@@ -1,33 +1,36 @@
 {
-  "name": "2025_2_Undefined",
-  "version": "1.0.0",
+  "name": "undefined",
   "description": "The undefined team's SPA app",
+  "private": true,
+  "version": "0.0.0",
   "authors": [
+    "Даниил Воронин https://github.com/cod1ng-space",
     "Михаил Крыгин https://github.com/MuXaH-bit",
     "Саид Дандамаев https://github.com/saiddandamaevv",
-    "Леонид Зимин https://github.com/lzimin05",
-    "Даниил Воронин https://github.com/cod1ng-space"
+    "Леонид Зимин https://github.com/lzimin05"
   ],
   "main": "src/index.js",
   "repository": "https://github.com/frontend-park-mail-ru/2025_2_Undefined.git",
   "license": "MIT",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon src/index.js",
-    "start": "node src/index.js",
-    "lint": "eslint src/**/*.js",
-    "lint:fix": "eslint src/**/*.js --fix",
-    "format": "prettier --write src/**/*.{js,css,html,hbs}"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write ."
   },
   "dependencies": {
-    "express": "^5.1.0",
+    "@yoichiro/vite-plugin-handlebars": "^1.4.0",
     "hbs": "^4.2.0"
   },
   "devDependencies": {
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
-    "globals": "^16.4.0",
-    "nodemon": "^3.1.10",
-    "prettier": "^3.6.2"
+    "prettier": "^3.6.2",
+    "vite": "^7.1.7"
   }
 }

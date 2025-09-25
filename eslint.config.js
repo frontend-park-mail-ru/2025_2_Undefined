@@ -1,49 +1,63 @@
 import js from '@eslint/js';
-import globals from 'globals';
+import importPlugin from 'eslint-plugin-import';
+import prettierPlugin from 'eslint-plugin-prettier';
 
 export default [
+  js.configs.recommended, // Base rules ESLint
   {
-    // For server files (Node.js )
     files: ['src/**/*.js'],
-    ignores: ['src/public/**/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
-        ...globals.node, // Global variables Node.js
-        require: 'readonly',
-        process: 'readonly',
-        __dirname: 'readonly',
-        module: 'readonly',
-        console: 'readonly'
-      }
-    },
-    rules: {
-      ...js.configs.recommended.rules,
-      'no-unused-vars': 'warn',
-      'no-console': 'off' // Enabling console in the server code
-    }
-  },
-  {
-    // For client files (browser)
-    files: ['src/public/js/**/*.js'],
-    languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
-      globals: {
-        ...globals.browser, // Global browser variables
-        alert: 'readonly',
-        document: 'readonly',
         window: 'readonly',
+        document: 'readonly',
         console: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly'
-      }
+      },
+    },
+    plugins: {
+      import: importPlugin,
+      prettier: prettierPlugin,
     },
     rules: {
-      ...js.configs.recommended.rules,
-      'no-unused-vars': 'warn',
-      'no-console': 'warn'
-    }
-  }
-];  
+      // Code style
+      'no-console': 'warn',
+      'no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      eqeqeq: ['error', 'always'],
+      curly: ['error', 'all'],
+      'prefer-const': 'error',
+      'no-var': 'error',
+      'arrow-body-style': ['error', 'as-needed'],
+      'object-shorthand': ['error', 'always'],
+
+      // Imports
+      'import/order': [
+        'error',
+        {
+          groups: [
+            'builtin',
+            'external',
+            'internal',
+            ['parent', 'sibling', 'index'],
+          ],
+          alphabetize: { order: 'asc', caseInsensitive: true },
+          'newlines-between': 'always',
+        },
+      ],
+
+      // Prettier
+      'prettier/prettier': [
+        'error',
+        {
+          singleQuote: true,
+          semi: true,
+          trailingComma: 'es5',
+          printWidth: 100,
+        },
+      ],
+    },
+  },
+];
