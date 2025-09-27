@@ -1,8 +1,8 @@
-import counter from './counter.hbs';
-import { setupCounter } from './counter.js';
+import { Signup } from "./pages/signup/signup"
 
 const root = document.getElementById('root');
-
-root.innerHTML = counter();
-
-setupCounter(document.querySelector('#counter'));
+const signup = new Signup(root);
+function renderSignup(){
+    signup.render();
+}
+renderSignup();
