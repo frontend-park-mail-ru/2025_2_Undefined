@@ -13,10 +13,9 @@ export async function signUpUser(userForm) {
         if (!response.ok) {
             const errorData = await response.json();
             
-            // Создаем объект ошибки с дополнительной информацией
             const error = new Error(errorData.message || 'Ошибка регистрации');
             error.status = response.status;
-            error.errors = errorData.errors; // Ожидаем, что сервер возвращает errors объект
+            error.errors = errorData.errors; 
             
             throw error;
         }
@@ -24,7 +23,6 @@ export async function signUpUser(userForm) {
         return await response.json();
         
     } catch (err) {
-        // Пробрасываем ошибку дальше для обработки в компоненте
         throw err;
     }
 }

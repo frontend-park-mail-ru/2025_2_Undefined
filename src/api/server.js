@@ -11,7 +11,6 @@ export async function sendPOSTRequest(path, data) {
         });
 
         if (!response.ok) {
-            // Пытаемся получить JSON с ошибкой, если сервер его возвращает
             let errorData;
             try {
                 errorData = await response.json();

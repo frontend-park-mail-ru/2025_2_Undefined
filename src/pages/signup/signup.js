@@ -124,7 +124,6 @@ export class Signup {
         const submitButton = form.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
         
-        // Блокируем кнопку
         submitButton.disabled = true;
         submitButton.textContent = 'Регистрация...';
 
@@ -132,28 +131,22 @@ export class Signup {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
             
-            // Валидация на клиенте
             if (!this.validateForm(data)) {
                 return;
             }
 
             await signUpUser(data);
             
-            // Успешная регистрация
-            alert('Регистрация прошла успешно!');
             form.reset();
             
         } catch (error) {
             console.error('Registration error:', error);
             
-            // Обработка ошибок с сервера
             if (error.errors) {
-                // Ошибки валидации с сервера
                 Object.keys(error.errors).forEach(fieldName => {
                     this.showFieldError(fieldName, error.errors[fieldName].join(', '));
                 });
             } else if (error.message) {
-                // Общая ошибка
                 this.showFormError(error.message);
             } else {
                 this.showFormError('Произошла ошибка при регистрации');
