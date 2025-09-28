@@ -8,7 +8,7 @@ export default defineConfig({
 
   // The directory for the build
   build: {
-    outDir: '../dist',
+    outDir: './dist',
     emptyOutDir: true,
   },
 
@@ -31,5 +31,11 @@ export default defineConfig({
   server: {
     port: 3000,
     open: true, // Automatically open the browser
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    }
   },
 });

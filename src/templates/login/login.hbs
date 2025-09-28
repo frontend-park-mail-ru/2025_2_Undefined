@@ -1,0 +1,28 @@
+<div class="login-block">
+    <h1>Вход</h1>
+
+    <form id="login" action="" class="login-form">
+        <div class="input-group">
+            <input type="text" name="phone_number" class="login-input" placeholder="Введите номер телефона">
+            <div class="error-message" data-field="phone_number"></div>
+        </div>
+        
+        <div class="input-group">
+            <div class="login-password-input">
+                <input type="password" name="password" id="passwordInput" class="login-input" placeholder="Введите пароль">
+                <button type="button" class="toggle-password" id="togglePassword">
+                    <i class='eye-icon'></i>
+                </button>
+            </div>
+
+            <div class="error-message" data-field="password"></div>
+        </div>
+        
+        <button type="submit" class="login-button">Войти</button>
+    </form>
+
+    <div class="link-to-login-block">
+        <span>Еще нет аккаунта?</span>
+        <a href="#" class="link-to-login">Регистрация</a>
+    </div>
+</div>
