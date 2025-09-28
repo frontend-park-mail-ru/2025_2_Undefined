@@ -24,6 +24,7 @@ h1{
 
 .input-group{
     margin-bottom: 5px;
+    position: relative;
 }
 
 .signup-input{
@@ -119,10 +120,24 @@ h1{
     position: absolute;
     right: 12px;
     top: 50%;
-    transform: translateY(-70%);
+    transform: translateY(-50%);
     background: none;
     border: none;
     cursor: pointer;
     font-size: 18px;
     padding: 4px 8px;
+}
+
+.eye-icon{
+    background-image: url('./assets/icons/eye.svg');
+    width: 30px;
+    height: 30px;
+    display: block;
+}
+
+.eyeHidden-icon{
+    background-image: url('./assets/icons/eyeHidden.svg');
+    width: 30px;
+    height: 30px;
+    display: block;
 }

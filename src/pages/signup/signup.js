@@ -64,59 +64,75 @@ export class Signup {
     validateForm(data) {
         let isValid = true;
         
+        let isInputValid = true;
         if (!data.phone_number || data.phone_number.trim().length === 0) {
             this.showFieldError('phone_number', 'Номер телефона обязателен');
             isValid = false;
-        } else if (!/^[\d+\-\s()]+$/.test(data.phone_number)) {
+            isInputValid = false;
+        } else if (!/^[\d+\-\s()]+$/.test(data.phone_number) && data.phone_number.length < 11) {
             this.showFieldError('phone_number', 'Некорректный формат номера телефона');
             isValid = false;
-        } else {
+            isInputValid = false
+        } else if (isInputValid === true){
             this.showFieldOk('phone_number');
         }
 
-        const nameRegex = /^[a-zA-Z0-9_]+$/;
+        isInputValid = true;
+        const usernameRegex = /^[a-zA-Z0-9_]+$/;
         if (!data.username || data.username.trim().length === 0) {
             this.showFieldError('username', 'Логин обязателен');
             isValid = false;
+            isInputValid = false;
         } else if (data.username.length < 3 && data.username.length < 20) {
             this.showFieldError('username', 'Логин должен содержать не менее 3 и не более 20 символов');
             isValid = false;
-        } else if (!nameRegex.test(data.username)) {
+            isInputValid = false;
+        } else if (!usernameRegex.test(data.username)) {
             this.showFieldError('username', 'Недопустимые символы');
             isValid = false;
-        } else {
+            isInputValid = false;
+        } else if (isInputValid === true){
             this.showFieldOk('username');
         }
 
+        isInputValid = true;
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
         if (!data.email || data.email.trim().length === 0) {
             this.showFieldError('email', 'Почта обязательна');
             isValid = false;
+            isInputValid = false;
         } else if (!emailRegex.test(data.email)) {
             this.showFieldError('email', 'Недопустимые символы');
             isValid = false;
-        } else {
+            isInputValid = false;
+        } else if (isInputValid === true){
             this.showFieldOk('email');
         }
- 
+        
+        isInputValid = true;
         if (!data.name || data.name.trim().length === 0) {
             this.showFieldError('name', 'Имя обязательно');
             isValid = false;
-        } else {
+            isInputValid = false;
+        } else if (isInputValid === true){
             this.showFieldOk('name');
         }
 
+        isInputValid = true;
         const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
         if (!data.password || data.password.length === 0) {
             this.showFieldError('password', 'Пароль обязателен');
             isValid = false;
+            isInputValid = false;
         } else if (data.password.length < 8) {
             this.showFieldError('password', 'Пароль должен содержать минимум 8 символов');
             isValid = false;
+            isInputValid = false;
         } else if (!passwordRegex.test(data.password)){
             this.showFieldError('password', 'Недопустимые символы');
             isValid = false;
-        } else {
+            isInputValid = false;
+        } else if (isInputValid === true){
             this.showFieldOk('password');
         }
 
@@ -173,11 +189,13 @@ export class Signup {
     togglePassword(){
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('passwordInput');
+        const eyeHidden = document.createElement('i');
+        eyeHidden.className = 'eyeHidden';
         
         if (togglePassword && passwordInput) {
                 const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                 passwordInput.setAttribute('type', type);
-                this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+                togglePassword.innerHTML = type === 'password' ? '<i class="eye-icon"></i>' : '<i class="eyeHidden-icon"></i>';
         }
     }
 
