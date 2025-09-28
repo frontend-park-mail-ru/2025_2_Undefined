@@ -3,26 +3,23 @@ import { sendPOSTRequest } from "./server";
 export async function signUpUser(userForm) {
     try {
         const response = await sendPOSTRequest("/register", {
-            name: userForm.name,
-            username: userForm.username,
-            phone_number: userForm.phone_number,
             email: userForm.email,
-            password: userForm.password
+            name: userForm.name,
+            password: userForm.password,
+            phone_number: userForm.phone_number,
+            username: userForm.username,
         });
 
         if (!response.ok) {
             const errorData = await response.json();
             
             const error = new Error(errorData.message || 'Ошибка регистрации');
-            error.status = response.status;
             error.errors = errorData.errors; 
-            
+
             throw error;
         }
-
-        return await response.json();
-        
     } catch (err) {
+        console.log(err.name)
         throw err;
     }
 }

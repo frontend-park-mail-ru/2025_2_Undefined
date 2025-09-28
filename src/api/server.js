@@ -17,18 +17,14 @@ export async function sendPOSTRequest(path, data) {
             } catch {
                 errorData = { message: `HTTP error ${response.status}` };
             }
+            const error = new Error(errorData.message || 'Ошибка регистрации');
+            error.errors = errorData.errors; 
             
-            const error = new Error(errorData.message || 'Request failed');
-            error.status = response.status;
-            error.data = errorData;
             throw error;
         }
 
         return response;
     } catch (error) {
-        if (error.name === 'TypeError' && error.message.includes('fetch')) {
-            throw new Error('Нет соединения с сервером');
-        }
         throw error;
     }
 }

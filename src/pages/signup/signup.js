@@ -88,6 +88,17 @@ export class Signup {
             this.showFieldOk('username');
         }
 
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!data.email || data.email.trim().length === 0) {
+            this.showFieldError('email', 'Почта обязательна');
+            isValid = false;
+        } else if (!emailRegex.test(data.email)) {
+            this.showFieldError('email', 'Недопустимые символы');
+            isValid = false;
+        } else {
+            this.showFieldOk('email');
+        }
+ 
         if (!data.name || data.name.trim().length === 0) {
             this.showFieldError('name', 'Имя обязательно');
             isValid = false;
@@ -143,10 +154,11 @@ export class Signup {
             console.error('Registration error:', error);
             
             if (error.errors) {
-                Object.keys(error.errors).forEach(fieldName => {
-                    this.showFieldError(fieldName, error.errors[fieldName].join(', '));
+                error.errors.forEach(errorItem => {
+                    this.showFieldError(errorItem.field, errorItem.message);
                 });
             } else if (error.message) {
+                console.log(error.errors)
                 this.showFormError(error.message);
             } else {
                 this.showFormError('Произошла ошибка при регистрации');
@@ -158,8 +170,20 @@ export class Signup {
         }
     }
 
+    togglePassword(){
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('passwordInput');
+        
+        if (togglePassword && passwordInput) {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+        }
+    }
+
     render() {
         this.#parent.innerHTML = signupTemplate();
         this.#parent.querySelector("#signup").addEventListener("submit", this.onSubmit);
+        this.#parent.querySelector("#togglePassword").addEventListener("click", this.togglePassword);
     }
 }

@@ -6,6 +6,11 @@
             <input type="text" name="phone_number" class="signup-input" placeholder="Введите номер телефона">
             <div class="error-message" data-field="phone_number"></div>
         </div>
+
+        <div class="input-group">
+            <input type="email" name="email" class="signup-input" placeholder="Введите почту">
+            <div class="error-message" data-field="email"></div>
+        </div>
         
         <div class="input-group">
             <input type="text" name="username" class="signup-input" placeholder="Введите логин">
@@ -18,7 +23,10 @@
         </div>
         
         <div class="input-group">
-            <input type="password" name="password" class="signup-input" placeholder="Введите пароль">
+            <input type="password" name="password" id="passwordInput" class="signup-input" placeholder="Введите пароль">
+            <button type="button" class="toggle-password" id="togglePassword">
+                👁️
+            </button>
             <div class="error-message" data-field="password"></div>
         </div>
         
