@@ -1,7 +1,7 @@
-import signupTemplate from '../../templates/signup/signup.hbs';
-import { signUpUser } from '../../api/auth';
+import loginTemplate from '../../templates/login/login.hbs';
+import { loginUser } from '../../api/auth';
 
-export class Signup {
+export class Login {
     #parent
     #isSubmitting = false;
 
@@ -11,7 +11,7 @@ export class Signup {
     }
 
     clearErrors() {
-        const inputs = this.#parent.querySelectorAll('.signup-input');
+        const inputs = this.#parent.querySelectorAll('.login-input');
         inputs.forEach(input => {
             input.classList.remove('error');
             input.classList.remove('ok'); 
@@ -56,7 +56,7 @@ export class Signup {
     showFormError(message) {
         this.clearErrors();
         
-        const form = this.#parent.querySelector('#signup');
+        const form = this.#parent.querySelector('#login');
         const errorDiv = document.createElement('div');
         errorDiv.className = 'form-error';
         errorDiv.textContent = message;
@@ -75,38 +75,6 @@ export class Signup {
             isValid = false;
         } else {
             this.showFieldOk('phone_number');
-        }
-
-        const usernameRegex = /^[a-zA-Z0-9_]+$/;
-        if (!data.username || data.username.trim().length === 0) {
-            this.showFieldError('username', 'Логин обязателен');
-            isValid = false;
-        } else if (data.username.length < 3 && data.username.length < 20) {
-            this.showFieldError('username', 'Логин должен содержать не менее 3 и не более 20 символов');
-            isValid = false;
-        } else if (!usernameRegex.test(data.username)) {
-            this.showFieldError('username', 'Недопустимые символы');
-            isValid = false;
-        } else {
-            this.showFieldOk('username');
-        }
-
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!data.email || data.email.trim().length === 0) {
-            this.showFieldError('email', 'Почта обязательна');
-            isValid = false;
-        } else if (!emailRegex.test(data.email)) {
-            this.showFieldError('email', 'Недопустимые символы');
-            isValid = false;
-        } else {
-            this.showFieldOk('email');
-        }
- 
-        if (!data.name || data.name.trim().length === 0) {
-            this.showFieldError('name', 'Имя обязательно');
-            isValid = false;
-        } else {
-            this.showFieldOk('name');
         }
 
         const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
@@ -139,7 +107,7 @@ export class Signup {
         const originalText = submitButton.textContent;
         
         submitButton.disabled = true;
-        submitButton.textContent = 'Регистрация...';
+        submitButton.textContent = 'Авторизация...';
 
         try {
             const formData = new FormData(form);
@@ -149,12 +117,12 @@ export class Signup {
                 return;
             }
 
-            await signUpUser(data);
+            await loginUser(data);
             
             form.reset();
             
         } catch (error) {
-            console.error('Registration error:', error);
+            console.error('Authorization error:', error);
             
             if (error.errors) {
                 error.errors.forEach(errorItem => {
@@ -164,7 +132,7 @@ export class Signup {
                 console.log(error.errors)
                 this.showFormError(error.message);
             } else {
-                this.showFormError('Произошла ошибка при регистрации');
+                this.showFormError('Произошла ошибка при авторизации');
             }
         } finally {
             this.#isSubmitting = false;
@@ -187,8 +155,8 @@ export class Signup {
     }
 
     render() {
-        this.#parent.innerHTML = signupTemplate();
-        this.#parent.querySelector("#signup").addEventListener("submit", this.onSubmit);
+        this.#parent.innerHTML = loginTemplate();
+        this.#parent.querySelector("#login").addEventListener("submit", this.onSubmit);
         this.#parent.querySelector("#togglePassword").addEventListener("click", this.togglePassword);
     }
 }

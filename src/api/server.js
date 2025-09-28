@@ -17,9 +17,9 @@ export async function sendPOSTRequest(path, data) {
             } catch {
                 errorData = { message: `HTTP error ${response.status}` };
             }
-            const error = new Error(errorData.message || 'Ошибка регистрации');
+            const error = new Error(errorData.message || 'Ошибка');
             error.errors = errorData.errors; 
-            
+
             throw error;
         }
 

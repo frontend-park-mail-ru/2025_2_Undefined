@@ -19,7 +19,26 @@ export async function signUpUser(userForm) {
             throw error;
         }
     } catch (err) {
-        console.log(err.name)
+        throw err;
+    }
+}
+
+export async function loginUser(userForm) {
+    try {
+        const response = await sendPOSTRequest("/login", {
+            password: userForm.password,
+            phone_number: userForm.phone_number,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            
+            const error = new Error(errorData.message || 'Ошибка авторизации');
+            error.errors = errorData.errors; 
+
+            throw error;
+        }
+    } catch (err) {
         throw err;
     }
 }
