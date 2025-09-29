@@ -1,15 +1,26 @@
 import loginTemplate from '../../templates/login/login.hbs';
-import { loginUser } from '../../api/auth';
+import { loginUser } from '../../api/modules/auth';
+import goToPage from '../../main'
 
+/**
+ * Класс для управления логикой страницы авторизации
+ */
 export class Login {
     #parent
     #isSubmitting = false;
 
+    /**
+     * Создает экземпляр класса Login
+     * @param {HTMLElement} parent - Родительский элемент для рендеринга
+     */
     constructor(parent) {
         this.#parent = parent;
         this.onSubmit = this.onSubmit.bind(this);
     }
 
+    /**
+     * Очищает все ошибки валидации формы
+     */
     clearErrors() {
         const inputs = this.#parent.querySelectorAll('.login-input');
         inputs.forEach(input => {
@@ -31,6 +42,11 @@ export class Login {
         }
     }
 
+    /**
+     * Показывает ошибку для конкретного поля формы
+     * @param {string} fieldName - Имя поля
+     * @param {string} message - Текст ошибки
+     */
     showFieldError(fieldName, message) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
         const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
@@ -43,6 +59,10 @@ export class Login {
         }
     }
 
+    /**
+     * Показывает успешную валидацию для поля формы
+     * @param {string} fieldName - Имя поля
+     */
     showFieldOk(fieldName) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
         const okElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
@@ -53,6 +73,10 @@ export class Login {
         }
     }
 
+    /**
+     * Показывает общую ошибку формы
+     * @param {string} message - Текст ошибки
+     */
     showFormError(message) {
         this.clearErrors();
         
@@ -64,6 +88,13 @@ export class Login {
         form.insertBefore(errorDiv, form.firstChild);
     }
 
+    /**
+     * Валидирует данные формы авторизации
+     * @param {Object} data - Данные формы
+     * @param {string} data.phone_number - Номер телефона
+     * @param {string} data.password - Пароль
+     * @returns {boolean} Результат валидации
+     */
     validateForm(data) {
         let isValid = true;
         
@@ -94,6 +125,11 @@ export class Login {
         return isValid;
     }
 
+    /**
+     * Обрабатывает отправку формы авторизации
+     * @param {Event} event - Событие отправки формы
+     * @returns {Promise<void>}
+     */
     async onSubmit(event) {
         event.preventDefault();
         
@@ -120,7 +156,9 @@ export class Login {
             await loginUser(data);
             
             form.reset();
-            
+
+            goToPage('home');
+        
         } catch (error) {
             console.error('Authorization error:', error);
             
@@ -141,6 +179,9 @@ export class Login {
         }
     }
 
+    /**
+     * Переключает видимость пароля в поле ввода
+     */
     togglePassword(){
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('passwordInput');
@@ -154,9 +195,22 @@ export class Login {
         }
     }
 
+    /**
+     * Переход на страницу регистрации
+     * @param {Event} event - Событие клика
+     */
+    linkToSignup(event){
+        event.preventDefault();
+        goToPage('signup');
+    }
+
+    /**
+     * Рендерит страницу авторизации
+     */
     render() {
         this.#parent.innerHTML = loginTemplate();
         this.#parent.querySelector("#login").addEventListener("submit", this.onSubmit);
         this.#parent.querySelector("#togglePassword").addEventListener("click", this.togglePassword);
+        this.#parent.querySelector('#linkToSignup').addEventListener("click", this.linkToSignup)
     }
 }

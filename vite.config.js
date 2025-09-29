@@ -27,10 +27,9 @@ export default defineConfig({
     }),
   ],
 
-  // Development Server Settings
   server: {
     port: 3000,
-    open: true, // Automatically open the browser
+    open: true, 
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
