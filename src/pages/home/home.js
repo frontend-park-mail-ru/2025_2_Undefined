@@ -140,7 +140,7 @@ export class Home {
    * Выполняет выход пользователя из системы
    */
   signOut() {
-    logoutUser().catch(() => {
+    logoutUser().then(() => {
         goToPage('login')
     });
   }
