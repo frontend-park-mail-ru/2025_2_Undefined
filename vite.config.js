@@ -8,7 +8,7 @@ export default defineConfig({
 
   // The directory for the build
   build: {
-    outDir: '../dist',
+    outDir: './dist',
     emptyOutDir: true,
   },
 
@@ -36,6 +36,6 @@ export default defineConfig({
         target: 'http://localhost:8080',
         changeOrigin: true,
       },
-    },
+    }
   },
 });
