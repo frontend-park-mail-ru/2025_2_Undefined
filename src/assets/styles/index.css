@@ -1,0 +1,14 @@
+@import url('../../pages/home/home.css');
+
+@import url('../../components/chat/chat.css');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif;
+  margin: 0;
+}
