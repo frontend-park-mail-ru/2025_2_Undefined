@@ -1,11 +1,19 @@
 import HomeTemplate from './home.hbs';
-import Auth from '../../api/modules/auth.js';
+import { logoutUser } from '../../api/modules/auth.js';
 import Chat from '../../api/modules/chats.js';
 import User from '../../api/modules/user.js';
+import goToPage from '../../main.js';
 
+/**
+ * Класс для управления домашней страницей приложения
+ */
 export class Home {
   #parent;
 
+  /**
+   * Создает экземпляр класса Home
+   * @param {HTMLElement} parent - Родительский элемент для рендеринга
+   */
   constructor(parent) {
     this.#parent = parent;
   }
@@ -22,7 +30,6 @@ export class Home {
 
     const date = new Date(dateString);
 
-    // Проверка на валидность даты
     if (isNaN(date.getTime())) {
       return 'Неверный формат даты';
     }
@@ -33,7 +40,6 @@ export class Home {
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
-    // Сегодня
     if (diffInDays === 0) {
       if (diffInMinutes < 1) {
         return 'только что';
@@ -43,14 +49,12 @@ export class Home {
         return `${diffInHours} ч. назад`;
       }
     }
-    // Вчера
     else if (diffInDays === 1) {
       return `вчера в ${date.toLocaleTimeString('ru-RU', {
         hour: '2-digit',
         minute: '2-digit',
       })}`;
     }
-    // В течение недели
     else if (diffInDays < 7) {
       return `${diffInDays} дн. назад`;
     }
@@ -132,41 +136,38 @@ export class Home {
     }
   }
 
+  /**
+   * Выполняет выход пользователя из системы
+   */
   signOut() {
-    Auth.logout().then((result) => {
-      if (result.success) {
-        console.log('Успешный выход');
-        // Перенаправить на страницу логина или обновить состояние приложения
-      } else {
-        console.error('Ошибка выхода:', result.error);
-      }
+    logoutUser().catch(() => {
+        goToPage('login')
     });
   }
 
+  /**
+   * Рендерит домашнюю страницу с данными пользователя и чатами
+   * @returns {Promise<void>}
+   */
   async render() {
     const HomeData = {};
 
     try {
-      // Получаем данные пользователя
       const userData = await this.getCurrentUser();
       if (userData) {
         HomeData.user = userData;
 
-        // Добавляем placeholder для аватара пользователя
         HomeData.user.placeholder = this.getChatPlaceholder(userData.name || userData.username);
       }
 
-      // Получаем список чатов
       const response = await Chat.getChats();
 
       if (response.ok) {
         const chats = await response.json();
         HomeData.chats = this.processChats(chats);
 
-        // Рендерим шаблон с данными
         this.#parent.innerHTML = HomeTemplate(HomeData);
 
-        // Добавляем обработчик выхода
         const signOutButton = this.#parent.querySelector('#signOut');
         if (signOutButton) {
           signOutButton.addEventListener('click', () => this.signOut());
@@ -177,11 +178,16 @@ export class Home {
     } catch (error) {
       console.error('Ошибка при рендеринге домашней страницы:', error);
 
-      // Рендерим шаблон с ошибкой
       HomeData.error = 'Не удалось загрузить данные';
       this.#parent.innerHTML = HomeTemplate(HomeData);
     }
   }
+
+  /**
+   * Создает массив чатов (заглушка для совместимости)
+   * @param {Array} chats - Массив чатов
+   * @returns {Array} Исходный массив чатов
+   */
   createChats(chats) {
     return chats || [];
   }

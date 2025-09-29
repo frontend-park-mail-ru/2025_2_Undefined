@@ -1,36 +1,136 @@
-// import { Signup } from "./pages/signup/signup"
-
-// const root = document.getElementById('root');
-// const signup = new Signup(root);
-// function renderSignup(){
-//     signup.render();
-// }
-// renderSignup();
-
-
 import { Login } from "./pages/login/login"
-// import counter from './counter.hbs';
-// import { setupCounter } from './counter.js';
+import { Signup } from "./pages/signup/signup"
+import { Home } from './pages/home/home'
 
-// import home from '../src/pages/home/home.hbs';
+const rootElement = document.getElementById('root');
 
-// const root = document.getElementById('root');
+/**
+ * Состояние приложения
+ * @typedef {Object} AppState
+ * @property {Object|null} user - Данные пользователя
+ * @property {boolean} isAuth - Статус авторизации
+ */
 
-// root.innerHTML = home();
+/**
+ * Состояние приложения
+ * @type {AppState}
+ */
+const app = {
+    user: null,
+    isAuth: false
+};
 
-// const root = document.getElementById('root');
+/**
+ * Конфигурация страниц приложения
+ * @type {Object}
+ */
+const config = {
+    pages: {
+        home: {
+            href: '/',
+            text: 'Чаты',
+            render: renderChats,
+            authRequired: true
+        },
+        login: {
+            href: '/login',
+            text: 'Авторизация',
+            render: renderLogin,
+            authRequired: false
+        },
+        signup: {
+            href: '/signup',
+            text: 'Регистрация',
+            render: renderSignup,
+            authRequired: false
+        }
+    }
+};
 
-// root.innerHTML = counter();
+/**
+ * Получает данные текущего пользователя
+ * @returns {Promise<boolean>} Статус авторизации
+ */
+async function fetchUser() {
+    try {
+        const response = await fetch('/api/v1/me', {
+            credentials: 'include'
+        });
+        
+        if (response.ok) {
+            const userData = await response.json();
+            app.user = userData;
+            app.isAuth = true;
+            return true;
+        }
+    } catch (error) {
+        console.error('Ошибка при получении пользователя:', error);
+    }
+    
+    app.user = null;
+    app.isAuth = false;
+    return false;
+}
 
-// setupCounter(document.querySelector('#counter'));
+/**
+ * Рендерит страницу чатов
+ */
+function renderChats(){
+    const home = new Home(rootElement);
+    home.render();
+}
 
-import { Home } from './pages/home/home.js';
+/**
+ * Рендерит страницу регистрации
+ */
+function renderSignup(){
+    const signup = new Signup(rootElement);
+    signup.render();
+}
 
-const root = document.getElementById('root');
-const login = new Login(root);
-function renderLogin(){
+/**
+ * Рендерит страницу авторизации
+ */
+function renderLogin() {
+    const login = new Login(rootElement);
     login.render();
 }
-renderLogin();
-const home = new Home(root);
-root.innerHTML = home.render();
+
+/**
+ * Переходит на указанную страницу с проверкой авторизации
+ * @param {string} page - Идентификатор страницы
+ * @returns {Promise<void>}
+ */
+export default async function goToPage(page) {
+    const isAuthenticated = await fetchUser();
+    
+    const pageConfig = config.pages[page];
+    
+    if (pageConfig.authRequired && !isAuthenticated) {
+        page = 'login';
+    }
+    
+    if ((page === 'login' || page === 'signup') && isAuthenticated) {
+        page = 'home';
+    }
+
+    rootElement.innerHTML = '';
+
+    const pageHref = config.pages[page].href;
+    history.pushState({ page }, '', pageHref);
+
+    config.pages[page].render();
+}
+
+/**
+ * Инициализирует приложение
+ * @returns {Promise<void>}
+ */
+async function initApp() {
+    await fetchUser(); 
+    
+    const startPage = app.isAuth ? 'home' : 'login';
+    goToPage(startPage);
+}
+
+initApp();
