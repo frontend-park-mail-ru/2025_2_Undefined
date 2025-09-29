@@ -13,6 +13,7 @@ export default [
         window: 'readonly',
         document: 'readonly',
         console: 'readonly',
+        fetch: 'readonly',
       },
     },
     plugins: {
