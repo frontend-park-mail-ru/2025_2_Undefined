@@ -1,0 +1,192 @@
+/* ===== БАЗОВЫЕ СТИЛИ ===== */
+.home {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #101723;
+  overflow: hidden;
+}
+
+/* ===== ХЕДЕР ===== */
+.header {
+  background-color: #0a121f;
+  width: 100%;
+  flex-shrink: 0;
+  border-bottom: 1px solid #2a3546;
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  height: 80px;
+}
+
+/* Колонки хедера */
+.left-column,
+.middle-column,
+.right-column {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.left-column {
+  width: 25%;
+  padding-right: 10px;
+}
+
+.middle-column {
+  width: 50%;
+  justify-content: center;
+}
+
+.right-column {
+  width: 25%;
+  justify-content: flex-end;
+  
+  gap: 25px;
+}
+
+/* Кнопки и иконки */
+.menu-btn,
+.signOut-btn {
+  flex-shrink: 0;
+  cursor: pointer;
+  padding: 20px;
+}
+
+.menu-icon,
+.search-icon,
+.signOut-icon {
+  background-repeat: no-repeat;
+  background-size: contain;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.menu-icon {
+  background-image: url('../../assets/icons/menu.svg');
+  width: 40px;
+  height: 40px;
+}
+
+.signOut-icon {
+  background-image: url('../../assets/icons/sign_out.svg');
+  width: 50px;
+  height: 50px;
+}
+
+/* Поиск */
+.search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid #363634;
+  border-radius: 8px;
+  background: #0c0f15;
+  padding: 15px;
+  color: #8c8c8c;
+  cursor: text;
+  flex: 1;
+  min-width: 0;
+  transition: border-color 0.2s ease;
+}
+
+.search-wrapper:focus-within {
+  border-color: #667eea;
+}
+
+.search-icon {
+  background-image: url('../../assets/icons/search_light.svg');
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.search {
+  font-size: 16px;
+  outline: none;
+  border: none;
+  background: transparent;
+  width: 100%;
+  color: #ffffff;
+  flex: 1;
+}
+
+.search::placeholder {
+  color: #8c8c8c;
+}
+
+/* Пользователь в хедере */
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.user-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: right;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.avatar-placeholder {
+  /* Стили для placeholder аватара */
+}
+
+/* ===== ОСНОВНОЙ КОНТЕНТ ===== */
+.content {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+  background-color: #101723;
+  overflow: hidden;
+}
+
+/* Левая колонка - список диалогов */
+.content-left-column {
+  width: 25%;
+  background-color: #0a121f;
+  border-right: 1px solid #2a3546;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.chats-list-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  color: #ffffff;
+  min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* Правая колонка - чат */
+.content-middle-column {
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  background-color: #0f1623;
+  min-height: 0;
+}
+
+/* Скрытие скроллбаров */
+.chats-list-scrollable::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}

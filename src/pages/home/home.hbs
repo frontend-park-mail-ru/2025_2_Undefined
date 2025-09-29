@@ -1,0 +1,53 @@
+<div class='home'>
+  <div class='header'>
+    <div class='header-wrapper'>
+      <div class='left-column'>
+        <div class='menu-btn'>
+          <i class='menu-icon'></i>
+        </div>
+        <div class='search-wrapper'>
+          <i class='search-icon'></i>
+          <input class='search' type='text' placeholder='Поиск' />
+        </div>
+      </div>
+      <div class='middle-column'>
+
+      </div>
+      <div class='right-column'>
+        <div class='user-header'>
+          <div class='user-info'>
+            <div class='user-details'>
+              <div class='user-name'>{{user.name}}</div>
+            </div>
+            <div class='avatar'>
+              <div class='avatar-placeholder'>{{user.placeholder}}</div>
+            </div>
+          </div>
+        </div>
+        <div class='signOut-btn' id="signOut">
+          <i class='signOut-icon'></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class='content'>
+    <!-- Левая колонка - список диалогов -->
+    <div class='content-left-column'>
+      <div class='chats-list-scrollable'>
+        {{#each chats}}
+        {{> components/chat/chat-template
+        placeholder=this.placeholder
+        name=this.name
+        last-message-date=this.last_message.created_at_formatted
+        last-message=this.this.last_message.string
+        }}
+        {{/each}}
+      </div>
+    </div>
+
+    <!-- Средняя колонка - чат -->
+    <div class='content-middle-column'>
+
+    </div>
+  </div>
