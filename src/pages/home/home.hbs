@@ -34,16 +34,22 @@
   <div class='content'>
     <!-- Левая колонка - список диалогов -->
     <div class='content-left-column'>
-      <div class='chats-list-scrollable'>
-        {{#each chats}}
-        {{> components/chat/chat-template
-        placeholder=this.placeholder
-        name=this.name
-        last-message-date=this.last_message.created_at_formatted
-        last-message=this.this.last_message.string
-        }}
-        {{/each}}
-      </div>
+      {{#if hasChats}}
+        <div class='chats-list-scrollable'>
+          {{#each chats}}
+          {{> components/chat/chat-template
+          placeholder=this.placeholder
+          name=this.name
+          last-message-date=this.last_message.created_at_formatted
+          last-message=this.this.last_message.string
+          }}
+          {{/each}}
+        </div>
+      {{else}}
+       <div class="hasNoChats">
+        <p>У вас пока нет чатов</p>
+       </div>
+      {{/if}}
     </div>
 
     <!-- Средняя колонка - чат -->

@@ -64,7 +64,7 @@ export async function loginUser(userForm) {
  */
 export async function logoutUser() {
     try {
-        const response = await sendPOSTRequest("/logout", {});  // ← Используйте sendPOSTRequest
+        const response = await sendPOSTRequest("/logout", {}); 
         
         if (!response.ok) {
             const errorData = await response.json();

@@ -16,6 +16,7 @@ export class Signup {
     constructor(parent) {
         this.#parent = parent;
         this.onSubmit = this.onSubmit.bind(this);
+        this.changeInput = this.changeInput.bind(this);
     }
 
     /**
@@ -104,8 +105,8 @@ export class Signup {
         if (!data.phone_number || data.phone_number.trim().length === 0) {
             this.showFieldError('phone_number', 'Номер телефона обязателен');
             isValid = false;
-        } else if (!/^[\d+\-\s()]+$/.test(data.phone_number) && data.phone_number.length < 11) {
-            this.showFieldError('phone_number', 'Некорректный формат номера телефона');
+        } else if (data.phone_number.trim().length < 18) {
+            this.showFieldError('phone_number', 'Введите номер полностью');
             isValid = false;
         } else {
             this.showFieldOk('phone_number');
@@ -151,13 +152,49 @@ export class Signup {
             this.showFieldError('password', 'Пароль должен содержать минимум 8 символов');
             isValid = false;
         } else if (!passwordRegex.test(data.password)){
-            this.showFieldError('password', 'Недопустимые символы');
+            this.showFieldError('password', 'В пароле допустимы только латиница, цифры и специальные символы');
             isValid = false;
         } else {
             this.showFieldOk('password');
         }
 
         return isValid;
+    }
+
+    telValidate(event){
+        let value = event.target.value.replace(/\D/g, '');
+        
+        if (value.startsWith('7') || value.startsWith('8')) {
+            value = value.substring(1);
+        }
+        
+        let formattedValue = '+7 (';
+        
+        if (value.length > 0) {
+            formattedValue += value.substring(0, 3);
+        }
+        if (value.length > 3) {
+            formattedValue += ') ' + value.substring(3, 6);
+        }
+        if (value.length > 6) {
+            formattedValue += '-' + value.substring(6, 8);
+        }
+        if (value.length > 8) {
+            formattedValue += '-' + value.substring(8, 10);
+        }
+        
+        event.target.value = formattedValue;
+    }
+
+    changeInput(event){
+        event.target.classList.remove("error");
+        event.target.classList.remove("ok");
+        const fieldName = event.target.getAttribute('name');
+        const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
+        if (errorElement) {
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+        }
     }
 
     /**
@@ -187,6 +224,8 @@ export class Signup {
             if (!this.validateForm(data)) {
                 return;
             }
+
+            data['phone_number'] = '+' + data['phone_number'].replace(/\D/g, '');
 
             await signUpUser(data);
             
@@ -246,6 +285,12 @@ export class Signup {
         this.#parent.innerHTML = signupTemplate();
         this.#parent.querySelector("#signup").addEventListener("submit", this.onSubmit);
         this.#parent.querySelector("#togglePassword").addEventListener("click", this.togglePassword);
-        this.#parent.querySelector('#linkToLogin').addEventListener("click", this.linkToLogin)
+        this.#parent.querySelector('#linkToLogin').addEventListener("click", this.linkToLogin);
+        this.#parent.querySelector('#tel').addEventListener("input", this.telValidate);
+
+        const allInputs = this.#parent.querySelectorAll('.signup-input');
+        allInputs.forEach(input => {
+            input.addEventListener("input", this.changeInput);
+        });        
     }
 }

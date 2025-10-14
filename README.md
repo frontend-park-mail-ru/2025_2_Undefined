@@ -2,6 +2,8 @@
 
 Фронтенд репозиторий команды undefined. Проект telegram
 
+[Деплой](http://89.208.231.242:8080/ "Деплой")
+
 ## Команда
 * [Даниил Воронин](https://github.com/cod1ng-space "Backend")
 * [Михаил Крыгин](https://github.com/MuXaH-bit "Frontend")
