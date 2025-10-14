@@ -15,7 +15,7 @@ const rootElement = document.getElementById('root');
  * Состояние приложения
  * @type {AppState}
  */
-const app = {
+export const app = {
     user: null,
     isAuth: false
 };
@@ -102,17 +102,7 @@ function renderLogin() {
  * @returns {Promise<void>}
  */
 export default async function goToPage(page) {
-    const isAuthenticated = await fetchUser();
-    
     const pageConfig = config.pages[page];
-    
-    if (pageConfig.authRequired && !isAuthenticated) {
-        page = 'login';
-    }
-    
-    if ((page === 'login' || page === 'signup') && isAuthenticated) {
-        page = 'home';
-    }
 
     rootElement.innerHTML = '';
 

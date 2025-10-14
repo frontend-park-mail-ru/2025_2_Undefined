@@ -3,6 +3,7 @@ import { logoutUser } from '../../api/modules/auth.js';
 import Chat from '../../api/modules/chats.js';
 import User from '../../api/modules/user.js';
 import goToPage from '../../main.js';
+import {app} from '../../main.js'
 
 /**
  * Класс для управления домашней страницей приложения
@@ -121,7 +122,11 @@ export class Home {
    * @returns {Promise<Object>} Данные пользователя
    */
   async getCurrentUser() {
-    try {
+    const userData = app.user;
+    if (userData){
+      return userData;
+    } else {
+      try {
       const response = await User.getMe();
 
       if (response.ok) {
@@ -134,6 +139,9 @@ export class Home {
       console.error('Ошибка при получении данных пользователя:', error);
       return null;
     }
+    }
+
+
   }
 
   /**
@@ -165,6 +173,7 @@ export class Home {
       if (response.ok) {
         const chats = await response.json();
         HomeData.chats = this.processChats(chats);
+        HomeData.hasChats = this.processChats(chats).length > 0;
 
         this.#parent.innerHTML = HomeTemplate(HomeData);
 
