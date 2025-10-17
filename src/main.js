@@ -1,6 +1,6 @@
-import { Login } from "./pages/login/login"
-import { Signup } from "./pages/signup/signup"
-import { Home } from './pages/home/home'
+import { Home } from './pages/home/home';
+import { Login } from './pages/login/login';
+import { Signup } from './pages/signup/signup';
 
 const rootElement = document.getElementById('root');
 
@@ -17,7 +17,7 @@ const rootElement = document.getElementById('root');
  */
 export const app = {
     user: null,
-    isAuth: false
+    isAuth: false,
 };
 
 /**
@@ -30,21 +30,21 @@ const config = {
             href: '/',
             text: 'Чаты',
             render: renderChats,
-            authRequired: true
+            authRequired: true,
         },
         login: {
             href: '/login',
             text: 'Авторизация',
             render: renderLogin,
-            authRequired: false
+            authRequired: false,
         },
         signup: {
             href: '/signup',
             text: 'Регистрация',
             render: renderSignup,
-            authRequired: false
-        }
-    }
+            authRequired: false,
+        },
+    },
 };
 
 /**
@@ -54,9 +54,9 @@ const config = {
 async function fetchUser() {
     try {
         const response = await fetch('/api/v1/me', {
-            credentials: 'include'
+            credentials: 'include',
         });
-        
+
         if (response.ok) {
             const userData = await response.json();
             app.user = userData;
@@ -66,7 +66,7 @@ async function fetchUser() {
     } catch (error) {
         console.error('Ошибка при получении пользователя:', error);
     }
-    
+
     app.user = null;
     app.isAuth = false;
     return false;
@@ -75,7 +75,7 @@ async function fetchUser() {
 /**
  * Рендерит страницу чатов
  */
-function renderChats(){
+function renderChats() {
     const home = new Home(rootElement);
     home.render();
 }
@@ -83,7 +83,7 @@ function renderChats(){
 /**
  * Рендерит страницу регистрации
  */
-function renderSignup(){
+function renderSignup() {
     const signup = new Signup(rootElement);
     signup.render();
 }
@@ -117,8 +117,8 @@ export default async function goToPage(page) {
  * @returns {Promise<void>}
  */
 async function initApp() {
-    await fetchUser(); 
-    
+    await fetchUser();
+
     const startPage = app.isAuth ? 'home' : 'login';
     goToPage(startPage);
 }

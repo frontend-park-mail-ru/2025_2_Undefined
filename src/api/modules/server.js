@@ -14,13 +14,13 @@ const SERVER_API = `${location.origin}/api/v1`;
 export async function sendPOSTRequest(path, data) {
     try {
         const response = await fetch(SERVER_API + path, {
-            method: "POST",
+            method: 'POST',
             body: JSON.stringify(data),
             headers: {
-                "Content-Type": "application/json"
+                'Content-Type': 'application/json',
             },
             credentials: 'include',
-            mode: 'cors'
+            mode: 'cors',
         });
 
         if (!response.ok) {
@@ -31,7 +31,7 @@ export async function sendPOSTRequest(path, data) {
                 errorData = { message: `HTTP error ${response.status}` };
             }
             const error = new Error(errorData.message || 'Ошибка');
-            error.errors = errorData.errors; 
+            error.errors = errorData.errors;
 
             throw error;
         }
