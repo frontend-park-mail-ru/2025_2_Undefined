@@ -1,6 +1,7 @@
-import loginTemplate from '../../templates/login/login.hbs';
-import { loginUser } from '../../api/modules/auth';
-import goToPage from '../../main';
+import { loginUser } from '@api/modules/auth';
+
+import goToPage from '@/main';
+import loginTemplate from '@/templates/login/login.hbs';
 
 /**
  * Класс для управления логикой страницы авторизации
@@ -27,9 +28,7 @@ export class Login {
         inputs.forEach((input) => {
             input.classList.remove('error');
             const fieldName = input.getAttribute('name');
-            const errorElement = this.#parent.querySelector(
-                `[data-field="${fieldName}"]`
-            );
+            const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
             errorElement.style.display = 'none';
         });
 
@@ -51,9 +50,7 @@ export class Login {
      */
     showFieldError(fieldName, message) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
-        const errorElement = this.#parent.querySelector(
-            `[data-field="${fieldName}"]`
-        );
+        const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
 
         if (input && errorElement) {
             input.classList.add('error');
@@ -129,9 +126,7 @@ export class Login {
         event.target.classList.remove('error');
         event.target.classList.remove('ok');
         const fieldName = event.target.getAttribute('name');
-        const errorElement = this.#parent.querySelector(
-            `[data-field="${fieldName}"]`
-        );
+        const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
         if (errorElement) {
             errorElement.style.display = 'none';
             errorElement.textContent = '';
@@ -146,7 +141,9 @@ export class Login {
     async onSubmit(event) {
         event.preventDefault();
 
-        if (this.#isSubmitting) return;
+        if (this.#isSubmitting) {
+            return;
+        }
 
         this.#isSubmitting = true;
 
@@ -165,8 +162,7 @@ export class Login {
                 return;
             }
 
-            data['phone_number'] =
-                '+' + data['phone_number'].replace(/\D/g, '');
+            data['phone_number'] = '+' + data['phone_number'].replace(/\D/g, '');
 
             await loginUser(data);
 
@@ -197,15 +193,10 @@ export class Login {
         eyeHidden.className = 'eyeHidden';
 
         if (togglePassword && passwordInput) {
-            const type =
-                passwordInput.getAttribute('type') === 'password'
-                    ? 'text'
-                    : 'password';
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             togglePassword.innerHTML =
-                type === 'password'
-                    ? '<i class="eye-icon"></i>'
-                    : '<i class="eyeHidden-icon"></i>';
+                type === 'password' ? '<i class="eye-icon"></i>' : '<i class="eyeHidden-icon"></i>';
         }
     }
 
@@ -223,18 +214,12 @@ export class Login {
      */
     render() {
         this.#parent.innerHTML = loginTemplate();
-        this.#parent
-            .querySelector('#login')
-            .addEventListener('submit', this.onSubmit);
+        this.#parent.querySelector('#login').addEventListener('submit', this.onSubmit);
         this.#parent
             .querySelector('#togglePassword')
             .addEventListener('click', this.togglePassword);
-        this.#parent
-            .querySelector('#linkToSignup')
-            .addEventListener('click', this.linkToSignup);
-        this.#parent
-            .querySelector('#tel')
-            .addEventListener('input', this.telValidate);
+        this.#parent.querySelector('#linkToSignup').addEventListener('click', this.linkToSignup);
+        this.#parent.querySelector('#tel').addEventListener('input', this.telValidate);
 
         const allInputs = this.#parent.querySelectorAll('.login-input');
         allInputs.forEach((input) => {

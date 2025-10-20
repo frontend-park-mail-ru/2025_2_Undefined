@@ -1,10 +1,19 @@
 // vite.config.js
 import { defineConfig } from 'vite';
-import { resolve } from 'path';
+import { resolve, path } from 'path';
 import handlebarsPlugin from '@yoichiro/vite-plugin-handlebars';
 
 export default defineConfig({
     // Root directory with source files
+     resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+      '@api': path.resolve(__dirname, './src/api'),
+      '@components': path.resolve(__dirname, './src/components'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@assets': path.resolve(__dirname, './src/assets')
+    }
+  },
 
     // The directory for the build
     build: {

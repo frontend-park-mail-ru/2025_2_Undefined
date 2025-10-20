@@ -1,9 +1,11 @@
+import { logoutUser } from '@api/modules/auth.js';
+import Chat from '@api/modules/chats.js';
+import User from '@api/modules/user.js';
+
 import HomeTemplate from './home.hbs';
-import { logoutUser } from '../../api/modules/auth.js';
-import Chat from '../../api/modules/chats.js';
-import User from '../../api/modules/user.js';
-import goToPage from '../../main.js';
-import { app } from '../../main.js';
+
+import goToPage from '@/main.js';
+import { app } from '@/main.js';
 
 /**
  * Класс для управления домашней страницей приложения
@@ -105,9 +107,7 @@ export class Home {
                 const processedChat = { ...chat };
                 processedChat.last_message = {
                     ...chat.last_message,
-                    created_at_formatted: this.formatMessageDate(
-                        chat.last_message.created_at
-                    ),
+                    created_at_formatted: this.formatMessageDate(chat.last_message.created_at),
                     created_at_original: chat.last_message.created_at, // сохраняем оригинальную дату
                 };
                 processedChat.placeholder = this.getChatPlaceholder(chat.name);
@@ -133,15 +133,10 @@ export class Home {
                     const userData = await response.json();
                     return userData;
                 } else {
-                    throw new Error(
-                        `Ошибка получения данных пользователя: ${response.status}`
-                    );
+                    throw new Error(`Ошибка получения данных пользователя: ${response.status}`);
                 }
             } catch (error) {
-                console.error(
-                    'Ошибка при получении данных пользователя:',
-                    error
-                );
+                console.error('Ошибка при получении данных пользователя:', error);
                 return null;
             }
         }
@@ -184,9 +179,7 @@ export class Home {
 
                 const signOutButton = this.#parent.querySelector('#signOut');
                 if (signOutButton) {
-                    signOutButton.addEventListener('click', () =>
-                        this.signOut()
-                    );
+                    signOutButton.addEventListener('click', () => this.signOut());
                 }
             } else {
                 throw new Error(`Ошибка получения чатов: ${response.status}`);

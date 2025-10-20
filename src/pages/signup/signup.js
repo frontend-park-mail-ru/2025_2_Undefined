@@ -1,6 +1,8 @@
+import { signUpUser } from '@api/modules/auth';
+
 import signupTemplate from '../../templates/signup/signup.hbs';
-import { signUpUser } from '../../api/modules/auth';
-import goToPage from '../../main';
+
+import goToPage from '@/main';
 
 /**
  * Класс для управления логикой страницы регистрации
@@ -28,9 +30,7 @@ export class Signup {
             input.classList.remove('error');
             input.classList.remove('ok');
             const fieldName = input.getAttribute('name');
-            const errorElement = this.#parent.querySelector(
-                `[data-field="${fieldName}"]`
-            );
+            const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
             errorElement.style.display = 'none';
         });
 
@@ -52,9 +52,7 @@ export class Signup {
      */
     showFieldError(fieldName, message) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
-        const errorElement = this.#parent.querySelector(
-            `[data-field="${fieldName}"]`
-        );
+        const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
 
         if (input && errorElement) {
             input.classList.add('error');
@@ -70,9 +68,7 @@ export class Signup {
      */
     showFieldOk(fieldName) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
-        const okElement = this.#parent.querySelector(
-            `[data-field="${fieldName}"]`
-        );
+        const okElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
 
         if (input && okElement) {
             input.classList.add('ok');
@@ -153,16 +149,12 @@ export class Signup {
             this.showFieldOk('name');
         }
 
-        const passwordRegex =
-            /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
+        const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
         if (!data.password || data.password.length === 0) {
             this.showFieldError('password', 'Пароль обязателен');
             isValid = false;
         } else if (data.password.length < 8) {
-            this.showFieldError(
-                'password',
-                'Пароль должен содержать минимум 8 символов'
-            );
+            this.showFieldError('password', 'Пароль должен содержать минимум 8 символов');
             isValid = false;
         } else if (!passwordRegex.test(data.password)) {
             this.showFieldError(
@@ -206,9 +198,7 @@ export class Signup {
         event.target.classList.remove('error');
         event.target.classList.remove('ok');
         const fieldName = event.target.getAttribute('name');
-        const errorElement = this.#parent.querySelector(
-            `[data-field="${fieldName}"]`
-        );
+        const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
         if (errorElement) {
             errorElement.style.display = 'none';
             errorElement.textContent = '';
@@ -223,7 +213,9 @@ export class Signup {
     async onSubmit(event) {
         event.preventDefault();
 
-        if (this.#isSubmitting) return;
+        if (this.#isSubmitting) {
+            return;
+        }
 
         this.clearErrors();
         this.#isSubmitting = true;
@@ -243,8 +235,7 @@ export class Signup {
                 return;
             }
 
-            data['phone_number'] =
-                '+' + data['phone_number'].replace(/\D/g, '');
+            data['phone_number'] = '+' + data['phone_number'].replace(/\D/g, '');
 
             await signUpUser(data);
 
@@ -281,15 +272,10 @@ export class Signup {
         eyeHidden.className = 'eyeHidden';
 
         if (togglePassword && passwordInput) {
-            const type =
-                passwordInput.getAttribute('type') === 'password'
-                    ? 'text'
-                    : 'password';
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
             togglePassword.innerHTML =
-                type === 'password'
-                    ? '<i class="eye-icon"></i>'
-                    : '<i class="eyeHidden-icon"></i>';
+                type === 'password' ? '<i class="eye-icon"></i>' : '<i class="eyeHidden-icon"></i>';
         }
     }
 
@@ -307,18 +293,12 @@ export class Signup {
      */
     render() {
         this.#parent.innerHTML = signupTemplate();
-        this.#parent
-            .querySelector('#signup')
-            .addEventListener('submit', this.onSubmit);
+        this.#parent.querySelector('#signup').addEventListener('submit', this.onSubmit);
         this.#parent
             .querySelector('#togglePassword')
             .addEventListener('click', this.togglePassword);
-        this.#parent
-            .querySelector('#linkToLogin')
-            .addEventListener('click', this.linkToLogin);
-        this.#parent
-            .querySelector('#tel')
-            .addEventListener('input', this.telValidate);
+        this.#parent.querySelector('#linkToLogin').addEventListener('click', this.linkToLogin);
+        this.#parent.querySelector('#tel').addEventListener('input', this.telValidate);
 
         const allInputs = this.#parent.querySelectorAll('.signup-input');
         allInputs.forEach((input) => {
