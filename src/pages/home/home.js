@@ -2,8 +2,8 @@ import HomeTemplate from './home.hbs';
 import { logoutUser } from '../../api/modules/auth.js';
 import Chat from '../../api/modules/chats.js';
 import User from '../../api/modules/user.js';
-import goToPage from '../../main.js';
 import {app} from '../../main.js'
+import { getRouter } from '../../router/router.js'
 
 /**
  * Класс для управления домашней страницей приложения
@@ -131,6 +131,10 @@ export class Home {
 
       if (response.ok) {
         const userData = await response.json();
+        app.user = userData;
+        app.isAuth = true;
+        console.log(app.isAuth);
+        console.log(123)
         return userData;
       } else {
         throw new Error(`Ошибка получения данных пользователя: ${response.status}`);
@@ -149,7 +153,10 @@ export class Home {
    */
   signOut() {
     logoutUser().then(() => {
-        goToPage('login')
+      app.user = null;
+      app.isAuth = false;
+      const router = getRouter();
+      router.navigateTo('/login');
     });
   }
 

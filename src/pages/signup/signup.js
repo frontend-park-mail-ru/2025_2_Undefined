@@ -1,6 +1,6 @@
 import signupTemplate from '../../templates/signup/signup.hbs';
 import { signUpUser } from '../../api/modules/auth';
-import goToPage from '../../main'
+import { getRouter } from '../../router/router.js'
 
 /**
  * Класс для управления логикой страницы регистрации
@@ -231,7 +231,8 @@ export class Signup {
             
             form.reset();
 
-            goToPage('home');
+            const router = getRouter();
+            router.navigateTo('/');
             
         } catch (error) {
             console.error('Registration error:', error);
@@ -275,7 +276,8 @@ export class Signup {
      */
     linkToLogin(event){
         event.preventDefault();
-        goToPage('login');
+        const router = getRouter();
+        router.navigateTo('/login');
     }
 
     /**

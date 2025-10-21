@@ -1,6 +1,6 @@
 import loginTemplate from '../../templates/login/login.hbs';
 import { loginUser } from '../../api/modules/auth';
-import goToPage from '../../main'
+import { getRouter } from '../../router/router.js'
 
 /**
  * Класс для управления логикой страницы авторизации
@@ -166,7 +166,8 @@ export class Login {
             
             form.reset();
 
-            goToPage('home');
+            const router = getRouter();
+            router.navigateTo('/');
         
         } catch (error) {
             console.error('Authorization error:', error);
@@ -204,7 +205,8 @@ export class Login {
      */
     linkToSignup(event){
         event.preventDefault();
-        goToPage('signup');
+        const router = getRouter();
+        router.navigateTo('/signup');
     }
 
     /**
