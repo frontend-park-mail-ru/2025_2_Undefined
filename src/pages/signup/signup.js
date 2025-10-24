@@ -1,12 +1,12 @@
-import signupTemplate from '../../templates/signup/signup.hbs';
-import { signUpUser } from '../../api/modules/auth';
-import goToPage from '../../main'
+import { signUpUser } from '@api/modules/auth';
+import signupTemplate from '@/templates/signup/signup.hbs';
+import { getRouter } from '@/router/router.js'
 
 /**
  * Класс для управления логикой страницы регистрации
  */
 export class Signup {
-    #parent
+    #parent;
     #isSubmitting = false;
 
     /**
@@ -16,6 +16,7 @@ export class Signup {
     constructor(parent) {
         this.#parent = parent;
         this.onSubmit = this.onSubmit.bind(this);
+        this.changeInput = this.changeInput.bind(this);
     }
 
     /**
@@ -23,16 +24,16 @@ export class Signup {
      */
     clearErrors() {
         const inputs = this.#parent.querySelectorAll('.signup-input');
-        inputs.forEach(input => {
+        inputs.forEach((input) => {
             input.classList.remove('error');
-            input.classList.remove('ok'); 
+            input.classList.remove('ok');
             const fieldName = input.getAttribute('name');
             const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
             errorElement.style.display = 'none';
         });
 
-       const errorMessages = this.#parent.querySelectorAll('.error-message');
-        errorMessages.forEach(message => {
+        const errorMessages = this.#parent.querySelectorAll('.error-message');
+        errorMessages.forEach((message) => {
             message.textContent = '';
         });
 
@@ -50,7 +51,7 @@ export class Signup {
     showFieldError(fieldName, message) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
         const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
-        
+
         if (input && errorElement) {
             input.classList.add('error');
             input.classList.remove('ok');
@@ -66,7 +67,7 @@ export class Signup {
     showFieldOk(fieldName) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
         const okElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
-        
+
         if (input && okElement) {
             input.classList.add('ok');
             input.classList.remove('remove');
@@ -79,12 +80,12 @@ export class Signup {
      */
     showFormError(message) {
         this.clearErrors();
-        
+
         const form = this.#parent.querySelector('#signup');
         const errorDiv = document.createElement('div');
         errorDiv.className = 'form-error';
         errorDiv.textContent = message;
-        
+
         form.insertBefore(errorDiv, form.firstChild);
     }
 
@@ -100,12 +101,12 @@ export class Signup {
      */
     validateForm(data) {
         let isValid = true;
-        
+
         if (!data.phone_number || data.phone_number.trim().length === 0) {
             this.showFieldError('phone_number', 'Номер телефона обязателен');
             isValid = false;
-        } else if (!/^[\d+\-\s()]+$/.test(data.phone_number) && data.phone_number.length < 11) {
-            this.showFieldError('phone_number', 'Некорректный формат номера телефона');
+        } else if (data.phone_number.trim().length < 18) {
+            this.showFieldError('phone_number', 'Введите номер полностью');
             isValid = false;
         } else {
             this.showFieldOk('phone_number');
@@ -116,7 +117,10 @@ export class Signup {
             this.showFieldError('username', 'Логин обязателен');
             isValid = false;
         } else if (data.username.length < 3 && data.username.length < 20) {
-            this.showFieldError('username', 'Логин должен содержать не менее 3 и не более 20 символов');
+            this.showFieldError(
+                'username',
+                'Логин должен содержать не менее 3 и не более 20 символов'
+            );
             isValid = false;
         } else if (!usernameRegex.test(data.username)) {
             this.showFieldError('username', 'Недопустимые символы');
@@ -135,7 +139,7 @@ export class Signup {
         } else {
             this.showFieldOk('email');
         }
- 
+
         if (!data.name || data.name.trim().length === 0) {
             this.showFieldError('name', 'Имя обязательно');
             isValid = false;
@@ -150,14 +154,53 @@ export class Signup {
         } else if (data.password.length < 8) {
             this.showFieldError('password', 'Пароль должен содержать минимум 8 символов');
             isValid = false;
-        } else if (!passwordRegex.test(data.password)){
-            this.showFieldError('password', 'Недопустимые символы');
+        } else if (!passwordRegex.test(data.password)) {
+            this.showFieldError(
+                'password',
+                'В пароле допустимы только латиница, цифры и специальные символы'
+            );
             isValid = false;
         } else {
             this.showFieldOk('password');
         }
 
         return isValid;
+    }
+
+    telValidate(event) {
+        let value = event.target.value.replace(/\D/g, '');
+
+        if (value.startsWith('7') || value.startsWith('8')) {
+            value = value.substring(1);
+        }
+
+        let formattedValue = '+7 (';
+
+        if (value.length > 0) {
+            formattedValue += value.substring(0, 3);
+        }
+        if (value.length > 3) {
+            formattedValue += ') ' + value.substring(3, 6);
+        }
+        if (value.length > 6) {
+            formattedValue += '-' + value.substring(6, 8);
+        }
+        if (value.length > 8) {
+            formattedValue += '-' + value.substring(8, 10);
+        }
+
+        event.target.value = formattedValue;
+    }
+
+    changeInput(event) {
+        event.target.classList.remove('error');
+        event.target.classList.remove('ok');
+        const fieldName = event.target.getAttribute('name');
+        const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
+        if (errorElement) {
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+        }
     }
 
     /**
@@ -167,42 +210,46 @@ export class Signup {
      */
     async onSubmit(event) {
         event.preventDefault();
-        
-        if (this.#isSubmitting) return;
-        
+
+        if (this.#isSubmitting) {
+            return;
+        }
+
         this.clearErrors();
         this.#isSubmitting = true;
-        
+
         const form = event.target;
         const submitButton = form.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
-        
+
         submitButton.disabled = true;
         submitButton.textContent = 'Регистрация...';
 
         try {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            
+
             if (!this.validateForm(data)) {
                 return;
             }
 
+            data['phone_number'] = '+' + data['phone_number'].replace(/\D/g, '');
+
             await signUpUser(data);
-            
+
             form.reset();
 
-            goToPage('home');
-            
+            const router = getRouter();
+            router.navigateTo('/');
         } catch (error) {
             console.error('Registration error:', error);
-            
+
             if (error.errors) {
-                error.errors.forEach(errorItem => {
+                error.errors.forEach((errorItem) => {
                     this.showFieldError(errorItem.field, errorItem.message);
                 });
             } else if (error.message) {
-                console.log(error.errors)
+                console.log(error.errors);
                 this.showFormError(error.message);
             } else {
                 this.showFormError('Произошла ошибка при регистрации');
@@ -217,16 +264,17 @@ export class Signup {
     /**
      * Переключает видимость пароля в поле ввода
      */
-    togglePassword(){
+    togglePassword() {
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('passwordInput');
         const eyeHidden = document.createElement('i');
         eyeHidden.className = 'eyeHidden';
-        
+
         if (togglePassword && passwordInput) {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                togglePassword.innerHTML = type === 'password' ? '<i class="eye-icon"></i>' : '<i class="eyeHidden-icon"></i>';
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.innerHTML =
+                type === 'password' ? '<i class="eye-icon"></i>' : '<i class="eyeHidden-icon"></i>';
         }
     }
 
@@ -234,9 +282,10 @@ export class Signup {
      * Переход на страницу авторизации
      * @param {Event} event - Событие клика
      */
-    linkToLogin(event){
+    linkToLogin(event) {
         event.preventDefault();
-        goToPage('login');
+        const router = getRouter();
+        router.navigateTo('/login');
     }
 
     /**
@@ -244,8 +293,16 @@ export class Signup {
      */
     render() {
         this.#parent.innerHTML = signupTemplate();
-        this.#parent.querySelector("#signup").addEventListener("submit", this.onSubmit);
-        this.#parent.querySelector("#togglePassword").addEventListener("click", this.togglePassword);
-        this.#parent.querySelector('#linkToLogin').addEventListener("click", this.linkToLogin)
+        this.#parent.querySelector('#signup').addEventListener('submit', this.onSubmit);
+        this.#parent
+            .querySelector('#togglePassword')
+            .addEventListener('click', this.togglePassword);
+        this.#parent.querySelector('#linkToLogin').addEventListener('click', this.linkToLogin);
+        this.#parent.querySelector('#tel').addEventListener('input', this.telValidate);
+
+        const allInputs = this.#parent.querySelectorAll('.signup-input');
+        allInputs.forEach((input) => {
+            input.addEventListener('input', this.changeInput);
+        });
     }
 }

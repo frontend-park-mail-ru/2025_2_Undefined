@@ -1,12 +1,12 @@
-import loginTemplate from '../../templates/login/login.hbs';
-import { loginUser } from '../../api/modules/auth';
-import goToPage from '../../main'
+import { getRouter } from '@/router/router'
+import { loginUser } from '@api/modules/auth';
+import loginTemplate from '@/templates/login/login.hbs';
 
 /**
  * Класс для управления логикой страницы авторизации
  */
 export class Login {
-    #parent
+    #parent;
     #isSubmitting = false;
 
     /**
@@ -16,6 +16,7 @@ export class Login {
     constructor(parent) {
         this.#parent = parent;
         this.onSubmit = this.onSubmit.bind(this);
+        this.changeInput = this.changeInput.bind(this);
     }
 
     /**
@@ -23,16 +24,15 @@ export class Login {
      */
     clearErrors() {
         const inputs = this.#parent.querySelectorAll('.login-input');
-        inputs.forEach(input => {
+        inputs.forEach((input) => {
             input.classList.remove('error');
-            input.classList.remove('ok'); 
             const fieldName = input.getAttribute('name');
             const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
             errorElement.style.display = 'none';
         });
 
-       const errorMessages = this.#parent.querySelectorAll('.error-message');
-        errorMessages.forEach(message => {
+        const errorMessages = this.#parent.querySelectorAll('.error-message');
+        errorMessages.forEach((message) => {
             message.textContent = '';
         });
 
@@ -50,7 +50,7 @@ export class Login {
     showFieldError(fieldName, message) {
         const input = this.#parent.querySelector(`[name="${fieldName}"]`);
         const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
-        
+
         if (input && errorElement) {
             input.classList.add('error');
             input.classList.remove('ok');
@@ -60,31 +60,17 @@ export class Login {
     }
 
     /**
-     * Показывает успешную валидацию для поля формы
-     * @param {string} fieldName - Имя поля
-     */
-    showFieldOk(fieldName) {
-        const input = this.#parent.querySelector(`[name="${fieldName}"]`);
-        const okElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
-        
-        if (input && okElement) {
-            input.classList.add('ok');
-            input.classList.remove('remove');
-        }
-    }
-
-    /**
      * Показывает общую ошибку формы
      * @param {string} message - Текст ошибки
      */
     showFormError(message) {
         this.clearErrors();
-        
+
         const form = this.#parent.querySelector('#login');
         const errorDiv = document.createElement('div');
         errorDiv.className = 'form-error';
         errorDiv.textContent = message;
-        
+
         form.insertBefore(errorDiv, form.firstChild);
     }
 
@@ -97,32 +83,53 @@ export class Login {
      */
     validateForm(data) {
         let isValid = true;
-        
+
         if (!data.phone_number || data.phone_number.trim().length === 0) {
             this.showFieldError('phone_number', 'Номер телефона обязателен');
             isValid = false;
-        } else if (!/^[\d+\-\s()]+$/.test(data.phone_number) && data.phone_number.length < 11) {
-            this.showFieldError('phone_number', 'Некорректный формат номера телефона');
-            isValid = false;
-        } else {
-            this.showFieldOk('phone_number');
         }
 
-        const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$/;
         if (!data.password || data.password.length === 0) {
             this.showFieldError('password', 'Пароль обязателен');
             isValid = false;
-        } else if (data.password.length < 8) {
-            this.showFieldError('password', 'Пароль должен содержать минимум 8 символов');
-            isValid = false;
-        } else if (!passwordRegex.test(data.password)){
-            this.showFieldError('password', 'Недопустимые символы');
-            isValid = false;
-        } else {
-            this.showFieldOk('password');
+        }
+        return isValid;
+    }
+
+    telValidate(event) {
+        let value = event.target.value.replace(/\D/g, '');
+
+        if (value.startsWith('7') || value.startsWith('8')) {
+            value = value.substring(1);
         }
 
-        return isValid;
+        let formattedValue = '+7 (';
+
+        if (value.length > 0) {
+            formattedValue += value.substring(0, 3);
+        }
+        if (value.length > 3) {
+            formattedValue += ') ' + value.substring(3, 6);
+        }
+        if (value.length > 6) {
+            formattedValue += '-' + value.substring(6, 8);
+        }
+        if (value.length > 8) {
+            formattedValue += '-' + value.substring(8, 10);
+        }
+
+        event.target.value = formattedValue;
+    }
+
+    changeInput(event) {
+        event.target.classList.remove('error');
+        event.target.classList.remove('ok');
+        const fieldName = event.target.getAttribute('name');
+        const errorElement = this.#parent.querySelector(`[data-field="${fieldName}"]`);
+        if (errorElement) {
+            errorElement.style.display = 'none';
+            errorElement.textContent = '';
+        }
     }
 
     /**
@@ -132,43 +139,41 @@ export class Login {
      */
     async onSubmit(event) {
         event.preventDefault();
-        
-        if (this.#isSubmitting) return;
-        
-        this.clearErrors();
+
+        if (this.#isSubmitting) {
+            return;
+        }
+
         this.#isSubmitting = true;
-        
+
         const form = event.target;
         const submitButton = form.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
-        
+
         submitButton.disabled = true;
         submitButton.textContent = 'Авторизация...';
 
         try {
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
-            
+
             if (!this.validateForm(data)) {
                 return;
             }
 
+            data['phone_number'] = '+' + data['phone_number'].replace(/\D/g, '');
+
             await loginUser(data);
-            
+
             form.reset();
 
-            goToPage('home');
+            const router = getRouter();
+            router.navigateTo('/');
         
         } catch (error) {
             console.error('Authorization error:', error);
-            
-            if (error.errors) {
-                error.errors.forEach(errorItem => {
-                    this.showFieldError(errorItem.field, errorItem.message);
-                });
-            } else if (error.message) {
-                console.log(error.errors)
-                this.showFormError(error.message);
+            if (error.message) {
+                this.showFormError('Неверные учётные данные');
             } else {
                 this.showFormError('Произошла ошибка при авторизации');
             }
@@ -182,16 +187,17 @@ export class Login {
     /**
      * Переключает видимость пароля в поле ввода
      */
-    togglePassword(){
+    togglePassword() {
         const togglePassword = document.getElementById('togglePassword');
         const passwordInput = document.getElementById('passwordInput');
         const eyeHidden = document.createElement('i');
         eyeHidden.className = 'eyeHidden';
-        
+
         if (togglePassword && passwordInput) {
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                togglePassword.innerHTML = type === 'password' ? '<i class="eye-icon"></i>' : '<i class="eyeHidden-icon"></i>';
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            togglePassword.innerHTML =
+                type === 'password' ? '<i class="eye-icon"></i>' : '<i class="eyeHidden-icon"></i>';
         }
     }
 
@@ -199,9 +205,10 @@ export class Login {
      * Переход на страницу регистрации
      * @param {Event} event - Событие клика
      */
-    linkToSignup(event){
+    linkToSignup(event) {
         event.preventDefault();
-        goToPage('signup');
+        const router = getRouter();
+        router.navigateTo('/signup');
     }
 
     /**
@@ -209,8 +216,16 @@ export class Login {
      */
     render() {
         this.#parent.innerHTML = loginTemplate();
-        this.#parent.querySelector("#login").addEventListener("submit", this.onSubmit);
-        this.#parent.querySelector("#togglePassword").addEventListener("click", this.togglePassword);
-        this.#parent.querySelector('#linkToSignup').addEventListener("click", this.linkToSignup)
+        this.#parent.querySelector('#login').addEventListener('submit', this.onSubmit);
+        this.#parent
+            .querySelector('#togglePassword')
+            .addEventListener('click', this.togglePassword);
+        this.#parent.querySelector('#linkToSignup').addEventListener('click', this.linkToSignup);
+        this.#parent.querySelector('#tel').addEventListener('input', this.telValidate);
+
+        const allInputs = this.#parent.querySelectorAll('.login-input');
+        allInputs.forEach((input) => {
+            input.addEventListener('input', this.changeInput);
+        });
     }
 }
