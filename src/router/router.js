@@ -7,20 +7,27 @@ export class Router {
     }
 
     navigateTo(path) {
-        const handler = this.routes[path];
-        if (handler) {
-            handler();
-        }
         history.pushState({}, '', path);
+        this.renderRoute(path);
     }
+
+    renderRoute(path) {
+        const handler = this.routes[path];
+        if (handler) {                                                                  
+            handler();
+        } else {
+            console.error('Route not found:', path);
+        }                                                                                                                                                                                                           
+    }                                           
 
     handlePopState = () => {
         const path = window.location.pathname;
-        if (!app.isAuth && (path === '/login' || path === '/signup')){
-            this.navigateTo(path);
-        } else if (app.isAuth && !(path === '/login' || path === '/signup')){
-            this.navigateTo(path);
+        if (((!app.isAuth && (path === '/login' || path === '/signup'))) || (app.isAuth && !(path === '/login' || path === '/signup'))){
+            this.renderRoute(path);
+        } else {
+            history.forward();
         }
+        
     };
 
     init() {
