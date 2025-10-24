@@ -1,4 +1,4 @@
-import { sendPOSTRequest } from "./server";
+import { sendPOSTRequest } from './server';
 
 /**
  * Регистрирует нового пользователя в системе
@@ -13,7 +13,7 @@ import { sendPOSTRequest } from "./server";
  */
 export async function signUpUser(userForm) {
     try {
-        const response = await sendPOSTRequest("/register", {
+        const response = await sendPOSTRequest('/register', {
             email: userForm.email,
             name: userForm.name,
             password: userForm.password,
@@ -24,7 +24,7 @@ export async function signUpUser(userForm) {
         if (!response.ok) {
             const errorData = await response.json();
             const error = new Error(errorData.message || 'Ошибка регистрации');
-            error.errors = errorData.errors; 
+            error.errors = errorData.errors;
             throw error;
         }
     } catch (err) {
@@ -42,14 +42,14 @@ export async function signUpUser(userForm) {
  */
 export async function loginUser(userForm) {
     try {
-        const response = await sendPOSTRequest("/login", {
+        const response = await sendPOSTRequest('/login', {
             password: userForm.password,
             phone_number: userForm.phone_number,
         });
         if (!response.ok) {
             const errorData = await response.json();
             const error = new Error(errorData.message || 'Ошибка авторизации');
-            error.errors = errorData.errors; 
+            error.errors = errorData.errors;
             throw error;
         }
     } catch (err) {
@@ -64,12 +64,12 @@ export async function loginUser(userForm) {
  */
 export async function logoutUser() {
     try {
-        const response = await sendPOSTRequest("/logout", {}); 
-        
+        const response = await sendPOSTRequest('/logout', {});
+
         if (!response.ok) {
             const errorData = await response.json();
             const error = new Error(errorData.message || 'Ошибка выхода');
-            error.errors = errorData.errors; 
+            error.errors = errorData.errors;
             throw error;
         }
 

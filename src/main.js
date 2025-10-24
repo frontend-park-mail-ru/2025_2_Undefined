@@ -1,7 +1,8 @@
-import { Login } from "./pages/login/login"
-import { Signup } from "./pages/signup/signup"
-import { Home } from './pages/home/home'
-import { initRouter } from "./router/router"
+import { Login } from "@/pages/login/login"
+import { Signup } from "@/pages/signup/signup"
+import { Home } from '@/pages/home/home'
+import { initRouter } from '@/router/router'
+
 
 const rootElement = document.getElementById('root');
 const home = new Home(rootElement);
@@ -15,7 +16,7 @@ const login = new Login(rootElement);
  */
 export const app = {
     user: null,
-    isAuth: false
+    isAuth: false,
 };
 
 const routes = {
@@ -31,9 +32,9 @@ const routes = {
 async function fetchUser() {
     try {
         const response = await fetch('/api/v1/me', {
-            credentials: 'include'
+            credentials: 'include',
         });
-        
+
         if (response.ok) {
             const userData = await response.json();
             app.user = userData;
@@ -43,11 +44,10 @@ async function fetchUser() {
     } catch (error) {
         console.error('Ошибка при получении пользователя:', error);
     }
-    
+
     app.user = null;
     app.isAuth = false;
     return false;
 }
-
 await fetchUser();
 initRouter(routes, 'root');
