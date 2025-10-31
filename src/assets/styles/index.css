@@ -2,12 +2,74 @@
 
 @import url('../../components/chat/chat.css');
 
+@font-face {
+    font-family: 'Roboto';
+    src: url('/src/assets/fonts/Roboto-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/src/assets/fonts/Roboto-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/src/assets/fonts/Roboto-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('/src/assets/fonts/Roboto-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+/* Dark theme */
+:root[data-theme='dark'] {
+    --color-bg-primary: #101723;
+    --color-bg-secondary: #0a121f;
+    --color-bg-tertiary: #2d3137;
+
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #8c8c8c;
+    --color-text-tertiary: #d9d9d9;
+
+    --color-accent-primary: #4d47c3;
+    --color-accent-primary-hover: #2d2987;
+
+    --color-status-error: #ff4444;
+    --color-border: #2d3137;
+}
+
+/* Light theme */
+:root[data-theme='light'] {
+    --color-bg-primary: #ffffff;
+    --color-bg-secondary: #f5f5f5;
+    --color-bg-tertiary: #f8f9fa;
+
+    --color-text-primary: #101723;
+    --color-text-secondary: #666666;
+    --color-text-tertiary: #404040;
+
+    --color-accent-primary: #4d47c3;
+    --color-accent-primary-hover: #6c67ff;
+
+    --color-status-error: #dc2626;
+    --color-border: #e5e5e5;
+}
+
 * {
-    padding: 0;
+    margin: 0px;
+    padding: 0px;
     box-sizing: border-box;
 }
 
 body {
-    font-family: sans-serif;
-    margin: 0;
+    font-family: 'Roboto', sans-serif;
 }
