@@ -112,34 +112,6 @@ export class Signup {
             this.showFieldOk('phone_number');
         }
 
-        const usernameRegex = /^[a-zA-Z0-9_]+$/;
-        if (!data.username || data.username.trim().length === 0) {
-            this.showFieldError('username', 'Логин обязателен');
-            isValid = false;
-        } else if (data.username.length < 3 && data.username.length < 20) {
-            this.showFieldError(
-                'username',
-                'Логин должен содержать не менее 3 и не более 20 символов'
-            );
-            isValid = false;
-        } else if (!usernameRegex.test(data.username)) {
-            this.showFieldError('username', 'Недопустимые символы');
-            isValid = false;
-        } else {
-            this.showFieldOk('username');
-        }
-
-        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        if (!data.email || data.email.trim().length === 0) {
-            this.showFieldError('email', 'Почта обязательна');
-            isValid = false;
-        } else if (!emailRegex.test(data.email)) {
-            this.showFieldError('email', 'Недопустимые символы');
-            isValid = false;
-        } else {
-            this.showFieldOk('email');
-        }
-
         if (!data.name || data.name.trim().length === 0) {
             this.showFieldError('name', 'Имя обязательно');
             isValid = false;

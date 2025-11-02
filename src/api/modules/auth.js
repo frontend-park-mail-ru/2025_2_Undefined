@@ -14,11 +14,9 @@ import { sendPOSTRequest } from './server';
 export async function signUpUser(userForm) {
     try {
         const response = await sendPOSTRequest('/register', {
-            email: userForm.email,
             name: userForm.name,
             password: userForm.password,
             phone_number: userForm.phone_number,
-            username: userForm.username,
         });
 
         if (!response.ok) {

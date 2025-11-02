@@ -22,7 +22,7 @@ export const app = {
 const routes = {
     '/': () => home.render(),
     '/login': () => login.render(),
-    '/signup': () => signup.render()
+    '/signup': () => signup.render(),
 }
 
 /**
