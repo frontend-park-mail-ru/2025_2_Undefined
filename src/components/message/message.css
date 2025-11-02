@@ -1,0 +1,23 @@
+.message{
+    background-color: #4D47C3;
+    max-width: 480px;
+    min-width: 100px;
+    min-height: 40px;
+    display: flex;
+    flex-direction: row;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 20px;
+}
+
+.message__text{
+    display: flex;
+    align-items: center;
+}
+
+.message__time, .message__read{
+    display: flex;
+    align-items: end;
+    font-size: 10px;
+    margin: 0 2px;
+}
