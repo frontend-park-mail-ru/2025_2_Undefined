@@ -1,9 +1,11 @@
 import { logoutUser } from '@api/modules/auth.js';
 import Chat from '@api/modules/chats.js';
 import User from '@api/modules/user.js';
+import { getPlaceholder } from '@components/avatar/avatar.js';
+
+import { app } from '@/main.js';
 import HomeTemplate from '@/pages/home/home.hbs';
-import {app} from '@/main.js'
-import { getRouter } from '@/router/router'
+import { getRouter } from '@/router/router';
 
 
 /**
@@ -70,27 +72,6 @@ export class Home {
     }
 
     /**
-     * Получает первую букву из имени чата для placeholder
-     * @param {string} name - Название чата
-     * @returns {string} Первая буква в верхнем регистре или заглушка
-     */
-    getChatPlaceholder(name) {
-        if (!name || typeof name !== 'string' || name.trim().length === 0) {
-            return '?';
-        }
-
-        const trimmedName = name.trim();
-        const firstChar = trimmedName.charAt(0).toUpperCase();
-
-        // Проверяем, является ли символ буквой (кириллица или латиница)
-        if (/[a-zA-Zа-яА-Я]/.test(firstChar)) {
-            return firstChar;
-        } else {
-            return '?';
-        }
-    }
-
-    /**
      * Обрабатывает список чатов, преобразуя даты последних сообщений
      * @param {Array} chats - Массив чатов из API
      * @returns {Array} Обработанный массив чатов с человеческими датами
@@ -110,7 +91,7 @@ export class Home {
                     created_at_formatted: this.formatMessageDate(chat.last_message.created_at),
                     created_at_original: chat.last_message.created_at, // сохраняем оригинальную дату
                 };
-                processedChat.placeholder = this.getChatPlaceholder(chat.name);
+                processedChat.placeholder = getPlaceholder(chat.name);
                 return processedChat;
             }
             return chat;
@@ -164,9 +145,7 @@ export class Home {
             if (userData) {
                 HomeData.user = userData;
 
-                HomeData.user.placeholder = this.getChatPlaceholder(
-                    userData.name || userData.username
-                );
+                HomeData.user.placeholder = getPlaceholder(userData.name || userData.username);
             }
 
             const response = await Chat.getChats();

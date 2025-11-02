@@ -143,10 +143,6 @@
     flex-shrink: 0;
 }
 
-.avatar-placeholder {
-    /* Стили для placeholder аватара */
-}
-
 /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
 .content {
     flex: 1;

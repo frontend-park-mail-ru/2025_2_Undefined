@@ -1,6 +1,8 @@
 <div class='chat-item'>
     <div class='chat-avatar'>
-        <div class='avatar-placeholder'>{{placeholder}}</div>
+        {{> components/avatar/avatar
+        placeholder=this.placeholder        
+        }}
     </div>
     <div class='chat-info'>
         <div class='chat-header'>

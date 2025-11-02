@@ -1,6 +1,7 @@
 @import url('../../pages/home/home.css');
 
 @import url('../../components/chat/chat.css');
+@import url('../../components/avatar/avatar.css');
 
 @font-face {
     font-family: 'Roboto';
