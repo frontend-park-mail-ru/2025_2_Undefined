@@ -1,14 +1,31 @@
 <div class='chat-item'>
     <div class='chat-avatar'>
-        {{> components/avatar/avatar
-        placeholder=this.placeholder        
-        }}
+        {{> components/avatar/avatar placeholder=this.placeholder}}
     </div>
     <div class='chat-info'>
-        <div class='chat-header'>
-            <div class='chat-name'>{{name}}</div>
-            <div class='chat-time'>{{last-message-date}}</div>
+        <div class="info-row">
+            <div class="title">
+                <div class="chat-type">
+                    {{#if isChannel}}
+                        <i class='channel-icon'></i>                                                
+                    {{/if}}
+                    {{#if isGroup}}
+                        <i class='group-icon'></i>
+                    {{/if}}
+                </div>
+                <div class='chat-name'>{{name}}</div>
+            </div>
+            <div class="separator"></div>
+            <div class="lastMessageMeta">
+                <div class="MessageStatus {{messageStatus}}"></div>
+                <div class="time">{{last-message-date}}</div>
+            </div>
         </div>
-        <div class='chat-preview'>{{last-message}}</div>
+        <div class="subtitle">
+            <div class="last-message">{{last-message}}</div>
+            {{#if unreadCount}}
+                <div class="ChatBadge unread {{#if muted}}muted{{/if}}">{{unreadCount}}</div>
+            {{/if}}
+        </div>
     </div>
 </div>

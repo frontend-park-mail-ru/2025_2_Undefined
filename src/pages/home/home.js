@@ -7,7 +7,6 @@ import { app } from '@/main.js';
 import HomeTemplate from '@/pages/home/home.hbs';
 import { getRouter } from '@/router/router';
 
-
 /**
  * Класс для управления домашней страницей приложения
  */
@@ -22,51 +21,57 @@ export class Home {
         this.#parent = parent;
     }
 
-
     /**
      * Преобразует дату created_at в человеческий формат
      * @param {string} dateString - Дата в строковом формате из API
      * @returns {string} Дата в человеческом формате
      */
     formatMessageDate(dateString) {
-        if (!dateString) {
-            return 'Дата не указана';
-        }
-
-        const date = new Date(dateString);
-
-        if (isNaN(date.getTime())) {
-            return 'Неверный формат даты';
-        }
-
+        const inputDate = new Date(dateString);
         const now = new Date();
-        const diffInMs = now - date;
-        const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
-        const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
-        const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        if (diffInDays === 0) {
-            if (diffInMinutes < 1) {
-                return 'только что';
-            } else if (diffInMinutes < 60) {
-                return `${diffInMinutes} мин. назад`;
-            } else {
-                return `${diffInHours} ч. назад`;
-            }
-        } else if (diffInDays === 1) {
-            return `вчера в ${date.toLocaleTimeString('ru-RU', {
+        // Приводим даты к локальному времени для корректного сравнения
+        const today = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+        const inputDay = new Date(
+            inputDate.getFullYear(),
+            inputDate.getMonth(),
+            inputDate.getDate()
+        );
+
+        // Разница в днях
+        const diffTime = inputDay - today;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        // Начало текущей недели (понедельник)
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(
+            today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)
+        );
+
+        if (diffDays === 0) {
+            // Сегодня - возвращаем только время
+            return inputDate.toLocaleTimeString('ru-RU', {
+                timeZone,
                 hour: '2-digit',
                 minute: '2-digit',
-            })}`;
-        } else if (diffInDays < 7) {
-            return `${diffInDays} дн. назад`;
-        }
-        // Более недели назад
-        else {
-            return date.toLocaleDateString('ru-RU', {
+            });
+        } else if (diffDays >= -6 && diffDays < 0) {
+            // На этой неделе (но не сегодня) - возвращаем день недели
+            return inputDate.toLocaleDateString('ru-RU', {
+                timeZone,
+                weekday: 'short',
+            });
+        } else {
+            // Больше чем на этой неделе - возвращаем число и сокращенный месяц
+            return inputDate.toLocaleDateString('ru-RU', {
+                timeZone,
                 day: 'numeric',
-                month: 'long',
-                year: 'numeric',
+                month: 'short',
             });
         }
     }
@@ -88,7 +93,9 @@ export class Home {
                 const processedChat = { ...chat };
                 processedChat.last_message = {
                     ...chat.last_message,
-                    created_at_formatted: this.formatMessageDate(chat.last_message.created_at),
+                    created_at_formatted: this.formatMessageDate(
+                        chat.last_message.created_at
+                    ),
                     created_at_original: chat.last_message.created_at, // сохраняем оригинальную дату
                 };
                 processedChat.placeholder = getPlaceholder(chat.name);
@@ -114,10 +121,15 @@ export class Home {
                     const userData = await response.json();
                     return userData;
                 } else {
-                    throw new Error(`Ошибка получения данных пользователя: ${response.status}`);
+                    throw new Error(
+                        `Ошибка получения данных пользователя: ${response.status}`
+                    );
                 }
             } catch (error) {
-                console.error('Ошибка при получении данных пользователя:', error);
+                console.error(
+                    'Ошибка при получении данных пользователя:',
+                    error
+                );
                 return null;
             }
         }
@@ -145,7 +157,9 @@ export class Home {
             if (userData) {
                 HomeData.user = userData;
 
-                HomeData.user.placeholder = getPlaceholder(userData.name || userData.username);
+                HomeData.user.placeholder = getPlaceholder(
+                    userData.name || userData.username
+                );
             }
 
             const response = await Chat.getChats();
@@ -159,7 +173,9 @@ export class Home {
 
                 const signOutButton = this.#parent.querySelector('#signOut');
                 if (signOutButton) {
-                    signOutButton.addEventListener('click', () => this.signOut());
+                    signOutButton.addEventListener('click', () =>
+                        this.signOut()
+                    );
                 }
             } else {
                 throw new Error(`Ошибка получения чатов: ${response.status}`);

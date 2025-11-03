@@ -1,14 +1,12 @@
-import { Login } from "@/pages/login/login"
-import { Signup } from "@/pages/signup/signup"
-import { Home } from '@/pages/home/home'
-import { initRouter } from '@/router/router'
-
+import { Home } from '@/pages/home/home';
+import { Login } from '@/pages/login/login';
+import { Signup } from '@/pages/signup/signup';
+import { initRouter } from '@/router/router';
 
 const rootElement = document.getElementById('root');
 const home = new Home(rootElement);
 const signup = new Signup(rootElement);
 const login = new Login(rootElement);
-
 
 /**
  * Состояние приложения
@@ -22,8 +20,8 @@ export const app = {
 const routes = {
     '/': () => home.render(),
     '/login': () => login.render(),
-    '/signup': () => signup.render()
-}
+    '/signup': () => signup.render(),
+};
 
 /**
  * Получает данные текущего пользователя

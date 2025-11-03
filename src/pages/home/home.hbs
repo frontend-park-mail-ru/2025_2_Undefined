@@ -44,6 +44,9 @@
           last-message=this.this.last_message.string
           }}
           {{/each}}
+          <div class="newChatButton">
+            {{> components/action-button/action-button icon='edit'}}  
+          </div>
         </div>
       {{else}}
        <div class="hasNoChats">

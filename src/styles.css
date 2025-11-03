@@ -144,14 +144,12 @@ h1 {
 }
 
 .eye-icon {
-    background-image: url('./assets/icons/eye.svg');
     width: 30px;
     height: 30px;
     display: block;
 }
 
 .eyeHidden-icon {
-    background-image: url('./assets/icons/eyeHidden.svg');
     width: 30px;
     height: 30px;
     display: block;

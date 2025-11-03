@@ -65,13 +65,11 @@
 }
 
 .menu-icon {
-    background-image: url('../../assets/icons/menu.svg');
     width: 40px;
     height: 40px;
 }
 
 .signOut-icon {
-    background-image: url('../../assets/icons/sign_out.svg');
     width: 50px;
     height: 50px;
 }
@@ -97,7 +95,6 @@
 }
 
 .search-icon {
-    background-image: url('../../assets/icons/search_light.svg');
     width: 24px;
     height: 24px;
     flex-shrink: 0;
@@ -172,13 +169,72 @@
     font-size: 24px;
 }
 
+.newChatButton {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    z-index: 10;
+}
+
+.chats-list-scrollable:hover .newChatButton {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
 .chats-list-scrollable {
     flex: 1;
-    overflow-y: auto;
+    overflow-y: hidden;
     color: #ffffff;
     min-height: 0;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    padding: 8px 0px 8px 8px;
+    box-sizing: border-box;
+    transition: overflow-y 0.3s ease;
+}
+
+.chats-list-scrollable:hover {
+    overflow-y: auto;
+}
+
+/* Стилизация скроллбара для Webkit браузеров */
+.chats-list-scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chats-list-scrollable::-webkit-scrollbar-track {
+    background: transparent; /* Прозрачный фон трека */
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.chats-list-scrollable::-webkit-scrollbar-thumb {
+    background: #2a3546; /* Цвет ползунка */
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.chats-list-scrollable::-webkit-scrollbar-thumb:hover {
+    background: #364153; /* Цвет ползунка при наведении */
+}
+
+/* Для Firefox */
+.chats-list-scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3546 transparent; /* Ползунок и прозрачный трек */
+}
+
+.chats-list-scrollable:hover {
+    scrollbar-color: #2a3546 transparent;
+}
+
+.chats-list-scrollable:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY();
 }
 
 /* Правая колонка - чат */
@@ -188,11 +244,4 @@
     flex-direction: column;
     background-color: #0f1623;
     min-height: 0;
-}
-
-/* Скрытие скроллбаров */
-.chats-list-scrollable::-webkit-scrollbar {
-    display: none;
-    width: 0;
-    height: 0;
 }

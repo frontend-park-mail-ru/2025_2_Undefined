@@ -8,22 +8,27 @@ class Auth {
      */
     async logout() {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/logout', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Добавьте здесь заголовок авторизации, если требуется
-                    // 'Authorization': 'Bearer ' + token
-                },
-                credentials: 'include', // Важно для работы с cookie
-            });
+            const response = await fetch(
+                'http://localhost:8080/api/v1/logout',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Добавьте здесь заголовок авторизации, если требуется
+                        // 'Authorization': 'Bearer ' + token
+                    },
+                    credentials: 'include', // Важно для работы с cookie
+                }
+            );
 
             if (response.ok) {
                 console.log('Logout successful');
                 return { success: true, message: 'Logout successful' };
             } else if (response.status === 401) {
                 const errorData = await response.json();
-                throw new Error(`Неавторизованный доступ: ${errorData.message}`);
+                throw new Error(
+                    `Неавторизованный доступ: ${errorData.message}`
+                );
             } else {
                 throw new Error(`Ошибка сервера: ${response.status}`);
             }
