@@ -49,16 +49,7 @@ export default [
                 },
             ],
 
-            // Prettier
-            'prettier/prettier': [
-                'error',
-                {
-                    singleQuote: true,
-                    semi: true,
-                    trailingComma: 'es5',
-                    printWidth: 100,
-                },
-            ],
+            'prettier/prettier': 'error',
         },
     },
 ];

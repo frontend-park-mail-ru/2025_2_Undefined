@@ -1,34 +1,53 @@
-@import url('../../pages/home/home.css');
+@import url('@/pages/home/home.css');
 
-@import url('../../components/chat/chat.css');
-@import url('../../components/avatar/avatar.css');
+@import url('@components/chat/chat.css');
+@import url('@components/avatar/avatar.css');
+@import url('@components/action-button/action-button.css');
+
+@import url('@assets/styles/icons.css');
 
 @font-face {
     font-family: 'Roboto';
-    src: url('/src/assets/fonts/Roboto-Regular.ttf') format('truetype');
+    src: url('@assets/fonts/Roboto-Regular.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Roboto';
-    src: url('/src/assets/fonts/Roboto-Bold.ttf') format('truetype');
+    src: url('@assets/fonts/Roboto-Bold.ttf') format('truetype');
     font-weight: bold;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Roboto';
-    src: url('/src/assets/fonts/Roboto-Medium.ttf') format('truetype');
+    src: url('@assets/fonts/Roboto-Medium.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Roboto';
-    src: url('/src/assets/fonts/Roboto-Italic.ttf') format('truetype');
+    src: url('@assets/fonts/Roboto-Italic.ttf') format('truetype');
     font-weight: normal;
     font-style: italic;
+}
+
+:root {
+    --color-bg-primary: #101723;
+    --color-bg-secondary: #0a121f;
+    --color-bg-tertiary: #2d3137;
+
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #8c8c8c;
+    --color-text-tertiary: #d9d9d9;
+
+    --color-accent-primary: #4d47c3;
+    --color-accent-primary-hover: #2d2987;
+
+    --color-status-error: #ff4444;
+    --color-border: #2d3137;
 }
 
 /* Dark theme */
