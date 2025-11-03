@@ -20,7 +20,7 @@
               <div class='user-name'>{{user.name}}</div>
             </div>
             <div class='avatar'>
-              <div class='avatar-placeholder'>{{user.placeholder}}</div>
+                      {{> components/avatar/avatar placeholder=user.placeholder }}
             </div>
           </div>
         </div>
@@ -44,6 +44,9 @@
           last-message=this.this.last_message.string
           }}
           {{/each}}
+          <div class="newChatButton">
+            {{> components/action-button/action-button icon='edit'}}  
+          </div>
         </div>
       {{else}}
        <div class="hasNoChats">

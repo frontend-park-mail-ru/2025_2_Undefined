@@ -1,0 +1,62 @@
+.channel-icon {
+    background-image: url('../../assets/icons/sound_light.svg');
+}
+
+.group-icon {
+    background-image: url('../../assets/icons/group_light.svg');
+}
+
+.eye-icon {
+    background-image: url('./assets/icons/eye.svg');
+}
+
+.eyeHidden-icon {
+    background-image: url('./assets/icons/eyeHidden.svg');
+}
+
+.menu-icon {
+    background-image: url('../../assets/icons/menu.svg');
+}
+
+.signOut-icon {
+    background-image: url('../../assets/icons/sign_out.svg');
+}
+
+.search-icon {
+    background-image: url('../../assets/icons/search_light.svg');
+}
+
+.read-icon {
+    -webkit-mask-image: url('../../assets/icons/done_all_alt_round_light.svg');
+    mask-image: url('../../assets/icons/done_all_alt_round_light.svg');
+}
+
+.submit-icon {
+    -webkit-mask-image: url('../../assets/icons/done_round_light.svg');
+    mask-image: url('../../assets/icons/done_round_light.svg');
+}
+
+.post-icon {
+    -webkit-mask-image: url('../../assets/icons/send_light.svg');
+    mask-image: url('../../assets/icons/send_light.svg');
+}
+
+.rightArrow-icon {
+    -webkit-mask-image: url('../../assets/icons/arrow_right_light.svg');
+    mask-image: url('../../assets/icons/arrow_right_light.svg');
+}
+
+.userAdd-icon {
+    -webkit-mask-image: url('../../assets/icons/user_add_alt_light.svg');
+    mask-image: url('../../assets/icons/user_add_alt_light.svg');
+}
+
+.edit-icon {
+    -webkit-mask-image: url('../../assets/icons/edit_light.svg');
+    mask-image: url('../../assets/icons/edit_light.svg');
+}
+
+.close-icon {
+    -webkit-mask-image: url('../../assets/icons/close_round_light.svg');
+    mask-image: url('../../assets/icons/close_round_light.svg');
+}
