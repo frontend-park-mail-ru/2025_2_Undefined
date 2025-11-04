@@ -86,3 +86,13 @@
     -webkit-mask-image: url('../../assets/icons/close_round_light.svg');
     mask-image: url('../../assets/icons/close_round_light.svg');
 }
+
+.exit-icon {
+    -webkit-mask-image: url('../../assets/icons/sign_in.svg');
+    mask-image: url('../../assets/icons/sign_in.svg');    
+}
+
+.delete-icon {
+    -webkit-mask-image: url('../../assets/icons/trash_light.svg');
+    mask-image: url('../../assets/icons/trash_light.svg');     
+}

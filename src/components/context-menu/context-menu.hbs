@@ -1,0 +1,11 @@
+<div class="Menu">
+    <div class="menu-container">
+        {{#each items}}
+            {{> components/element-menu/element-menu
+                icon=this.icon
+                text=this.text
+                danger=this.danger
+            }}
+        {{/each}}
+    </div>
+</div>

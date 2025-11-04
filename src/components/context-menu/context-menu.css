@@ -1,0 +1,27 @@
+.Menu {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.menu-container {
+    background: var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+}
+
+/* Анимация появления */
+.menu-container {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+    transition: all 0.2s ease;
+}
+
+.Menu.show .menu-container {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+}
