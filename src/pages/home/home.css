@@ -160,7 +160,7 @@
     min-height: 0;
 }
 
-.hasNoChats {
+.hasNoItems {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -169,24 +169,24 @@
     font-size: 24px;
 }
 
-.newChatButton {
+.newChatButton, .newContactButton {
     position: absolute;
     bottom: 16px;
     right: 16px;
-    opacity: 0;
+    /* opacity: 0;
     visibility: hidden;
-    transform: translateY(10px);
+    transform: translateY(10px); */
     transition: all 0.3s ease;
     z-index: 10;
 }
 
-.chats-list-scrollable:hover .newChatButton {
+.items-list-scrollable:hover .newChatButton {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
 }
 
-.chats-list-scrollable {
+.items-list-scrollable {
     flex: 1;
     overflow-y: hidden;
     color: #ffffff;
@@ -196,42 +196,42 @@
     transition: overflow-y 0.3s ease;
 }
 
-.chats-list-scrollable:hover {
+.items-list-scrollable:hover {
     overflow-y: auto;
 }
 
 /* Стилизация скроллбара для Webkit браузеров */
-.chats-list-scrollable::-webkit-scrollbar {
+.items-list-scrollable::-webkit-scrollbar {
     width: 8px;
 }
 
-.chats-list-scrollable::-webkit-scrollbar-track {
+.items-list-scrollable::-webkit-scrollbar-track {
     background: transparent; /* Прозрачный фон трека */
     border-radius: 4px;
     margin: 4px 0;
 }
 
-.chats-list-scrollable::-webkit-scrollbar-thumb {
+.items-list-scrollable::-webkit-scrollbar-thumb {
     background: #2a3546; /* Цвет ползунка */
     border-radius: 4px;
     transition: background 0.3s ease;
 }
 
-.chats-list-scrollable::-webkit-scrollbar-thumb:hover {
+.items-list-scrollable::-webkit-scrollbar-thumb:hover {
     background: #364153; /* Цвет ползунка при наведении */
 }
 
 /* Для Firefox */
-.chats-list-scrollable {
+.items-list-scrollable {
     scrollbar-width: thin;
     scrollbar-color: #2a3546 transparent; /* Ползунок и прозрачный трек */
 }
 
-.chats-list-scrollable:hover {
+.items-list-scrollable:hover {
     scrollbar-color: #2a3546 transparent;
 }
 
-.chats-list-scrollable:hover {
+.items-list-scrollable:hover {
     opacity: 1;
     visibility: visible;
     transform: translateY();

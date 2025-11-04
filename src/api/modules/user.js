@@ -10,6 +10,7 @@ class User {
             credentials: 'include',
         });
     }
+    
 }
 
 export default new User();

@@ -3,7 +3,12 @@
     <div class='header-wrapper'>
       <div class='left-column'>
         <div class='menu-btn'>
-          <i class='menu-icon'></i>
+          {{#if activeTabChats}}
+            <i class='menu-icon' id='menuBtn'></i>
+          {{/if}}
+          {{#if activeTabContacts}}
+            <i class='menu-icon' id='backBtn'></i>
+          {{/if}}
         </div>
         <div class='search-wrapper'>
           <i class='search-icon'></i>
@@ -33,25 +38,51 @@
 
   <div class='content'>
     <!-- Левая колонка - список диалогов -->
-    <div class='content-left-column'>
-      {{#if hasChats}}
-        <div class='chats-list-scrollable'>
-          {{#each chats}}
-          {{> components/chat/chat-template
-          placeholder=this.placeholder
-          name=this.name
-          last-message-date=this.last_message.created_at_formatted
-          last-message=this.this.last_message.string
-          }}
-          {{/each}}
-          <div class="newChatButton">
-            {{> components/action-button/action-button icon='edit'}}  
+
+    <div class='content-left-column' id="contentLeftColumn">
+      {{#if activeTabChats}}
+        {{#if hasChats}}
+          <div class='items-list-scrollable'>
+            {{#each chats}}
+            {{> components/chat/chat-template
+            placeholder=this.placeholder
+            name=this.name
+            last-message-date=this.last_message.created_at_formatted
+            last-message=this.this.last_message.string
+            }}
+            {{/each}}
+
           </div>
+        {{else}}
+        <div class="hasNoItems">
+          <p>У вас пока нет чатов</p>
         </div>
-      {{else}}
-       <div class="hasNoChats">
-        <p>У вас пока нет чатов</p>
-       </div>
+        {{/if}}
+        <div class="newChatButton">
+          {{> components/action-button/action-button icon='edit'}}  
+        </div>
+      {{/if}}
+
+      
+      {{#if activeTabContacts}}
+        {{#if hasContacts}}
+          <div class='items-list-scrollable'>
+            {{#each contacts}}
+            {{> components/contact/contact
+            placeholder=contact.placeholder
+            name=contact.name
+            }}
+            {{/each}}
+
+          </div>
+        {{else}}
+        <div class="hasNoItems">
+          <p>У вас пока нет контактов</p>
+        </div>
+        {{/if}}
+        <div class="newContactButton">
+          {{> components/add-contact-btn/add-contact-btn}}  
+        </div>
       {{/if}}
     </div>
 

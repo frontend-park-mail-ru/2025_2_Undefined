@@ -1,24 +1,21 @@
-import { renderNewChatMenu } from '@/components/new-chat-menu/new-chat-menu.js'; 
+import { renderAddContactDialog } from '@/components/add-contact/add-contact.js'; 
 
 /**
  * Класс для кнопки "Добавить контакт"
  */
-export class startNewChat {
+export class AddContactButton {
     #element;
     #homeInstance;
 
     constructor(element, homeInstance) {
         this.#element = element;
         this.#homeInstance = homeInstance;
-
         this.#element.addEventListener('click', this.handleClick);
     }
 
     handleClick = (event) => {
         event.preventDefault();
-        
-        const parentElement = document.getElementById('contentLeftColumn');
-        renderNewChatMenu(parentElement, this.#homeInstance);
+        renderAddContactDialog(document.body, this.#homeInstance);
     };
 
     destroy() {

@@ -1,0 +1,44 @@
+.contact-item {
+    display: flex;
+    align-items: center; /* Центрируем по вертикали все дочерние элементы */
+    padding: 9px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    gap: 12px;
+    min-height: 72px;
+    box-sizing: border-box;
+}
+
+.contact-item:hover {
+    background-color: var(--color-border);
+}
+
+.contact-avatar {
+    flex-shrink: 0;
+    width: 54px;
+    height: 54px;
+    margin: 0;
+}
+
+.contact-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 0; /* Убираем лишние отступы */
+    justify-content: center; /* Центрируем содержимое внутри .contact-info */
+}
+
+.contact-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
