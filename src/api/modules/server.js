@@ -13,11 +13,18 @@ const SERVER_API = `${location.origin}/api/v1`;
  */
 export async function sendPOSTRequest(path, data) {
     try {
+
+        const csrfToken = localStorage.getItem('csrf_token');
+        if (!csrfToken) {
+            console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');
+        }
+
         const response = await fetch(SERVER_API + path, {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
             },
             credentials: 'include',
             mode: 'cors',
@@ -32,6 +39,7 @@ export async function sendPOSTRequest(path, data) {
             }
             const error = new Error(errorData.message || 'Ошибка');
             error.errors = errorData.errors;
+            error.statusCode = response.status;
 
             throw error;
         }

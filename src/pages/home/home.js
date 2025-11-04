@@ -2,16 +2,23 @@ import { logoutUser } from '@api/modules/auth.js';
 import Chat from '@api/modules/chats.js';
 import User from '@api/modules/user.js';
 import { getPlaceholder } from '@components/avatar/avatar.js';
-
+import { startNewChat } from '@/components/action-button/action-button';
 import { app } from '@/main.js';
 import HomeTemplate from '@/pages/home/home.hbs';
 import { getRouter } from '@/router/router';
+import { getContacts } from '@api/modules/contacts';
+import { AddContactButton } from '@components/add-contact-btn/add-contact-btn';
+import '@/components/add-contact/add-contact.css';
+import '@/components/contact/contact.css'
+import '@/components/new-chat-menu/new-chat-menu.css'
 
 /**
  * Класс для управления домашней страницей приложения
  */
 export class Home {
     #parent;
+    #addButtonInstance;
+    #activeTab = 'chats';
 
     /**
      * Создает экземпляр класса Home
@@ -140,52 +147,169 @@ export class Home {
      */
     signOut() {
         logoutUser().then(() => {
+            app.user = null;
             const router = getRouter();
             router.navigateTo('/login');
         });
     }
 
-    /**
-     * Рендерит домашнюю страницу с данными пользователя и чатами
-     * @returns {Promise<void>}
-     */
-    async render() {
-        const HomeData = {};
-
-        try {
-            const userData = await this.getCurrentUser();
-            if (userData) {
-                HomeData.user = userData;
-
-                HomeData.user.placeholder = getPlaceholder(
-                    userData.name || userData.username
-                );
+    initAddButton() {
+        const buttonEl = this.#parent.querySelector('.action-button');
+        if (buttonEl) {
+            if (this.#activeTab === 'chats') {
+                this.#addButtonInstance = new startNewChat(buttonEl, this);
+            } else if (this.#activeTab === 'contacts') {
+                this.#addButtonInstance = new AddContactButton(buttonEl, this);
             }
+            
+        }
+    }
 
+    renderPage (HomeData) {
+        if (!HomeData.user) {
+            HomeData.user = app.user;
+        }
+        this.#parent.innerHTML = HomeTemplate(HomeData);
+
+        const signOutButton = this.#parent.querySelector('#signOut');
+        const menuBtn = this.#parent.querySelector('#menuBtn');
+        const backBtn = this.#parent.querySelector('#backBtn');
+        if (signOutButton) {
+            signOutButton.addEventListener('click', () =>
+                this.signOut()
+            );
+        }
+        if (menuBtn) {
+            menuBtn.addEventListener('click', () => {
+                this.openMenu();
+            })
+        }
+        if (backBtn) {
+            backBtn.addEventListener('click', () => {
+                this.renderChats();
+            })
+        }
+
+        this.initAddButton();
+    }
+
+    async openMenu() {
+        this.renderContacts();
+    }
+
+    async renderContacts() {
+        const HomeData = {};
+        HomeData.user = app.user;
+        this.#activeTab = 'contacts';
+        try {
+            const contacts = await getContacts();
+
+            HomeData.contacts = contacts.map(contactItem => {
+                if (!contactItem.contact.placeholder && contactItem.contact.name) {
+                    contactItem.contact.placeholder = getPlaceholder(contactItem.contact.name);
+                }
+                return contactItem;
+            });
+            HomeData.hasContacts = contacts.length > 0;
+            HomeData.activeTabChats = this.#activeTab === 'chats';
+            HomeData.activeTabContacts = this.#activeTab === 'contacts';
+
+            this.renderPage(HomeData);
+        } catch(error) {
+            console.error("Ошибка:", error);
+        }
+    }
+
+    async renderChats() {
+        const HomeData = {};
+        HomeData.user = app.user;
+        this.#activeTab = 'chats';
+        try {
             const response = await Chat.getChats();
 
             if (response.ok) {
                 const chats = await response.json();
                 HomeData.chats = this.processChats(chats);
                 HomeData.hasChats = this.processChats(chats).length > 0;
-
-                this.#parent.innerHTML = HomeTemplate(HomeData);
+                HomeData.activeTabChats = this.#activeTab === 'chats';
+                HomeData.activeTabContacts = this.#activeTab === 'contacts';
 
                 const signOutButton = this.#parent.querySelector('#signOut');
+                const menuBtn = this.#parent.querySelector('#menuBtn');
                 if (signOutButton) {
                     signOutButton.addEventListener('click', () =>
                         this.signOut()
                     );
                 }
+                if (menuBtn) {
+                    menuBtn.addEventListener('click', () => {
+                        this.openMenu();
+                    })
+                }
+
+                this.renderPage(HomeData);
             } else {
                 throw new Error(`Ошибка получения чатов: ${response.status}`);
             }
+        } catch(error) {
+            console.error("Ошибка", error);
+        }
+    }
+
+    
+    /**
+     * Рендерит домашнюю страницу с данными пользователя и чатами
+     * @returns {Promise<void>}
+     */
+    async render() {
+        const HomeData = {};
+        this.#activeTab = 'chats';
+
+        try {
+            const userData = await this.getCurrentUser();
+            if (userData) {
+                app.user = userData;
+                HomeData.user = userData;
+
+                HomeData.user.placeholder = getPlaceholder(
+                    userData.name || userData.username
+                );
+            }
+            this.renderChats();
+
+            // const response = await Chat.getChats();
+
+            // if (response.ok) {
+            //     const chats = await response.json();
+            //     HomeData.chats = this.processChats(chats);
+            //     HomeData.hasChats = this.processChats(chats).length > 0;
+            //     HomeData.activeTabChats = this.#activeTab === 'chats';
+            //     HomeData.activeTabContacts = this.#activeTab === 'contacts';
+
+            //     this.#parent.innerHTML = HomeTemplate(HomeData);
+
+            //     const signOutButton = this.#parent.querySelector('#signOut');
+            //     const menuBtn = this.#parent.querySelector('#menuBtn');
+            //     if (signOutButton) {
+            //         signOutButton.addEventListener('click', () =>
+            //             this.signOut()
+            //         );
+            //     }
+            //     if (menuBtn) {
+            //         menuBtn.addEventListener('click', () => {
+            //             this.openMenu();
+            //         })
+            //     }
+            // } else {
+            //     throw new Error(`Ошибка получения чатов: ${response.status}`);
+            // }
         } catch (error) {
             console.error('Ошибка при рендеринге домашней страницы:', error);
 
             HomeData.error = 'Не удалось загрузить данные';
             this.#parent.innerHTML = HomeTemplate(HomeData);
         }
+        this.initAddButton();
     }
 
     /**

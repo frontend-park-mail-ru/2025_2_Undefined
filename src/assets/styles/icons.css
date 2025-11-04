@@ -6,13 +6,13 @@
     background-image: url('../../assets/icons/group_light.svg');
 }
 
-.eye-icon {
+/* .eye-icon {
     background-image: url('./assets/icons/eye.svg');
 }
 
 .eyeHidden-icon {
     background-image: url('./assets/icons/eyeHidden.svg');
-}
+} */
 
 .menu-icon {
     background-image: url('../../assets/icons/menu.svg');
@@ -49,6 +49,11 @@
 .userAdd-icon {
     -webkit-mask-image: url('../../assets/icons/user_add_alt_light.svg');
     mask-image: url('../../assets/icons/user_add_alt_light.svg');
+}
+
+.user-icon {
+    -webkit-mask-image: url('../../assets/icons/user_alt_light.svg');
+    mask-image: url('../../assets/icons/user_alt_light.svg');
 }
 
 .edit-icon {

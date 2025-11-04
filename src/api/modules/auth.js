@@ -25,6 +25,11 @@ export async function signUpUser(userForm) {
             error.errors = errorData.errors;
             throw error;
         }
+
+        const data = await response.json();
+        if (data.csrf_token) {
+            localStorage.setItem('csrf_token', data.csrf_token);
+        }
     } catch (err) {
         throw err;
     }
@@ -50,6 +55,11 @@ export async function loginUser(userForm) {
             error.errors = errorData.errors;
             throw error;
         }
+
+        const data = await response.json();
+        if (data.csrf_token) {
+            localStorage.setItem('csrf_token', data.csrf_token);
+        }
     } catch (err) {
         throw err;
     }
@@ -70,7 +80,7 @@ export async function logoutUser() {
             error.errors = errorData.errors;
             throw error;
         }
-
+        localStorage.removeItem('csrfToken');
         return { success: true, message: 'Logout successful' };
     } catch (err) {
         throw err;
