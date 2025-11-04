@@ -41,7 +41,8 @@
 }
 
 .menu-icon {
-    background-image: url('../../assets/icons/menu.svg');
+    -webkit-mask-image: url('../../assets/icons/menu.svg');
+    mask-image: url('../../assets/icons/menu.svg');
 }
 
 .signOut-icon {
@@ -72,6 +73,11 @@
     mask-image: url('../../assets/icons/arrow_right_light.svg');
 }
 
+.leftArrow-icon {
+    -webkit-mask-image: url('../../assets/icons/arrow_left_light.svg');
+    mask-image: url('../../assets/icons/arrow_left_light.svg');
+}
+
 .userAdd-icon {
     -webkit-mask-image: url('../../assets/icons/user_add_alt_light.svg');
     mask-image: url('../../assets/icons/user_add_alt_light.svg');
@@ -95,4 +101,19 @@
 .delete-icon {
     -webkit-mask-image: url('../../assets/icons/trash_light.svg');
     mask-image: url('../../assets/icons/trash_light.svg');     
+}
+
+.info-icon {
+    -webkit-mask-image: url('../../assets/icons/info_light.svg');
+    mask-image: url('../../assets/icons/info_light.svg');     
+}
+
+.meatballs-icon {
+    -webkit-mask-image: url('../../assets/icons/meatballs.svg');
+    mask-image: url('../../assets/icons/meatballs.svg');     
+}
+
+.phone-icon {
+    -webkit-mask-image: url('../../assets/icons/phone_light.svg');
+    mask-image: url('../../assets/icons/phone_light.svg');     
 }

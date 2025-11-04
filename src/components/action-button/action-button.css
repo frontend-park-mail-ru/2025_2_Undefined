@@ -1,38 +1,50 @@
+/* Базовый блок кнопки */
 .button {
-    width: 48px;
-    height: 48px;   
     border: none;
     border-radius: 50%;
-    background: var(--color-accent-primary); 
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: all 0.2s ease;
     color: var(--color-text-primary);
 }
 
-.button:hover {  
-    background: var(--color-accent-primary-hover);
+.button--size-lg {
+    width: 48px;
+    height: 48px;
 }
 
-.button:hover {
+.button--size-s {
+    width: 36px;
+    height: 36px;
+}
+
+.button--disabled {
+    background: var(--color-border);
+    cursor: not-allowed;
+}
+
+.button--disabled:hover {
+    background: var(--color-border);
+    color: var(--color-text-primary);
+}
+
+.action-button {
+    background: var(--color-accent-primary);
+}
+
+.action-button:hover {
+    background: var(--color-accent-primary-hover);
     color: var(--color-text-secondary);
 }
 
-.disabled {
+.menu-button {
+    background: var(--color-bg-secondary);
+    backdrop-filter: blur(10px);
+}
+
+.menu-button:hover {
     background: var(--color-border);
-}
-
-.button:disabled {
-    background: var(--color-border);
-    cursor: not-allowed; 
-}
-
-.button:disabled:hover {
-    background: var(--color-border); 
-}
-
-.button:disabled:hover {
     color: var(--color-text-primary);
 }
