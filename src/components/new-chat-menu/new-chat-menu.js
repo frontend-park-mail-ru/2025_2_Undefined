@@ -1,5 +1,4 @@
 import newChatMenu from '@components/new-chat-menu/new-chat-menu.hbs';
-import { renderAddContactDialog } from '@components/add-contact/add-contact';
 
 export async function renderNewChatMenu (parent, homeInstance) {
     const html = newChatMenu();
@@ -27,5 +26,6 @@ export async function renderNewChatMenu (parent, homeInstance) {
     };
 
     dialog.addEventListener('mouseleave', handleCancel);
+    dialog.addEventListener('click', handleCancel);
     window.addEventListener('keydown', handleEscape);
 }

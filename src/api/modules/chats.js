@@ -1,4 +1,5 @@
 import { SERVER_API } from '../config.js';
+import { sendPOSTRequest } from './server.js';
 
 class Chat {
     // Функция для получения токена из cookies
@@ -29,6 +30,24 @@ class Chat {
             credentials: 'include',
         });
         return response;
+    }
+
+    async createChat(data) {
+        sendPOSTRequest ('/chats', {
+            members: data.members,
+            name: data.name,
+            type: 'dialog',
+        })
+    }
+
+    async getChat(chatId) {
+        return await fetch(SERVER_API + '/chats/' + chatId, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        });
     }
 }
 

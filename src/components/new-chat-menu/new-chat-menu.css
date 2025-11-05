@@ -39,7 +39,7 @@
     width: 500px;
     height: 500px;
     position: absolute;
-    top: 500px;
+    bottom: -120px;
     right: -126px;
     z-index: 1000;
 }

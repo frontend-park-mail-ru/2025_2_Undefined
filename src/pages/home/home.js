@@ -8,9 +8,15 @@ import HomeTemplate from '@/pages/home/home.hbs';
 import { getRouter } from '@/router/router';
 import { getContacts } from '@api/modules/contacts';
 import { AddContactButton } from '@components/add-contact-btn/add-contact-btn';
+import { startNewDialog } from '@components/contact/contact';
+import { openChat } from '@/components/chat/chat';
+import { inputMessage } from '@/components/input-message/input-message';
+import { initWebSocket } from '@api/modules/websocket.js';
+
 import '@/components/add-contact/add-contact.css';
-import '@/components/contact/contact.css'
-import '@/components/new-chat-menu/new-chat-menu.css'
+import '@/components/contact/contact.css';
+import '@/components/new-chat-menu/new-chat-menu.css';
+import '@/components/input-message/input-message.css';
 
 /**
  * Класс для управления домашней страницей приложения
@@ -19,6 +25,7 @@ export class Home {
     #parent;
     #addButtonInstance;
     #activeTab = 'chats';
+    #isChatOpen = 'false';
 
     /**
      * Создает экземпляр класса Home
@@ -95,6 +102,7 @@ export class Home {
         }
 
         return chats.map((chat) => {
+            // console.log(chat);
             if (chat.last_message && chat.last_message.created_at) {
                 // Создаем копию, чтобы не мутировать исходные данные
                 const processedChat = { ...chat };
@@ -190,11 +198,25 @@ export class Home {
             })
         }
 
+        if (this.#activeTab === 'contacts') {
+            startNewDialog();
+        } else if (this.#activeTab === 'chats') {
+            openChat(HomeData, this);
+        }
+        inputMessage();
         this.initAddButton();
     }
 
     async openMenu() {
         this.renderContacts();
+    }
+
+    async renderChat(HomeData, chatId) {
+        this.#isChatOpen = true;
+        HomeData.isChatOpen = true;
+        HomeData.chatId = chatId;
+
+        this.renderPage(HomeData);
     }
 
     async renderContacts() {
@@ -213,8 +235,10 @@ export class Home {
             HomeData.hasContacts = contacts.length > 0;
             HomeData.activeTabChats = this.#activeTab === 'chats';
             HomeData.activeTabContacts = this.#activeTab === 'contacts';
+            HomeData.isChatOpen = this.#isChatOpen;
 
             this.renderPage(HomeData);
+
         } catch(error) {
             console.error("Ошибка:", error);
         }
@@ -233,6 +257,8 @@ export class Home {
                 HomeData.hasChats = this.processChats(chats).length > 0;
                 HomeData.activeTabChats = this.#activeTab === 'chats';
                 HomeData.activeTabContacts = this.#activeTab === 'contacts';
+                HomeData.isChatOpen = this.#isChatOpen;
+                
 
                 const signOutButton = this.#parent.querySelector('#signOut');
                 const menuBtn = this.#parent.querySelector('#menuBtn');
@@ -246,7 +272,7 @@ export class Home {
                         this.openMenu();
                     })
                 }
-
+                console.log(HomeData)
                 this.renderPage(HomeData);
             } else {
                 throw new Error(`Ошибка получения чатов: ${response.status}`);
@@ -264,6 +290,7 @@ export class Home {
     async render() {
         const HomeData = {};
         this.#activeTab = 'chats';
+        this.#isChatOpen = false;
 
         try {
             const userData = await this.getCurrentUser();
@@ -276,6 +303,13 @@ export class Home {
                 );
             }
             this.renderChats();
+
+            initWebSocket();
+            window.addEventListener('beforeunload', () => {
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.close(1000, 'Page reload'); 
+                }
+            });
 
             // const response = await Chat.getChats();
 

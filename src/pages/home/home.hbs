@@ -49,6 +49,7 @@
             name=this.name
             last-message-date=this.last_message.created_at_formatted
             last-message=this.this.last_message.string
+            id=this.id
             }}
             {{/each}}
 
@@ -71,6 +72,7 @@
             {{> components/contact/contact
             placeholder=contact.placeholder
             name=contact.name
+            id=contact.id
             }}
             {{/each}}
 
@@ -88,6 +90,15 @@
 
     <!-- Средняя колонка - чат -->
     <div class='content-middle-column'>
-
+      {{#if isChatOpen}}
+        <div class="content-middle-column-center">
+          <div class="content-middle-column-center-messages">
+            
+          </div>
+          <div class="content-middle-column-center-input">
+            {{> components/input-message/input-message id=chatId}}
+          </div>
+        </div>
+      {{/if}}
     </div>
   </div>

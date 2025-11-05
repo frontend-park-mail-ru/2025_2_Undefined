@@ -25,11 +25,11 @@
 
 .button:disabled {
     background: var(--color-border);
-    cursor: not-allowed; 
+    /* cursor: not-allowed;  */
 }
 
 .button:disabled:hover {
-    background: var(--color-border); 
+    /* background: var(--color-border);  */
 }
 
 .button:disabled:hover .icon {

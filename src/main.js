@@ -49,3 +49,4 @@ async function fetchUser() {
 }
 await fetchUser();
 initRouter(routes, 'root');
+

@@ -1,0 +1,15 @@
+.inputMessage{
+    display: flex;
+}
+
+.inputMessage-item-input{
+    height: 60px;
+    width: 731px;
+    padding: 20px;
+    font-size: 20px;
+    background-color: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    margin-right: 10px;
+    color: white;
+}
