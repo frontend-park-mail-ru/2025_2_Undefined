@@ -2,6 +2,7 @@
     <div class="menu-container">
         {{#each items}}
             {{> components/element-menu/element-menu
+                action=this.action
                 icon=this.icon
                 text=this.text
                 danger=this.danger
