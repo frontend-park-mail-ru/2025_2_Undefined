@@ -15,6 +15,7 @@ export class Home {
     #parent;
     #isMainMenuOpen = false;
     #isNewChatMenuOpen = false;
+    #isProfileOpen = false;
 
     /**
      * Создает экземпляр класса Home
@@ -70,6 +71,42 @@ export class Home {
                     newChatButtonIcon.classList.add('edit-icon');
                 }
             }
+        }
+    }
+
+    /**
+     * Открывает панель профиля
+     */
+    openProfile() {
+        console.log('Opening profile...');
+        this.#isProfileOpen = true;
+        const profilePanel = this.#parent.querySelector('.profile-panel');
+        const chatArea = this.#parent.querySelector('.chat-area');
+
+        if (profilePanel) {
+            profilePanel.classList.add('profile-panel--open');
+        }
+        if (chatArea) {
+            chatArea.classList.add('chat-area--with-profile');
+        }
+
+        this.closeAllMenus();
+    }
+
+    /**
+     * Закрывает панель профиля
+     */
+    closeProfile() {
+        console.log('Closing profile...');
+        this.#isProfileOpen = false;
+        const profilePanel = this.#parent.querySelector('.profile-panel');
+        const chatArea = this.#parent.querySelector('.chat-area');
+
+        if (profilePanel) {
+            profilePanel.classList.remove('profile-panel--open');
+        }
+        if (chatArea) {
+            chatArea.classList.remove('chat-area--with-profile');
         }
     }
 
@@ -140,16 +177,10 @@ export class Home {
     }
 
     /**
-     * Инициализирует обработчики событий
+     * Инициализирует обработчики событий для меню
      */
-    initEventListeners() {
-        const signOutButton = this.#parent.querySelector('#signOut');
-        if (signOutButton) {
-            signOutButton.addEventListener('click', () => this.signOut());
-        }
-
+    initMenuEventListeners() {
         const menuButton = this.#parent.querySelector('.menu .menu-button');
-
         if (menuButton) {
             menuButton.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -158,10 +189,60 @@ export class Home {
             });
         }
 
+        // Делегирование событий для всех пунктов меню
+        document.addEventListener('click', (e) => {
+            const menuItem = e.target.closest('.MenuItem');
+            if (menuItem) {
+                const action = menuItem.dataset.action;
+
+                switch (action) {
+                    case 'profile':
+                        this.openProfile();
+                        break;
+                    case 'contacts':
+                        // Добавьте обработку контактов
+                        console.log('Open contacts');
+                        break;
+                    case 'logout':
+                        this.signOut();
+                        break;
+                    case 'create-channel':
+                        // Обработка создания канала
+                        console.log('Create channel');
+                        break;
+                    case 'create-group':
+                        // Обработка создания группы
+                        console.log('Create group');
+                        break;
+                    case 'create-chat':
+                        // Обработка создания чата
+                        console.log('Create chat');
+                        break;
+                    case 'leave-group':
+                        // Обработка выхода из группы
+                        console.log('Leave group');
+                        break;
+                    case 'delete-chat':
+                        // Обработка удаления чата
+                        console.log('Delete chat');
+                        break;
+                    default:
+                        console.log('Unknown action:', action);
+                }
+
+                // Закрываем меню после выбора пункта
+                this.closeAllMenus();
+            }
+        });
+    }
+
+    /**
+     * Инициализирует обработчики событий для создания чата
+     */
+    initChatCreateEventListeners() {
         const newChatButton = this.#parent.querySelector(
             '.chat-create .action-button'
         );
-
         if (newChatButton) {
             newChatButton.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -181,7 +262,36 @@ export class Home {
                 this.hideNewChatButton();
             });
         }
+    }
 
+    /**
+     * Инициализирует обработчики событий для профиля
+     */
+    initProfileEventListeners() {
+        const profileBackButton = this.#parent.querySelector(
+            '.profile-panel__back'
+        );
+        if (profileBackButton) {
+            profileBackButton.addEventListener('click', () => {
+                this.closeProfile();
+            });
+        }
+    }
+
+    /**
+     * Инициализирует обработчики событий для выхода
+     */
+    initSignOutEventListeners() {
+        const signOutButton = this.#parent.querySelector('#signOut');
+        if (signOutButton) {
+            signOutButton.addEventListener('click', () => this.signOut());
+        }
+    }
+
+    /**
+     * Инициализирует глобальные обработчики событий
+     */
+    initGlobalEventListeners() {
         document.addEventListener('click', (e) => {
             if (this.#isMainMenuOpen || this.#isNewChatMenuOpen) {
                 const menuWrapper =
@@ -215,13 +325,25 @@ export class Home {
         });
 
         document.addEventListener('keydown', (e) => {
-            if (
-                e.key === 'Escape' &&
-                (this.#isMainMenuOpen || this.#isNewChatMenuOpen)
-            ) {
-                this.closeAllMenus();
+            if (e.key === 'Escape') {
+                if (this.#isMainMenuOpen || this.#isNewChatMenuOpen) {
+                    this.closeAllMenus();
+                } else if (this.#isProfileOpen) {
+                    this.closeProfile();
+                }
             }
         });
+    }
+
+    /**
+     * Инициализирует все обработчики событий
+     */
+    initEventListeners() {
+        this.initMenuEventListeners();
+        this.initChatCreateEventListeners();
+        this.initProfileEventListeners();
+        this.initSignOutEventListeners();
+        this.initGlobalEventListeners();
     }
 
     /**
@@ -363,6 +485,8 @@ export class Home {
                 const chats = await response.json();
                 HomeData.chats = this.processChats(chats);
                 HomeData.hasChats = HomeData.chats.length > 0;
+
+                // Используем меню с actions
                 HomeData.newChats = contextMenu.newChat;
                 HomeData.mainMenu = contextMenu.mainMenu;
 
