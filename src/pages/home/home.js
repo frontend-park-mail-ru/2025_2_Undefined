@@ -17,6 +17,7 @@ import '@/components/add-contact/add-contact.css';
 import '@/components/contact/contact.css';
 import '@/components/new-chat-menu/new-chat-menu.css';
 import '@/components/input-message/input-message.css';
+import '@components/message/message.css'
 
 /**
  * Класс для управления домашней страницей приложения
@@ -26,6 +27,8 @@ export class Home {
     #addButtonInstance;
     #activeTab = 'chats';
     #isChatOpen = 'false';
+    #openChatId = '';
+    #messages = {};
 
     /**
      * Создает экземпляр класса Home
@@ -177,6 +180,7 @@ export class Home {
         if (!HomeData.user) {
             HomeData.user = app.user;
         }
+        console.log(HomeData);
         this.#parent.innerHTML = HomeTemplate(HomeData);
 
         const signOutButton = this.#parent.querySelector('#signOut');
@@ -211,10 +215,13 @@ export class Home {
         this.renderContacts();
     }
 
-    async renderChat(HomeData, chatId) {
+    async renderChat(HomeData, chatId, messages) {
         this.#isChatOpen = true;
         HomeData.isChatOpen = true;
+        this.#openChatId = chatId;
         HomeData.chatId = chatId;
+        this.#messages = messages;
+        HomeData.messages = messages;
 
         this.renderPage(HomeData);
     }
@@ -236,6 +243,7 @@ export class Home {
             HomeData.activeTabChats = this.#activeTab === 'chats';
             HomeData.activeTabContacts = this.#activeTab === 'contacts';
             HomeData.isChatOpen = this.#isChatOpen;
+            HomeData.chatId = this.#openChatId;
 
             this.renderPage(HomeData);
 
@@ -258,6 +266,7 @@ export class Home {
                 HomeData.activeTabChats = this.#activeTab === 'chats';
                 HomeData.activeTabContacts = this.#activeTab === 'contacts';
                 HomeData.isChatOpen = this.#isChatOpen;
+                HomeData.chatId = this.#openChatId;
                 
 
                 const signOutButton = this.#parent.querySelector('#signOut');

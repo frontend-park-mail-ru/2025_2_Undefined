@@ -1,18 +1,4 @@
-// const ws = new WebSocket('ws://localhost:8080/api/v1/message/ws');
-
-// ws.onopen = function() {
-//     console.log('сокет есть')
-// }
-
-// ws.onerror = function(error) {
-//   console.log("Ошибка " + error.message);
-// };
-
-// ws.onclose = function(event) {
-//     console.log("WebSocket соединение закрыто. Код:", event.code, "Причина:", event.reason, "Was clean:", event.wasClean);
-// };
-
-
+import {WEBSOCKET} from '@api/config.js';
 
 let globalWs = null;
 
@@ -21,7 +7,8 @@ export function initWebSocket() {
         return globalWs;
     }
 
-    globalWs = new WebSocket('ws://localhost:8080/api/v1/message/ws');
+    
+    globalWs = new WebSocket(`${WEBSOCKET}/api/v1/message/ws`);    
 
     globalWs.onopen = () => console.log('WebSocket подключён');
 

@@ -259,6 +259,9 @@
 .content-middle-column-center-messages{
     margin-top: auto;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    
 }
 
 .content-middle-column-center-input{

@@ -69,11 +69,11 @@
         {{#if hasContacts}}
           <div class='items-list-scrollable'>
             {{#each contacts}}
-            {{> components/contact/contact
-            placeholder=contact.placeholder
-            name=contact.name
-            id=contact.id
-            }}
+              {{> components/contact/contact
+              placeholder=contact.placeholder
+              name=contact.name
+              id=contact.id
+              }}
             {{/each}}
 
           </div>
@@ -93,7 +93,13 @@
       {{#if isChatOpen}}
         <div class="content-middle-column-center">
           <div class="content-middle-column-center-messages">
-            
+            {{#each messages}}
+              {{> components/message/message 
+                text=this.text
+                time=this.created_at
+              }}
+            {{/each}}
+
           </div>
           <div class="content-middle-column-center-input">
             {{> components/input-message/input-message id=chatId}}
