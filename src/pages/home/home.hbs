@@ -4,16 +4,29 @@
       <div class='left-column'>
         <div class='menu-btn'>
           {{#if activeTabChats}}
-            <i class='menu-icon' id='menuBtn'></i>
+            <i class='icon menu-icon' id='menuBtn'></i>
           {{/if}}
           {{#if activeTabContacts}}
-            <i class='menu-icon' id='backBtn'></i>
+              <i class='icon menu-icon' id='backBtn'></i>
           {{/if}}
         </div>
+        {{#if activeTabChats}}
         <div class='search-wrapper'>
           <i class='search-icon'></i>
           <input class='search' type='text' placeholder='Поиск' />
         </div>
+        {{/if}}
+        {{#if activeTabContacts}}
+        <div class='search-wrapper'>
+          <i class='search-icon'></i>
+          <input class='search' type='text' placeholder='Поиск' />
+        </div>
+        {{/if}}
+        {{#if activeTabProfile}}
+          <button class="button action-button" dataAction='close-menu'>
+            <i class="icon leftArrow-icon"></i>
+          </button>
+        {{/if}} 
       </div>
       <div class='middle-column'>
         {{#if isChatOpen}}
@@ -36,7 +49,7 @@
               <div class='user-name'>{{user.name}}</div>
             </div>
             <div class='avatar'>
-                      {{> components/avatar/avatar placeholder=user.placeholder }}
+              {{> components/avatar/avatar placeholder=user.placeholder }}
             </div>
           </div>
         </div>
