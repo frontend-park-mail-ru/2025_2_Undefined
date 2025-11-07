@@ -1,59 +1,28 @@
 .chat-item {
     display: flex;
     align-items: flex-start;
-    padding: 16px 20px;
-    border-bottom: 1px solid #2a3546;
+    padding: 9px;
+    border-radius: 12px;
     cursor: pointer;
     transition: background-color 0.2s ease;
-    gap: 15px;
+    gap: 12px;
+    min-height: 72px;
+    box-sizing: border-box;
 }
 
-.chat-item.active,
 .chat-item:hover {
-    background-color: #1a2436;
+    background-color: var(--color-border);
 }
 
-.chat-item:last-child {
-    border-bottom: none;
+.chat-item.active {
+    background-color: var(--color-accent-primary);
 }
 
 .chat-avatar {
     flex-shrink: 0;
-    width: 50px;
-    height: 50px;
-}
-
-/* MB home */
-.avatar-placeholder {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 18px;
-}
-
-.avatar-placeholder {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: 600;
-    font-size: 18px;
-}
-
-.avatar-placeholder.small {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
+    width: 54px;
+    height: 54px;
+    margin: 0;
 }
 
 .chat-info {
@@ -61,35 +30,134 @@
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
+    padding: 4px 0;
+    justify-content: center;
 }
 
-.chat-header {
+.info-row {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 10px;
+    gap: 8px;
+    align-items: center;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    justify-content: space-between;
+}
+
+.chat-type {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    min-width: 0;
+    flex-basis: auto;
+}
+
+.chat-type:empty {
+    display: none;
+}
+
+.channel-icon,
+.group-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #8c8c8c;
 }
 
 .chat-name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #ffffff;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--color-text-primary);
     line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
 }
 
-.chat-time {
-    font-size: 12px;
-    color: #8c8c8c;
+.separator {
+    flex: 1;
+    min-width: 8px;
+}
+
+.lastMessageMeta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    /* Фиксируем ширину чтобы не двигалось */
+    min-width: 60px;
+    justify-content: flex-end;
+}
+
+.MessageStatus {
+    width: 16px;
+    height: 16px;
     flex-shrink: 0;
 }
 
-.chat-preview {
+.time {
     font-size: 13px;
-    color: #8c8c8c;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-left: 5px;
+}
+
+.last-message {
+    font-size: 14px;
+    color: var(--color-text-secondary);
     line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+    min-width: 0;
+}
+
+.ChatBadge {
+    background-color: var(--color-accent-primary);
+    color: var(--color-text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 12px;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+.ChatBadge.muted {
+    background-color: var(--color-text-secondary);
+    color: var(--color-text-primary);
+}
+
+.ChatBadge.unread {
+    background-color: var(--color-accent-primary);
+    color: var(--color-text-primary);
 }

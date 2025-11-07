@@ -1,13 +1,35 @@
-<div class="message">
-    <div class="message__text">
-        lalala papapa kokoko
+{{#if isSystem}}
+    <div class="systemMessage">
+        {{text}}
     </div>
-    <div class="message__time">
-        12:12
-    </div>
+{{else}}
     {{#if isMine}}
-        <div class="message__read">
-
+        <div class="myMessage message">
+            <div class="message-text">
+                {{ text }}
+            </div>
+            <div class="message-time">
+                {{ time }}
+            </div>
+        </div>
+    {{else}}
+        <div class="notMyMessage message">
+            <div class="message-text">
+                {{ text }}
+            </div>
+            <div class="message-time">
+                {{ time }}
+            </div>
         </div>
     {{/if}}
-</div>
+{{/if}}
+
+
+
+
+
+        {{!-- {{#if isMine}}
+            <div class="message-read">
+                <i ></i>
+            </div>
+        {{/if}} --}}

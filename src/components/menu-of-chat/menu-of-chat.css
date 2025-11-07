@@ -1,0 +1,49 @@
+.menuOfChat{
+    position: absolute;
+    /* top: 720px;
+    right: 16px; */
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 216px;
+    background-color: var(--color-border);
+    display: flex;
+    flex-direction: column;
+    padding: 6px;
+    border-radius: 12px;
+    color: var(--color-text-secondary);
+}
+
+.menuOfChat-item {
+    height: 32px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    padding-left: 12px; 
+    box-sizing: border-box; 
+}
+
+.menuOfChat-item:hover{
+    background-color: var(--color-bg-primary);
+    cursor: pointer;
+}
+
+.menuOfChat-item-icon i{
+    width: 30px;
+    height: 30px;
+}
+
+#menuOfChat{
+    background-color: rgba(0, 0, 0, 0);
+    width: 500px;
+    height: 500px;
+    position: absolute;
+    bottom: 580px;
+    right: 460px;
+    z-index: 1000;
+}
+
+#deleteChat{
+    color: var(--color-status-error);
+}

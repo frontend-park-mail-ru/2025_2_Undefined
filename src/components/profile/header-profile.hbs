@@ -1,0 +1,14 @@
+<div class="profile-header {{#if isProfileOpen}}{{else}}Hide{{/if}}">
+    <div class="profile-header__left">
+        {{> components/action-button/action-button type='menu' icon='leftArrow' action='profile-header__back' }}
+        <h1 class="profile-header__title">Профиль</h1>
+    </div>
+    
+    <div class="profile-header__right">
+        {{> components/action-button/action-button type='menu' icon='edit' action='profile-header__edit' }}
+        {{> components/action-button/action-button type='menu' icon='meatballs' action='profile-header__menu' }}
+    </div>
+    <div class="exit__wrapper">
+        {{> components/context-menu/context-menu direction='top' items=exit}}
+    </div>
+</div>

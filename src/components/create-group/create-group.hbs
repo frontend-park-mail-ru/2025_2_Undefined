@@ -1,0 +1,27 @@
+<div class="modal-overlay" id="createGroupDialog">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h2>Создать группу</h2>
+    </div>
+    <div class="modal-body">
+      <div class="input-group">
+        <input
+          type="text"
+          id="nameOfGroup"
+          class="modal-input"
+          placeholder="Введите название группы"
+          maxlength="30"
+        />
+        <div class="error-message" id="createGroupNameError"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="cancelGroupBtn">
+        Отменить
+      </button>
+      <button type="button" class="btn btn-primary" id="createGroupBtn">
+        Создать
+      </button>
+    </div>
+  </div>
+</div>
