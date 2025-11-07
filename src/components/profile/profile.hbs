@@ -1,0 +1,22 @@
+<div class="profile">
+    <div class="profile__avatar">
+        {{> components/avatar/avatar placeholder=this.placeholder}}
+    </div>
+    <div class="profile__name">
+        {{this.name}}
+    </div>
+    <div class="profile__info">
+        <div class="profile__phone">
+            <div class="profile__icons">
+                <i class="icon phone-icon icon--size-lg"></i>
+            </div>
+            {{this.phone_number}}
+        </div>
+        <div class="profile__username">
+            <div class="profile__icons">
+                <i class="icon at-icon icon--size-lg"></i>
+            </div>
+            {{this.username}}
+        </div>
+    </div>
+</div>

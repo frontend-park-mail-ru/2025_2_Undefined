@@ -117,3 +117,8 @@
     -webkit-mask-image: url('../../assets/icons/phone_light.svg');
     mask-image: url('../../assets/icons/phone_light.svg');     
 }
+
+.at-icon {
+    -webkit-mask-image: url('../../assets/icons/at.svg');
+    mask-image: url('../../assets/icons/at.svg');     
+}
