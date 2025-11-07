@@ -47,6 +47,7 @@
 .menu {
     position: relative;
     padding: 20px;
+    color: var(--color-text-secondary);
 }
 
 .menu__wrapper {
@@ -126,6 +127,7 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: 8px;
 }
 
 .user__details {
@@ -191,9 +193,10 @@
     font-size: 24px;
 }
 
+/* ИСПРАВЛЕНИЕ: Скроллбар появляется только при наведении */
 .chats-panel__list {
     flex: 1;
-    overflow-y: hidden;
+    overflow-y: hidden; /* Скрыт по умолчанию */
     color: #ffffff;
     min-height: 0;
     padding: 8px 0 8px 8px;
@@ -202,8 +205,9 @@
     scrollbar-gutter: stable;
 }
 
-.chats-panel__list--scrollable {
-    overflow-y: auto;
+/* Скроллбар появляется при наведении на панель чатов */
+.chats-panel:hover .chats-panel__list {
+    overflow-y: auto; /* Показываем скроллбар при наведении */
 }
 
 /* Кнопка создания чата */
@@ -216,6 +220,7 @@
     transform: translateY(10px);
     transition: all 0.3s ease;
     z-index: 10;
+    color: var(--color-text-primary);
 }
 
 .chats-panel:hover .chat-create {

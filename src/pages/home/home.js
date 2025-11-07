@@ -16,6 +16,11 @@ export class Home {
     #isMainMenuOpen = false;
     #isNewChatMenuOpen = false;
     #isProfileOpen = false;
+    #isExitMenuOpen = false;
+    #currentUser = null;
+    #chats = [];
+    #eventListeners = new Map();
+    #isEventListenersInitialized = false;
 
     /**
      * Создает экземпляр класса Home
@@ -26,21 +31,22 @@ export class Home {
     }
 
     /**
+     * Устанавливает состояние профиля и выполняет перерендер
+     * @param {boolean} isOpen - Состояние профиля
+     */
+    setProfileOpen(isOpen) {
+        if (this.#isProfileOpen !== isOpen) {
+            this.#isProfileOpen = isOpen;
+            this.render();
+        }
+    }
+
+    /**
      * Переключает отображение главного меню
      */
     toggleMainMenu() {
         this.#isMainMenuOpen = !this.#isMainMenuOpen;
-        const menuComponent = this.#parent.querySelector(
-            '.menu__wrapper .Menu'
-        );
-
-        if (menuComponent) {
-            if (this.#isMainMenuOpen) {
-                menuComponent.classList.add('show');
-            } else {
-                menuComponent.classList.remove('show');
-            }
-        }
+        this.updateMenuState();
     }
 
     /**
@@ -48,6 +54,33 @@ export class Home {
      */
     toggleNewChatMenu() {
         this.#isNewChatMenuOpen = !this.#isNewChatMenuOpen;
+        this.updateNewChatMenuState();
+    }
+
+    /**
+     * Переключает отображение меню выхода
+     */
+    toggleExitMenu() {
+        this.#isExitMenuOpen = !this.#isExitMenuOpen;
+        this.updateExitMenuState();
+    }
+
+    /**
+     * Обновляет состояние главного меню в DOM
+     */
+    updateMenuState() {
+        const menuComponent = this.#parent.querySelector(
+            '.menu__wrapper .Menu'
+        );
+        if (menuComponent) {
+            menuComponent.classList.toggle('show', this.#isMainMenuOpen);
+        }
+    }
+
+    /**
+     * Обновляет состояние меню создания чата в DOM
+     */
+    updateNewChatMenuState() {
         const menuComponent = this.#parent.querySelector(
             '.chat-create__menu .Menu'
         );
@@ -56,22 +89,66 @@ export class Home {
         );
 
         if (menuComponent) {
-            if (this.#isNewChatMenuOpen) {
-                menuComponent.classList.add('show');
-                // Меняем иконку на "close" при открытии меню
-                if (newChatButtonIcon) {
-                    newChatButtonIcon.classList.remove('edit-icon');
-                    newChatButtonIcon.classList.add('close-icon');
-                }
-            } else {
-                menuComponent.classList.remove('show');
-                // Возвращаем иконку "edit" при закрытии меню
-                if (newChatButtonIcon) {
-                    newChatButtonIcon.classList.remove('close-icon');
-                    newChatButtonIcon.classList.add('edit-icon');
-                }
-            }
+            menuComponent.classList.toggle('show', this.#isNewChatMenuOpen);
         }
+
+        if (newChatButtonIcon) {
+            newChatButtonIcon.classList.toggle(
+                'edit-icon',
+                !this.#isNewChatMenuOpen
+            );
+            newChatButtonIcon.classList.toggle(
+                'close-icon',
+                this.#isNewChatMenuOpen
+            );
+        }
+    }
+
+    /**
+     * Обновляет состояние меню выхода в DOM
+     */
+    updateExitMenuState() {
+        const exitWrapper = this.#parent.querySelector('.exit__wrapper');
+        const exitMenu = this.#parent.querySelector('.exit__wrapper .Menu');
+
+        if (exitWrapper) {
+            exitWrapper.classList.toggle('show', this.#isExitMenuOpen);
+        }
+        if (exitMenu) {
+            exitMenu.classList.toggle('show', this.#isExitMenuOpen);
+        }
+    }
+
+    /**
+     * Закрывает меню выхода
+     */
+    closeExitMenu() {
+        this.#isExitMenuOpen = false;
+        this.updateExitMenuState();
+    }
+
+    /**
+     * Обрабатывает кнопку "Назад" в профиле
+     */
+    handleProfileBack() {
+        console.log('Profile back button clicked');
+        this.closeProfile();
+    }
+
+    /**
+     * Обрабатывает кнопку "Редактировать" в профиле
+     */
+    handleProfileEdit() {
+        console.log('Profile edit button clicked');
+        // Добавьте логику редактирования профиля
+    }
+
+    /**
+     * Обрабатывает кнопку меню в профиле
+     */
+    handleProfileMenu() {
+        console.log('Profile menu button clicked');
+        this.toggleExitMenu();
     }
 
     /**
@@ -79,17 +156,7 @@ export class Home {
      */
     openProfile() {
         console.log('Opening profile...');
-        this.#isProfileOpen = true;
-        const profilePanel = this.#parent.querySelector('.profile-panel');
-        const chatArea = this.#parent.querySelector('.chat-area');
-
-        if (profilePanel) {
-            profilePanel.classList.add('profile-panel--open');
-        }
-        if (chatArea) {
-            chatArea.classList.add('chat-area--with-profile');
-        }
-
+        this.setProfileOpen(true);
         this.closeAllMenus();
     }
 
@@ -98,15 +165,35 @@ export class Home {
      */
     closeProfile() {
         console.log('Closing profile...');
-        this.#isProfileOpen = false;
-        const profilePanel = this.#parent.querySelector('.profile-panel');
-        const chatArea = this.#parent.querySelector('.chat-area');
+        this.setProfileOpen(false);
+        this.closeAllMenus();
+    }
 
-        if (profilePanel) {
-            profilePanel.classList.remove('profile-panel--open');
-        }
+    /**
+     * Обновляет состояние профиля в DOM (для восстановления после рендера)
+     */
+    updateProfileState() {
+        const [menu, search] = this.#parent.querySelectorAll('.menu, .search');
+        const chatArea = this.#parent.querySelector('.chat-area');
+        const profileHeader = this.#parent.querySelector('.profile-header');
+
+        // Обновляем область чата
         if (chatArea) {
-            chatArea.classList.remove('chat-area--with-profile');
+            chatArea.classList.toggle(
+                'chat-area--with-profile',
+                this.#isProfileOpen
+            );
+        }
+
+        // Обновляем видимость элементов
+        if (menu) {
+            menu.classList.toggle('Hide', this.#isProfileOpen);
+        }
+        if (search) {
+            search.classList.toggle('Hide', this.#isProfileOpen);
+        }
+        if (profileHeader) {
+            profileHeader.classList.toggle('Hide', !this.#isProfileOpen);
         }
     }
 
@@ -115,12 +202,7 @@ export class Home {
      */
     closeMainMenu() {
         this.#isMainMenuOpen = false;
-        const menuComponent = this.#parent.querySelector(
-            '.menu__wrapper .Menu'
-        );
-        if (menuComponent) {
-            menuComponent.classList.remove('show');
-        }
+        this.updateMenuState();
     }
 
     /**
@@ -128,22 +210,7 @@ export class Home {
      */
     closeNewChatMenu() {
         this.#isNewChatMenuOpen = false;
-        const menuComponent = this.#parent.querySelector(
-            '.chat-create__menu .Menu'
-        );
-        const newChatButtonIcon = this.#parent.querySelector(
-            '.chat-create .action-button .icon'
-        );
-
-        if (menuComponent) {
-            menuComponent.classList.remove('show');
-        }
-
-        // Возвращаем иконку "edit" при закрытии меню
-        if (newChatButtonIcon) {
-            newChatButtonIcon.classList.remove('close-icon');
-            newChatButtonIcon.classList.add('edit-icon');
-        }
+        this.updateNewChatMenuState();
     }
 
     /**
@@ -152,6 +219,7 @@ export class Home {
     closeAllMenus() {
         this.closeMainMenu();
         this.closeNewChatMenu();
+        this.closeExitMenu();
     }
 
     /**
@@ -172,95 +240,234 @@ export class Home {
         if (newChatButton) {
             newChatButton.classList.remove('chat-create--visible');
         }
-        // При скрытии кнопки обязательно закрываем меню
         this.closeNewChatMenu();
     }
+
+    /**
+     * Обрабатывает действия из меню
+     * @param {string} action - Действие из data-action
+     */
+    handleMenuAction(action) {
+        const actionHandlers = {
+            profile: () => this.openProfile(),
+            contacts: () => this.handleContacts(),
+            logout: () => this.signOut(),
+            'create-channel': () => this.handleCreateChannel(),
+            'create-group': () => this.handleCreateGroup(),
+            'create-chat': () => this.handleCreateChat(),
+            'leave-group': () => this.handleLeaveGroup(),
+            'delete-chat': () => this.handleDeleteChat(),
+            'profile-header__back': () => this.handleProfileBack(),
+            'profile-header__edit': () => this.handleProfileEdit(),
+            'profile-header__menu': () => this.handleProfileMenu(),
+        };
+
+        const handler = actionHandlers[action];
+        if (handler) {
+            handler();
+        } else {
+            console.warn('Unknown action:', action);
+        }
+    }
+
+    /**
+     * Обрабатывает открытие контактов
+     */
+    handleContacts() {
+        console.log('Open contacts');
+        // Добавьте логику открытия контактов
+    }
+
+    /**
+     * Обрабатывает создание канала
+     */
+    handleCreateChannel() {
+        console.log('Create channel');
+        // Добавьте логику создания канала
+    }
+
+    /**
+     * Обрабатывает создание группы
+     */
+    handleCreateGroup() {
+        console.log('Create group');
+        // Добавьте логику создания группы
+    }
+
+    /**
+     * Обрабатывает создание чата
+     */
+    handleCreateChat() {
+        console.log('Create chat');
+        // Добавьте логику создания чата
+    }
+
+    /**
+     * Обрабатывает выход из группы
+     */
+    handleLeaveGroup() {
+        console.log('Leave group');
+        // Добавьте логику выхода из группы
+    }
+
+    /**
+     * Обрабатывает удаление чата
+     */
+    handleDeleteChat() {
+        console.log('Delete chat');
+        // Добавьте логику удаления чата
+    }
+
+    /**
+     * Удаляет все обработчики событий
+     */
+    removeAllEventListeners() {
+        // Удаляем делегированные обработчики
+        this.#eventListeners.forEach((listener, type) => {
+            this.#parent.removeEventListener(type, listener);
+        });
+        this.#eventListeners.clear();
+
+        // Удаляем глобальные обработчики
+        document.removeEventListener('click', this.#globalClickHandler);
+        document.removeEventListener('keydown', this.#globalKeydownHandler);
+
+        this.#isEventListenersInitialized = false;
+    }
+
+    /**
+     * Обработчик глобальных кликов
+     */
+    #globalClickHandler = (e) => {
+        if (
+            this.#isMainMenuOpen ||
+            this.#isNewChatMenuOpen ||
+            this.#isExitMenuOpen
+        ) {
+            const menuWrapper = this.#parent.querySelector('.menu__wrapper');
+            const newChatMenuWrapper =
+                this.#parent.querySelector('.chat-create__menu');
+            const exitMenuWrapper =
+                this.#parent.querySelector('.exit__wrapper');
+            const menuButton = this.#parent.querySelector('.menu .menu-button');
+            const newChatButton = this.#parent.querySelector(
+                '.chat-create .action-button'
+            );
+            const profileMenuButton = this.#parent.querySelector(
+                '[data-action="profile-header__menu"]'
+            );
+
+            const isClickOutsideMainMenu =
+                menuWrapper &&
+                !menuWrapper.contains(e.target) &&
+                !(menuButton && menuButton.contains(e.target));
+
+            const isClickOutsideNewChatMenu =
+                newChatMenuWrapper &&
+                !newChatMenuWrapper.contains(e.target) &&
+                !(newChatButton && newChatButton.contains(e.target));
+
+            const isClickOutsideExitMenu =
+                exitMenuWrapper &&
+                !exitMenuWrapper.contains(e.target) &&
+                !(profileMenuButton && profileMenuButton.contains(e.target));
+
+            if (isClickOutsideMainMenu && this.#isMainMenuOpen) {
+                this.closeMainMenu();
+            }
+
+            if (isClickOutsideNewChatMenu && this.#isNewChatMenuOpen) {
+                this.closeNewChatMenu();
+            }
+
+            if (isClickOutsideExitMenu && this.#isExitMenuOpen) {
+                this.closeExitMenu();
+            }
+        }
+    };
+
+    /**
+     * Обработчик глобальных нажатий клавиш
+     */
+    #globalKeydownHandler = (e) => {
+        if (e.key === 'Escape') {
+            if (
+                this.#isMainMenuOpen ||
+                this.#isNewChatMenuOpen ||
+                this.#isExitMenuOpen
+            ) {
+                this.closeAllMenus();
+            } else if (this.#isProfileOpen) {
+                this.closeProfile();
+            }
+        }
+    };
 
     /**
      * Инициализирует обработчики событий для меню
      */
     initMenuEventListeners() {
+        // Кнопка главного меню
         const menuButton = this.#parent.querySelector('.menu .menu-button');
         if (menuButton) {
-            menuButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.toggleMainMenu();
-            });
-        }
-
-        // Делегирование событий для всех пунктов меню
-        document.addEventListener('click', (e) => {
-            const menuItem = e.target.closest('.MenuItem');
-            if (menuItem) {
-                const action = menuItem.dataset.action;
-
-                switch (action) {
-                    case 'profile':
-                        this.openProfile();
-                        break;
-                    case 'contacts':
-                        // Добавьте обработку контактов
-                        console.log('Open contacts');
-                        break;
-                    case 'logout':
-                        this.signOut();
-                        break;
-                    case 'create-channel':
-                        // Обработка создания канала
-                        console.log('Create channel');
-                        break;
-                    case 'create-group':
-                        // Обработка создания группы
-                        console.log('Create group');
-                        break;
-                    case 'create-chat':
-                        // Обработка создания чата
-                        console.log('Create chat');
-                        break;
-                    case 'leave-group':
-                        // Обработка выхода из группы
-                        console.log('Leave group');
-                        break;
-                    case 'delete-chat':
-                        // Обработка удаления чата
-                        console.log('Delete chat');
-                        break;
-                    default:
-                        console.log('Unknown action:', action);
+            // Используем один обработчик через делегирование
+            const menuButtonHandler = (e) => {
+                if (e.target.closest('.menu .menu-button')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.toggleMainMenu();
                 }
+            };
 
-                // Закрываем меню после выбора пункта
-                this.closeAllMenus();
+            // Добавляем только если еще не добавлен
+            if (!this.#eventListeners.has('menu-button')) {
+                this.#parent.addEventListener('click', menuButtonHandler);
+                this.#eventListeners.set('menu-button', menuButtonHandler);
             }
-        });
+        }
     }
 
     /**
      * Инициализирует обработчики событий для создания чата
      */
     initChatCreateEventListeners() {
+        // Кнопка создания нового чата
         const newChatButton = this.#parent.querySelector(
             '.chat-create .action-button'
         );
         if (newChatButton) {
-            newChatButton.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.toggleNewChatMenu();
-            });
+            const newChatButtonHandler = (e) => {
+                if (e.target.closest('.chat-create .action-button')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.toggleNewChatMenu();
+                }
+            };
+
+            if (!this.#eventListeners.has('new-chat-button')) {
+                this.#parent.addEventListener('click', newChatButtonHandler);
+                this.#eventListeners.set(
+                    'new-chat-button',
+                    newChatButtonHandler
+                );
+            }
         }
 
-        // Обработчики для показа/скрытия кнопки нового чата
+        // Показать/скрыть кнопку создания чата при наведении
         const chatsList = this.#parent.querySelector('.chats-panel');
         if (chatsList) {
-            chatsList.addEventListener('mouseenter', () => {
-                this.showNewChatButton();
-            });
+            const mouseEnterHandler = () => this.showNewChatButton();
+            const mouseLeaveHandler = () => this.hideNewChatButton();
 
-            chatsList.addEventListener('mouseleave', () => {
-                this.hideNewChatButton();
-            });
+            if (!this.#eventListeners.has('chats-mouseenter')) {
+                chatsList.addEventListener('mouseenter', mouseEnterHandler);
+                this.#eventListeners.set('chats-mouseenter', mouseEnterHandler);
+            }
+
+            if (!this.#eventListeners.has('chats-mouseleave')) {
+                chatsList.addEventListener('mouseleave', mouseLeaveHandler);
+                this.#eventListeners.set('chats-mouseleave', mouseLeaveHandler);
+            }
         }
     }
 
@@ -268,13 +475,22 @@ export class Home {
      * Инициализирует обработчики событий для профиля
      */
     initProfileEventListeners() {
-        const profileBackButton = this.#parent.querySelector(
-            '.profile-panel__back'
-        );
-        if (profileBackButton) {
-            profileBackButton.addEventListener('click', () => {
-                this.closeProfile();
-            });
+        // Делегирование событий для кнопок профиля
+        const profileButtonHandler = (e) => {
+            const button = e.target.closest('[data-action]');
+            if (button) {
+                const action = button.dataset.action;
+                if (action.startsWith('profile-header__')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.handleMenuAction(action);
+                }
+            }
+        };
+
+        if (!this.#eventListeners.has('profile-buttons')) {
+            this.#parent.addEventListener('click', profileButtonHandler);
+            this.#eventListeners.set('profile-buttons', profileButtonHandler);
         }
     }
 
@@ -284,7 +500,17 @@ export class Home {
     initSignOutEventListeners() {
         const signOutButton = this.#parent.querySelector('#signOut');
         if (signOutButton) {
-            signOutButton.addEventListener('click', () => this.signOut());
+            const signOutHandler = (e) => {
+                if (e.target.closest('#signOut')) {
+                    e.preventDefault();
+                    this.signOut();
+                }
+            };
+
+            if (!this.#eventListeners.has('signout')) {
+                this.#parent.addEventListener('click', signOutHandler);
+                this.#eventListeners.set('signout', signOutHandler);
+            }
         }
     }
 
@@ -292,58 +518,77 @@ export class Home {
      * Инициализирует глобальные обработчики событий
      */
     initGlobalEventListeners() {
-        document.addEventListener('click', (e) => {
-            if (this.#isMainMenuOpen || this.#isNewChatMenuOpen) {
-                const menuWrapper =
-                    this.#parent.querySelector('.menu__wrapper');
-                const newChatMenuWrapper =
-                    this.#parent.querySelector('.chat-create__menu');
-                const menuButton =
-                    this.#parent.querySelector('.menu .menu-button');
-                const newChatButton = this.#parent.querySelector(
-                    '.chat-create .action-button'
-                );
+        // Добавляем глобальные обработчики только один раз
+        if (!this.#eventListeners.has('global-click')) {
+            document.addEventListener('click', this.#globalClickHandler);
+            this.#eventListeners.set('global-click', this.#globalClickHandler);
+        }
 
-                const isClickOutsideMainMenu =
-                    menuWrapper &&
-                    !menuWrapper.contains(e.target) &&
-                    !(menuButton && menuButton.contains(e.target));
+        if (!this.#eventListeners.has('global-keydown')) {
+            document.addEventListener('keydown', this.#globalKeydownHandler);
+            this.#eventListeners.set(
+                'global-keydown',
+                this.#globalKeydownHandler
+            );
+        }
+    }
 
-                const isClickOutsideNewChatMenu =
-                    newChatMenuWrapper &&
-                    !newChatMenuWrapper.contains(e.target) &&
-                    !(newChatButton && newChatButton.contains(e.target));
-
-                if (isClickOutsideMainMenu && this.#isMainMenuOpen) {
-                    this.closeMainMenu();
-                }
-
-                if (isClickOutsideNewChatMenu && this.#isNewChatMenuOpen) {
-                    this.closeNewChatMenu();
-                }
+    /**
+     * Инициализирует делегированные обработчики для меню
+     */
+    initMenuDelegation() {
+        // Один общий обработчик для всех пунктов меню
+        const menuItemHandler = (e) => {
+            const menuItem = e.target.closest('.MenuItem');
+            if (menuItem) {
+                const action = menuItem.dataset.action;
+                this.handleMenuAction(action);
+                this.closeAllMenus();
             }
-        });
+        };
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (this.#isMainMenuOpen || this.#isNewChatMenuOpen) {
-                    this.closeAllMenus();
-                } else if (this.#isProfileOpen) {
-                    this.closeProfile();
-                }
+        if (!this.#eventListeners.has('menu-items')) {
+            this.#parent.addEventListener('click', menuItemHandler);
+            this.#eventListeners.set('menu-items', menuItemHandler);
+        }
+    }
+
+    /**
+     * Восстанавливает состояния после рендера
+     */
+    restoreMenuStates() {
+        this.updateMenuState();
+        this.updateNewChatMenuState();
+        this.updateExitMenuState();
+        this.updateProfileState();
+
+        // Восстанавливаем видимость кнопки создания чата если нужно
+        const chatsList = this.#parent.querySelector('.chats-panel');
+        if (chatsList) {
+            const isHovered = chatsList.matches(':hover');
+            if (isHovered) {
+                this.showNewChatButton();
             }
-        });
+        }
     }
 
     /**
      * Инициализирует все обработчики событий
      */
     initEventListeners() {
+        // Инициализируем только один раз
+        if (this.#isEventListenersInitialized) {
+            return;
+        }
+
+        this.initMenuDelegation();
         this.initMenuEventListeners();
         this.initChatCreateEventListeners();
         this.initProfileEventListeners();
         this.initSignOutEventListeners();
         this.initGlobalEventListeners();
+
+        this.#isEventListenersInitialized = true;
     }
 
     /**
@@ -369,11 +614,6 @@ export class Home {
 
         const diffTime = inputDay - today;
         const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(
-            today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)
-        );
 
         if (diffDays === 0) {
             return inputDate.toLocaleTimeString('ru-RU', {
@@ -428,28 +668,29 @@ export class Home {
      * @returns {Promise<Object>} Данные пользователя
      */
     async getCurrentUser() {
+        if (this.#currentUser) {
+            return this.#currentUser;
+        }
+
         const userData = app.user;
         if (userData) {
+            this.#currentUser = userData;
             return userData;
-        } else {
-            try {
-                const response = await User.getMe();
+        }
 
-                if (response.ok) {
-                    const userData = await response.json();
-                    return userData;
-                } else {
-                    throw new Error(
-                        `Ошибка получения данных пользователя: ${response.status}`
-                    );
-                }
-            } catch (error) {
-                console.error(
-                    'Ошибка при получении данных пользователя:',
-                    error
+        try {
+            const response = await User.getMe();
+            if (response.ok) {
+                this.#currentUser = await response.json();
+                return this.#currentUser;
+            } else {
+                throw new Error(
+                    `Ошибка получения данных пользователя: ${response.status}`
                 );
-                return null;
             }
+        } catch (error) {
+            console.error('Ошибка при получении данных пользователя:', error);
+            return null;
         }
     }
 
@@ -479,28 +720,38 @@ export class Home {
                 );
             }
 
-            const response = await Chat.getChats();
-
-            if (response.ok) {
-                const chats = await response.json();
-                HomeData.chats = this.processChats(chats);
-                HomeData.hasChats = HomeData.chats.length > 0;
-
-                // Используем меню с actions
-                HomeData.newChats = contextMenu.newChat;
-                HomeData.mainMenu = contextMenu.mainMenu;
-
-                this.#parent.innerHTML = HomeTemplate(HomeData);
-                this.initEventListeners();
-            } else {
-                throw new Error(`Ошибка получения чатов: ${response.status}`);
+            // Загружаем чаты только если их еще нет
+            if (this.#chats.length === 0) {
+                const response = await Chat.getChats();
+                if (response.ok) {
+                    const chats = await response.json();
+                    this.#chats = this.processChats(chats);
+                } else {
+                    throw new Error(
+                        `Ошибка получения чатов: ${response.status}`
+                    );
+                }
             }
-        } catch (error) {
-            console.error('Ошибка при рендеринге домашней страницы:', error);
 
-            HomeData.error = 'Не удалось загрузить данные';
+            HomeData.chats = this.#chats;
+            HomeData.hasChats = this.#chats.length > 0;
+            HomeData.isProfileOpen = this.#isProfileOpen;
+
+            // Используем меню с actions
+            HomeData.newChats = contextMenu.newChat;
+            HomeData.mainMenu = contextMenu.mainMenu;
+            HomeData.exit = contextMenu.exit;
+
             this.#parent.innerHTML = HomeTemplate(HomeData);
             this.initEventListeners();
+            this.restoreMenuStates();
+        } catch (error) {
+            console.error('Ошибка при рендеринге домашней страницы:', error);
+            HomeData.error = 'Не удалось загрузить данные';
+            HomeData.isProfileOpen = this.#isProfileOpen;
+            this.#parent.innerHTML = HomeTemplate(HomeData);
+            this.initEventListeners();
+            this.restoreMenuStates();
         }
     }
 
@@ -511,5 +762,12 @@ export class Home {
      */
     createChats(chats) {
         return chats || [];
+    }
+
+    /**
+     * Очищает ресурсы при уничтожении компонента
+     */
+    destroy() {
+        this.removeAllEventListeners();
     }
 }

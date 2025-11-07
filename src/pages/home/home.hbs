@@ -2,16 +2,17 @@
   <div class="header">
     <div class="header__wrapper">
       <div class="header__column header__column--left">
-        <div class="menu">
-          {{> components/action-button/action-button type='menu' icon='menu'}}
-          <div class="menu__wrapper">
-            {{> components/context-menu/context-menu direction='top' items=mainMenu}}
+          {{> components/profile/header-profile open=isProfileOpen}}
+          <div class="menu">
+            {{> components/action-button/action-button type='menu' icon='menu'}}
+            <div class="menu__wrapper">
+              {{> components/context-menu/context-menu direction='top' items=mainMenu}}
+            </div>
           </div>
-        </div>
-        <div class="search">
-          <i class="search__icon"></i>
-          <input class="search__input" type="text" placeholder="Поиск">
-        </div>
+          <div class="search">
+            <i class="search__icon"></i>
+            <input class="search__input" type="text" placeholder="Поиск">
+          </div>
       </div>
       
       <div class="header__column header__column--middle">
@@ -19,23 +20,20 @@
       </div>
       
       <div class="header__column header__column--right">
-        <div class="user">
-          <div class="user__details">
-            <div class="user__name">{{user.name}}</div>
-          </div>
-          <div class="user__avatar">
-            {{> components/avatar/avatar placeholder=user.placeholder }}
-          </div>
-        </div>
-        <div class="sign-out" id="signOut">
-          <i class="sign-out__icon signOut-icon"></i>
-        </div>
       </div>
     </div>
   </div>
 
   <div class="content">
     <div class="chats-panel">
+      {{#if isProfileOpen}}
+        {{> components/profile/profile
+          placeholder=user.placeholder
+          name=user.name
+          username=user.username
+          phone_number=user.phone_number
+        }}
+      {{else}}
       {{#if hasChats}}
         <div class="chats-panel__list scrollable">
           {{#each chats}}
@@ -57,6 +55,7 @@
         <div class="chats-panel__empty">
           <p>У вас пока нет чатов</p>
         </div>
+      {{/if}}
       {{/if}}
     </div>
 
