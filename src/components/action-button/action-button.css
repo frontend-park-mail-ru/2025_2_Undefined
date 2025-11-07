@@ -7,7 +7,7 @@
     justify-content: center;
     cursor: pointer;
     transition: all 0.2s ease;
-    color: var(--color-text-primary);
+    color: currentColor;
 }
 
 .button--size-lg {
@@ -27,7 +27,7 @@
 
 .button--disabled:hover {
     background: var(--color-border);
-    color: var(--color-text-primary);
+    color: currentColor;
 }
 
 .action-button {
@@ -46,5 +46,5 @@
 
 .menu-button:hover {
     background: var(--color-border);
-    color: var(--color-text-primary);
+    color: currentColor;
 }
