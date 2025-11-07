@@ -24,7 +24,6 @@
     </div>
   </div>
 
-  <div class="content">
     <div class="chats-panel">
       {{#if isProfileOpen}}
         {{> components/profile/profile
@@ -33,36 +32,73 @@
           username=user.username
           phone_number=user.phone_number
         }}
-      {{else}}
-      {{#if hasChats}}
-        <div class="chats-panel__list scrollable">
-          {{#each chats}}
+      {{/if}}
+      {{#if activeTabChats}}
+        {{#if hasChats}}
+          <div class='items-list-scrollable'>
+            {{#each chats}}
             {{> components/chat/chat-template
             placeholder=this.placeholder
             name=this.name
             last-message-date=this.last_message.created_at_formatted
-            last-message=this.last_message.string
+            last-message=this.this.last_message.string
+            id=this.id
             }}
-          {{/each}}
-        </div>
-        <div class="chat-create">
-          {{> components/action-button/action-button type='action' icon='edit'}}
-          <div class="chat-create__menu">
-            {{> components/context-menu/context-menu direction='bottom' items=newChats}}
+            {{/each}}
+
           </div>
-        </div>
-      {{else}}
-        <div class="chats-panel__empty">
+        {{else}}
+        <div class="hasNoItems">
           <p>У вас пока нет чатов</p>
         </div>
+        {{/if}}
+        <div class="newChatButton">
+          {{> components/action-button/action-button icon='edit'}}  
+        </div>
       {{/if}}
+
+      
+      {{#if activeTabContacts}}
+        {{#if hasContacts}}
+          <div class='items-list-scrollable'>
+            {{#each contacts}}
+              {{> components/contact/contact
+              placeholder=contact.placeholder
+              name=contact.name
+              id=contact.id
+              }}
+            {{/each}}
+
+          </div>
+        {{else}}
+        <div class="hasNoItems">
+          <p>У вас пока нет контактов</p>
+        </div>
+        {{/if}}
+        <div class="newContactButton">
+          {{> components/add-contact-btn/add-contact-btn}}  
+        </div>
       {{/if}}
     </div>
 
-    <div class="chat-area">
-      <div class="chat-area__placeholder">
-        <p>Выберите чат для начала общения</p>
-      </div>
+    <!-- Средняя колонка - чат -->
+    <div class='content-middle-column'>
+      {{#if isChatOpen}}
+        <div class="content-middle-column-center">
+          <div class="content-middle-column-center-messages">
+            {{#each messages}}
+              {{> components/message/message 
+                text=this.text
+                time=this.created_at
+              }}
+            {{/each}}
+
+          </div>
+          <div class="content-middle-column-center-input">
+            {{> components/input-message/input-message id=chatId}}
+          </div>
+        </div>
+      {{/if}}
     </div>
   </div>
 </div>

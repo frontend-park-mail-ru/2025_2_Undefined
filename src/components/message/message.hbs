@@ -1,13 +1,31 @@
-<div class="message">
-    <div class="message__text">
-        lalala papapa kokoko
-    </div>
-    <div class="message__time">
-        12:12
-    </div>
-    {{#if isMine}}
-        <div class="message__read">
-
+{{!-- {{#if isMine}} --}}
+    <div class="myMessage message">
+        <div class="message-text">
+            {{ text }}
         </div>
-    {{/if}}
-</div>
+        <div class="message-time">
+            {{ time }}
+        </div>
+        {{!-- {{#if isMine}}
+            <div class="message-read">
+                <i ></i>
+            </div>
+        {{/if}} --}}
+    </div>
+{{!-- {{/if}}
+
+{{#if (not isMine)}}
+    <div class="notMyMessage message">
+        <div class="message-text">
+            {{ text }}
+        </div>
+        <div class="message-time">
+            {{ time }}
+        </div> --}}
+        {{!-- {{#if isMine}}
+            <div class="message-read">
+                <i ></i>
+            </div>
+        {{/if}} --}}
+    {{!-- </div>
+{{/if}} --}}
