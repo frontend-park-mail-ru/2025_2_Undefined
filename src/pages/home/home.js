@@ -203,10 +203,19 @@ export class Home {
         }
 
         if (this.#activeTab === 'contacts') {
-            startNewDialog();
+            startNewDialog(HomeData, this);
         } else if (this.#activeTab === 'chats') {
             openChat(HomeData, this);
         }
+
+        //Выделение активного чата
+        if(this.#isChatOpen) {
+            const chatElement = document.querySelector(`[data-chat-id="${this.#openChatId}"]`);
+            if (chatElement) {
+                chatElement.classList.add('active');
+            }
+        }
+
         inputMessage();
         this.initAddButton();
     }
@@ -221,7 +230,7 @@ export class Home {
         this.#openChatId = chatId;
         HomeData.chatId = chatId;
         this.#messages = messages;
-        HomeData.messages = messages;
+        HomeData.messages = messages.reverse();
 
         this.renderPage(HomeData);
     }
@@ -244,6 +253,7 @@ export class Home {
             HomeData.activeTabContacts = this.#activeTab === 'contacts';
             HomeData.isChatOpen = this.#isChatOpen;
             HomeData.chatId = this.#openChatId;
+            HomeData.messages = this.#messages;
 
             this.renderPage(HomeData);
 
@@ -261,12 +271,14 @@ export class Home {
 
             if (response.ok) {
                 const chats = await response.json();
-                HomeData.chats = this.processChats(chats);
+                HomeData.chats = this.processChats(chats).reverse();
                 HomeData.hasChats = this.processChats(chats).length > 0;
                 HomeData.activeTabChats = this.#activeTab === 'chats';
                 HomeData.activeTabContacts = this.#activeTab === 'contacts';
                 HomeData.isChatOpen = this.#isChatOpen;
                 HomeData.chatId = this.#openChatId;
+                HomeData.messages = this.#messages;
+                
                 
 
                 const signOutButton = this.#parent.querySelector('#signOut');
@@ -300,6 +312,7 @@ export class Home {
         const HomeData = {};
         this.#activeTab = 'chats';
         this.#isChatOpen = false;
+        this.#messages = {};
 
         try {
             const userData = await this.getCurrentUser();

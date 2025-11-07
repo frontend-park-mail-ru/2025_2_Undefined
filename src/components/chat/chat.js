@@ -47,16 +47,16 @@ export default new Auth();
 
 
 export async function openChat(HomeData, homeInstance) {
+    console.log('HomeData: ', HomeData)
     const chat = document.querySelectorAll('.chat-item');
     chat.forEach(item => {
         item.addEventListener('click',async () => {
             const clickedItem = event.target.closest('.chat-item');
             if(clickedItem) {
-                const chat = await(Chat.getChat(clickedItem.dataset.chatId));
-                const chatInfo = await chat.json();
-                console.log(chatInfo);
+                const chat = await Chat.getChat(clickedItem.dataset.chatId);
+                console.log('Инфа о нажатом чате',chat);
 
-                homeInstance.renderChat(HomeData, chatInfo.id, chatInfo.messages);
+                homeInstance.renderChat(HomeData, chat.id, chat.messages);
             }
         })
     })

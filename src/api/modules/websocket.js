@@ -1,4 +1,5 @@
 import {WEBSOCKET} from '@api/config.js';
+import {home} from '@/main.js'
 
 let globalWs = null;
 

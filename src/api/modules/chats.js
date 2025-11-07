@@ -33,21 +33,72 @@ class Chat {
     }
 
     async createChat(data) {
-        sendPOSTRequest ('/chats', {
-            members: data.members,
-            name: data.name,
-            type: 'dialog',
-        })
+        try {
+            const response = await sendPOSTRequest ('/chats', {
+                members: data.members,
+                name: data.name,
+                type: 'dialog',
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                const error = new Error(errorData.message || 'Ошибка получения чата');
+                error.errors = errorData.errors;
+                throw error;
+            }       
+            
+            const dataOfResponse = await response.json();
+            return dataOfResponse;
+        } catch(error) {
+            console.error('Ошибка при получении диалога' + error);
+        }
+
     }
 
     async getChat(chatId) {
-        return await fetch(SERVER_API + '/chats/' + chatId, {
+        try {
+            const response = await fetch(`${SERVER_API}chats/${chatId}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
             credentials: 'include',
         });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const error = new Error(errorData.message || 'Ошибка получения чата');
+            error.errors = errorData.errors;
+            throw error;
+        }
+
+        const data = await response.json();
+        return data;
+
+    } catch(error) {
+            console.error('Ошибка при получении диалога' + error);
+    }
+}
+
+    async getChatByContact(contactId) {
+const response = await fetch(`${SERVER_API}chats/dialog/${contactId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                const error = new Error(errorData.message || 'Ошибка получения чата');
+                error.errors = errorData.errors;
+                throw error;
+            }
+
+            const data = await response.json();
+            return data;
+
     }
 }
 
