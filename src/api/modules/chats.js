@@ -37,7 +37,7 @@ class Chat {
             const response = await sendPOSTRequest ('/chats', {
                 members: data.members,
                 name: data.name,
-                type: 'dialog',
+                type: data.type,
             })
 
             if (!response.ok) {

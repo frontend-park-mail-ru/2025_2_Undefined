@@ -269,3 +269,164 @@
     height: 69px;
     margin: 25px 0;
 }
+
+
+
+
+
+/* .header {
+    background-color: #0a121f;
+    border-bottom: 1px solid #2a3546;
+    flex-shrink: 0;
+}
+
+.header__wrapper {
+    display: flex;
+    align-items: center;
+    height: 80px;
+} */
+
+/* Колонки хедера */
+/* .header__column {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+.header__column--left {
+    width: 25%;
+    padding-right: 10px;
+}
+
+.header__column--middle {
+    width: 50%;
+    justify-content: center;
+}
+
+.header__column--right {
+    width: 25%;
+    justify-content: flex-end;
+    gap: 25px;
+} */
+
+/* Меню в хедере */
+/* .menu {
+    position: relative;
+    padding: 20px;
+    color: var(--color-text-secondary);
+}
+
+.menu__wrapper {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 5px;
+    z-index: 1000;
+} */
+
+/* Компонент меню (уже следует БЭМ) */
+/* .menu__container {
+    background: var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.menu__container--bottom {
+    transform: scale(0.95) translateY(10px);
+}
+
+.menu__container--top {
+    transform: scale(0.95) translateY(-10px);
+}
+
+.menu__container--visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+} */
+
+/* Поиск */
+/* .search {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid #363634;
+    border-radius: 8px;
+    background: #0c0f15;
+    padding: 15px;
+    color: #8c8c8c;
+    cursor: text;
+    flex: 1;
+    min-width: 0;
+    transition: border-color 0.2s ease;
+}
+
+.search--focused {
+    border-color: #667eea;
+}
+
+.search__icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+.search__input {
+    font-size: 16px;
+    outline: none;
+    border: none;
+    background: transparent;
+    width: 100%;
+    color: #ffffff;
+    flex: 1;
+}
+
+.search__input::placeholder {
+    color: #8c8c8c;
+} */
+
+/* Пользователь в хедере */
+/* .user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+}
+
+.user__details {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.user__name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffffff;
+    text-align: right;
+}
+
+.user__avatar {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+} */
+
+/* Кнопка выхода */
+/* .sign-out {
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 20px;
+}
+
+.sign-out__icon {
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 50px;
+    height: 50px;
+} */

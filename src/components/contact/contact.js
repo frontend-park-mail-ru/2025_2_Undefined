@@ -1,6 +1,5 @@
 import { app } from '@/main.js';
-import Chat from '@api/modules/chats.js'
-import { openChat } from '@components/chat/chat';
+import Chat from '@api/modules/chats.js';
 
 export async function startNewDialog(HomeData, homeInstance) {
     const contactItems = document.querySelectorAll('.contact-item');
@@ -21,24 +20,18 @@ export async function startNewDialog(HomeData, homeInstance) {
                             role: 'admin'
                         }
                     ],
-                    name: 'pew pew pew'
-                    
+                    name: 'pew pew pew',
+                    type: 'dialog',
                 };
 
-                console.log('Нажатие')
                 
                 let dialogWithContactId;
                 try{
                     dialogWithContactId = await Chat.getChatByContact(contactId);
-                    console.log('Это tryz')
                 } catch {
-                    console.log('begin')
-                    
                     dialogWithContactId = await Chat.createChat(contactData);
-                    console.log('Чат создан')
                 }
                 
-                console.log(dialogWithContactId);
                 const chat = await Chat.getChat(dialogWithContactId.id);
 
                 homeInstance.renderChat(HomeData, chat.id, chat.messages);

@@ -13,6 +13,7 @@ import { openChat } from '@/components/chat/chat';
 import { inputMessage } from '@/components/input-message/input-message';
 import { initWebSocket } from '@api/modules/websocket.js';
 
+import '@components/profile/profile.css'
 import '@/components/add-contact/add-contact.css';
 import '@/components/contact/contact.css';
 import '@/components/new-chat-menu/new-chat-menu.css';
@@ -164,11 +165,11 @@ export class Home {
         });
     }
 
-    initAddButton() {
+    initAddButton(homeData) {
         const buttonEl = this.#parent.querySelector('.action-button');
         if (buttonEl) {
             if (this.#activeTab === 'chats') {
-                this.#addButtonInstance = new startNewChat(buttonEl, this);
+                this.#addButtonInstance = new startNewChat(buttonEl, this, homeData);
             } else if (this.#activeTab === 'contacts') {
                 this.#addButtonInstance = new AddContactButton(buttonEl, this);
             }
@@ -180,20 +181,31 @@ export class Home {
         if (!HomeData.user) {
             HomeData.user = app.user;
         }
+
+        if (HomeData.messages && typeof HomeData.messages === 'object') {
+            for (let key in HomeData.messages) {
+                HomeData.messages[key].created_at = HomeData.messages[key].created_at.substring(11, 16);
+            }
+        }
+
         console.log(HomeData);
+
         this.#parent.innerHTML = HomeTemplate(HomeData);
 
         const signOutButton = this.#parent.querySelector('#signOut');
         const menuBtn = this.#parent.querySelector('#menuBtn');
         const backBtn = this.#parent.querySelector('#backBtn');
+        console.log(menuBtn);
         if (signOutButton) {
             signOutButton.addEventListener('click', () =>
                 this.signOut()
             );
         }
         if (menuBtn) {
+            console.log(1234)
             menuBtn.addEventListener('click', () => {
-                this.openMenu();
+                console.log(123)
+                this.openMenu(HomeData);
             })
         }
         if (backBtn) {
@@ -215,13 +227,23 @@ export class Home {
                 chatElement.classList.add('active');
             }
         }
+    
 
         inputMessage();
-        this.initAddButton();
+        this.initAddButton(HomeData);
     }
 
-    async openMenu() {
-        this.renderContacts();
+    async openMenu(HomeData) {
+        this.renderProfile(HomeData);
+    }
+
+    renderProfile(HomeData) {
+        this.#activeTab = 'profile';
+        HomeData.activeTabProfile = true;
+        HomeData.activeTabChats = this.#activeTab === 'chats';
+        HomeData.activeTabContacts = this.#activeTab === 'contacts';
+
+        this.renderPage(HomeData);
     }
 
     async renderChat(HomeData, chatId, messages) {
@@ -231,6 +253,11 @@ export class Home {
         HomeData.chatId = chatId;
         this.#messages = messages;
         HomeData.messages = messages.reverse();
+        console.log(HomeData.messages);
+        HomeData.messages.forEach(message => {
+            message.isMine = message.sender_id === app.user.id;
+            message.isSystem = message.type === "system";
+        });
 
         this.renderPage(HomeData);
     }
@@ -251,6 +278,7 @@ export class Home {
             HomeData.hasContacts = contacts.length > 0;
             HomeData.activeTabChats = this.#activeTab === 'chats';
             HomeData.activeTabContacts = this.#activeTab === 'contacts';
+            HomeData.activeTabProfile = this.#activeTab === 'profile;'
             HomeData.isChatOpen = this.#isChatOpen;
             HomeData.chatId = this.#openChatId;
             HomeData.messages = this.#messages;
@@ -275,25 +303,15 @@ export class Home {
                 HomeData.hasChats = this.processChats(chats).length > 0;
                 HomeData.activeTabChats = this.#activeTab === 'chats';
                 HomeData.activeTabContacts = this.#activeTab === 'contacts';
+                HomeData.activeTabProfile = this.#activeTab === 'profile;'
                 HomeData.isChatOpen = this.#isChatOpen;
                 HomeData.chatId = this.#openChatId;
                 HomeData.messages = this.#messages;
                 
                 
 
-                const signOutButton = this.#parent.querySelector('#signOut');
-                const menuBtn = this.#parent.querySelector('#menuBtn');
-                if (signOutButton) {
-                    signOutButton.addEventListener('click', () =>
-                        this.signOut()
-                    );
-                }
-                if (menuBtn) {
-                    menuBtn.addEventListener('click', () => {
-                        this.openMenu();
-                    })
-                }
-                console.log(HomeData)
+
+                console.log('HomeData', HomeData)
                 this.renderPage(HomeData);
             } else {
                 throw new Error(`Ошибка получения чатов: ${response.status}`);

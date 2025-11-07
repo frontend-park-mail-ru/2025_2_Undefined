@@ -1,31 +1,35 @@
-{{!-- {{#if isMine}} --}}
-    <div class="myMessage message">
-        <div class="message-text">
-            {{ text }}
-        </div>
-        <div class="message-time">
-            {{ time }}
-        </div>
-        {{!-- {{#if isMine}}
-            <div class="message-read">
-                <i ></i>
-            </div>
-        {{/if}} --}}
+{{#if isSystem}}
+    <div class="systemMessage">
+        {{text}}
     </div>
-{{!-- {{/if}}
-
-{{#if (not isMine)}}
-    <div class="notMyMessage message">
-        <div class="message-text">
-            {{ text }}
+{{else}}
+    {{#if isMine}}
+        <div class="myMessage message">
+            <div class="message-text">
+                {{ text }}
+            </div>
+            <div class="message-time">
+                {{ time }}
+            </div>
         </div>
-        <div class="message-time">
-            {{ time }}
-        </div> --}}
+    {{else}}
+        <div class="notMyMessage message">
+            <div class="message-text">
+                {{ text }}
+            </div>
+            <div class="message-time">
+                {{ time }}
+            </div>
+        </div>
+    {{/if}}
+{{/if}}
+
+
+
+
+
         {{!-- {{#if isMine}}
             <div class="message-read">
                 <i ></i>
             </div>
         {{/if}} --}}
-    {{!-- </div>
-{{/if}} --}}

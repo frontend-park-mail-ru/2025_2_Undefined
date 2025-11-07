@@ -1,5 +1,6 @@
 // import { SERVER_API } from '../config.js';
 import Chat from '@api/modules/chats.js'
+import {getPlaceholder} from '@components/avatar/avatar.js'
 
 class Auth {
     // Функция для получения токена из cookies
@@ -55,7 +56,8 @@ export async function openChat(HomeData, homeInstance) {
             if(clickedItem) {
                 const chat = await Chat.getChat(clickedItem.dataset.chatId);
                 console.log('Инфа о нажатом чате',chat);
-
+                HomeData.chatName = chat.name;
+                HomeData.placeholder = getPlaceholder(HomeData.chatName);
                 homeInstance.renderChat(HomeData, chat.id, chat.messages);
             }
         })
