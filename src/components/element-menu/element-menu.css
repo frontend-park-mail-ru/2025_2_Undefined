@@ -1,0 +1,22 @@
+.MenuItem {
+    height: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 12px 4px 4px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.MenuItem:hover {
+    background: var(--color-bg-primary);
+}
+
+.danger {
+    color: var(--color-status-error);
+}

@@ -1,0 +1,35 @@
+.Menu {
+    display: inline-block;
+}
+
+.menu-container {
+    background: var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+    
+    opacity: 0;
+    transition: all 0.2s ease;
+}
+
+.Menu--bottom .menu-container {
+    transform: scale(0.95) translateY(10px);
+}
+
+.Menu--bottom.show .menu-container {
+    transform: scale(1) translateY(0);
+}
+
+.Menu--top .menu-container {
+    transform: scale(0.95) translateY(-10px);
+}
+
+.Menu--top.show .menu-container {
+    transform: scale(1) translateY(0);
+}
+
+.Menu.show .menu-container {
+    opacity: 1;
+}

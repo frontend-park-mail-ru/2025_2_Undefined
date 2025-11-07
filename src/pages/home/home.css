@@ -10,72 +10,80 @@
 /* ===== ХЕДЕР ===== */
 .header {
     background-color: #0a121f;
-    width: 100%;
-    flex-shrink: 0;
     border-bottom: 1px solid #2a3546;
+    flex-shrink: 0;
 }
 
-.header-wrapper {
+.header__wrapper {
     display: flex;
     align-items: center;
     height: 80px;
 }
 
 /* Колонки хедера */
-.left-column,
-.middle-column,
-.right-column {
+.header__column {
     display: flex;
     align-items: center;
     box-sizing: border-box;
 }
 
-.left-column {
+.header__column--left {
     width: 25%;
     padding-right: 10px;
 }
 
-.middle-column {
+.header__column--middle {
     width: 50%;
     justify-content: center;
 }
 
-.right-column {
+.header__column--right {
     width: 25%;
     justify-content: flex-end;
-
     gap: 25px;
 }
 
-/* Кнопки и иконки */
-.menu-btn,
-.signOut-btn {
-    flex-shrink: 0;
-    cursor: pointer;
+/* Меню в хедере */
+.menu {
+    position: relative;
     padding: 20px;
+    color: var(--color-text-secondary);
 }
 
-.menu-icon,
-.search-icon,
-.signOut-icon {
-    background-repeat: no-repeat;
-    background-size: contain;
-    display: inline-block;
-    box-sizing: border-box;
+.menu__wrapper {
+    position: absolute;
+    top: calc(100% + 3px);
+    left: 5px;
+    z-index: 1000;
 }
 
-.menu-icon {
-    width: 40px;
-    height: 40px;
+/* Компонент меню (уже следует БЭМ) */
+.menu__container {
+    background: var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    padding: 8px;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+    opacity: 0;
+    transition: all 0.2s ease;
 }
 
-.signOut-icon {
-    width: 50px;
-    height: 50px;
+.menu__container--bottom {
+    transform: scale(0.95) translateY(10px);
+}
+
+.menu__container--top {
+    transform: scale(0.95) translateY(-10px);
+}
+
+.menu__container--visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
 }
 
 /* Поиск */
-.search-wrapper {
+.search {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -90,17 +98,17 @@
     transition: border-color 0.2s ease;
 }
 
-.search-wrapper:focus-within {
+.search--focused {
     border-color: #667eea;
 }
 
-.search-icon {
+.search__icon {
     width: 24px;
     height: 24px;
     flex-shrink: 0;
 }
 
-.search {
+.search__input {
     font-size: 16px;
     outline: none;
     border: none;
@@ -110,34 +118,51 @@
     flex: 1;
 }
 
-.search::placeholder {
+.search__input::placeholder {
     color: #8c8c8c;
 }
 
 /* Пользователь в хедере */
-.user-info {
+.user {
     display: flex;
     align-items: center;
     gap: 12px;
+    padding: 8px;
 }
 
-.user-details {
+.user__details {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
 }
 
-.user-name {
+.user__name {
     font-size: 16px;
     font-weight: 600;
     color: #ffffff;
     text-align: right;
 }
 
-.avatar {
+.user__avatar {
     width: 44px;
     height: 44px;
     flex-shrink: 0;
+}
+
+/* Кнопка выхода */
+.sign-out {
+    flex-shrink: 0;
+    cursor: pointer;
+    padding: 20px;
+}
+
+.sign-out__icon {
+    background-repeat: no-repeat;
+    background-size: contain;
+    display: inline-block;
+    box-sizing: border-box;
+    width: 50px;
+    height: 50px;
 }
 
 /* ===== ОСНОВНОЙ КОНТЕНТ ===== */
@@ -150,25 +175,44 @@
 }
 
 /* Левая колонка - список диалогов */
-.content-left-column {
+.chats-panel {
     position: relative;
     width: 25%;
     background-color: #0a121f;
     border-right: 1px solid #2a3546;
     display: flex;
     flex-direction: column;
-    min-height: 0;
 }
 
+.chats-panel__empty {
 .hasNoItems {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translateX(-50%) translateY(-50%);
+    transform: translate(-50%, -50%);
     color: #fff;
     font-size: 24px;
 }
 
+/* ИСПРАВЛЕНИЕ: Скроллбар появляется только при наведении */
+.chats-panel__list {
+    flex: 1;
+    overflow-y: hidden; /* Скрыт по умолчанию */
+    color: #ffffff;
+    min-height: 0;
+    padding: 8px 0 8px 8px;
+    box-sizing: border-box;
+    transition: overflow-y 0.3s ease;
+    scrollbar-gutter: stable;
+}
+
+/* Скроллбар появляется при наведении на панель чатов */
+.chats-panel:hover .chats-panel__list {
+    overflow-y: auto; /* Показываем скроллбар при наведении */
+}
+
+/* Кнопка создания чата */
+.chat-create {
 .newChatButton, .newContactButton {
     position: absolute;
     bottom: 16px;
@@ -178,24 +222,66 @@
     transform: translateY(10px); */
     transition: all 0.3s ease;
     z-index: 10;
+    color: var(--color-text-primary);
 }
 
+.chats-panel:hover .chat-create {
 .items-list-scrollable:hover .newChatButton {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
 }
 
+.chat-create--visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.chat-create__menu {
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    margin-bottom: 8px;
+    z-index: 20;
+}
+
+/* Средняя колонка - чат */
+.chat-area {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    background-color: #0f1623;
 .items-list-scrollable {
     flex: 1;
     overflow-y: hidden;
     color: #ffffff;
     min-height: 0;
-    padding: 8px 0px 8px 8px;
-    box-sizing: border-box;
-    transition: overflow-y 0.3s ease;
 }
 
+.chat-area__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #8c8c8c;
+    font-size: 16px;
+}
+
+/* ===== КОМПОНЕНТЫ ===== */
+
+/* Стилизация скроллбара */
+.scrollable {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3546 transparent;
+}
+
+.scrollable::-webkit-scrollbar {
+    width: 8px;
+}
+
+.scrollable::-webkit-scrollbar-track {
+    background: transparent;
 .items-list-scrollable:hover {
     overflow-y: auto;
 }
@@ -211,12 +297,25 @@
     margin: 4px 0;
 }
 
+.scrollable::-webkit-scrollbar-thumb {
+    background: #2a3546;
 .items-list-scrollable::-webkit-scrollbar-thumb {
     background: #2a3546; /* Цвет ползунка */
     border-radius: 4px;
     transition: background 0.3s ease;
 }
 
+.scrollable::-webkit-scrollbar-thumb:hover {
+    background: #364153;
+}
+
+/* Модификаторы состояний */
+.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.is-visible {
 .items-list-scrollable::-webkit-scrollbar-thumb:hover {
     background: #364153; /* Цвет ползунка при наведении */
 }
@@ -234,9 +333,10 @@
 .items-list-scrollable:hover {
     opacity: 1;
     visibility: visible;
-    transform: translateY();
 }
 
+.has-transition {
+    transition: all 0.3s ease;
 /* Правая колонка - чат */
 .content-middle-column {
     width: 75%;

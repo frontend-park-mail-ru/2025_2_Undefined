@@ -6,7 +6,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--color-text-primary);
     font-weight: 600;
-    font-size: 18px;
+    position: relative;
+    overflow: hidden;
+}
+
+.avatar-placeholder--with-image {
+    background: none;
+}
+
+.avatar-placeholder--with-image::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--avatar-image);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 50%;
+}
+
+.avatar-placeholder__text {
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    font-weight: inherit;
+    position: relative;
+    z-index: 1;
 }
