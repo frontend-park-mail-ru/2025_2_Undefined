@@ -81,7 +81,7 @@ class Chat {
 }
 
     async getChatByContact(contactId) {
-const response = await fetch(`${SERVER_API}chats/dialog/${contactId}`, {
+        const response = await fetch(`${SERVER_API}chats/dialog/${contactId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -98,6 +98,36 @@ const response = await fetch(`${SERVER_API}chats/dialog/${contactId}`, {
 
             const data = await response.json();
             return data;
+
+    }
+
+    async deleteChat(chatId) {
+
+        try{
+            const csrfToken = localStorage.getItem('csrf_token');
+            if (!csrfToken) {
+                console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');
+            }
+
+            const response = await fetch(`${SERVER_API}chats/${chatId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const error = new Error(errorData.message || 'Ошибка удаления чата');
+                    error.errors = errorData.errors;
+                    throw error;
+                }            
+        } catch (error) {
+            console.error(error);
+        }
+
 
     }
 }

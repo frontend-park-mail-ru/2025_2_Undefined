@@ -58,7 +58,7 @@ export async function openChat(HomeData, homeInstance) {
                 console.log('Инфа о нажатом чате',chat);
                 HomeData.chatName = chat.name;
                 HomeData.placeholder = getPlaceholder(HomeData.chatName);
-                homeInstance.renderChat(HomeData, chat.id, chat.messages);
+                homeInstance.renderChat(HomeData, chat.id, chat.messages, chat.type==='group');
             }
         })
     })

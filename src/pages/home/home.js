@@ -12,8 +12,10 @@ import { startNewDialog } from '@components/contact/contact';
 import { openChat } from '@/components/chat/chat';
 import { inputMessage } from '@/components/input-message/input-message';
 import { initWebSocket } from '@api/modules/websocket.js';
+import { renderMenuOfChat } from '@components/menu-of-chat/menu-of-chat.js';
 
-import '@components/profile/profile.css'
+import '@components/menu-of-chat/menu-of-chat.css';
+import '@components/profile/profile.css';
 import '@/components/add-contact/add-contact.css';
 import '@/components/contact/contact.css';
 import '@/components/new-chat-menu/new-chat-menu.css';
@@ -30,6 +32,7 @@ export class Home {
     #isChatOpen = 'false';
     #openChatId = '';
     #messages = {};
+    #isGroup = false;
 
     /**
      * Создает экземпляр класса Home
@@ -202,7 +205,6 @@ export class Home {
             );
         }
         if (menuBtn) {
-            console.log(1234)
             menuBtn.addEventListener('click', () => {
                 console.log(123)
                 this.openMenu(HomeData);
@@ -210,7 +212,7 @@ export class Home {
         }
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                this.renderChats();
+                this.renderChats(this.menuOfChat(HomeData));
             })
         }
 
@@ -218,6 +220,11 @@ export class Home {
             startNewDialog(HomeData, this);
         } else if (this.#activeTab === 'chats') {
             openChat(HomeData, this);
+        }
+
+        const nameOfChat = document.querySelector('#nameOfChat');
+        if (nameOfChat) {
+            nameOfChat.addEventListener("click", () => this.menuOfChat(HomeData))
         }
 
         //Выделение активного чата
@@ -233,6 +240,11 @@ export class Home {
         this.initAddButton(HomeData);
     }
 
+    async menuOfChat(HomeData) {
+        const parentElement = document.querySelector('.header');
+        renderMenuOfChat(parentElement, this, HomeData);
+    }
+
     async openMenu(HomeData) {
         this.renderProfile(HomeData);
     }
@@ -246,18 +258,22 @@ export class Home {
         this.renderPage(HomeData);
     }
 
-    async renderChat(HomeData, chatId, messages) {
+    async renderChat(HomeData, chatId, messages, isGroup) {
         this.#isChatOpen = true;
         HomeData.isChatOpen = true;
         this.#openChatId = chatId;
         HomeData.chatId = chatId;
         this.#messages = messages;
         HomeData.messages = messages.reverse();
+        this.#isGroup = isGroup;
+        HomeData.isGroup = isGroup;
         console.log(HomeData.messages);
         HomeData.messages.forEach(message => {
             message.isMine = message.sender_id === app.user.id;
             message.isSystem = message.type === "system";
         });
+        
+        
 
         this.renderPage(HomeData);
     }
