@@ -56,7 +56,7 @@ export async function openChat(HomeData, homeInstance) {
                 const chatInfo = await chat.json();
                 console.log(chatInfo);
 
-                homeInstance.renderChat(HomeData, chatInfo.id);
+                homeInstance.renderChat(HomeData, chatInfo.id, chatInfo.messages);
             }
         })
     })

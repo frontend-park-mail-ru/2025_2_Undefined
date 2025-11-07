@@ -1,22 +1,25 @@
 .message{
     background-color: #4D47C3;
     max-width: 480px;
-    min-width: 100px;
+    width: fit-content;
     min-height: 40px;
-    display: flex;
+    display: inline-flex;
     flex-direction: row;
     padding: 12px;
     border-radius: 8px;
     font-size: 20px;
+    color: white;
+    margin-top: 8px;
+    align-self: flex-end;
 }
 
-.message__text{
-    display: flex;
+.message-text{
+    display: inline-flex;
     align-items: center;
 }
 
-.message__time, .message__read{
-    display: flex;
+.message-time, .message-read{
+    display: inline-flex;
     align-items: end;
     font-size: 10px;
     margin: 0 2px;
