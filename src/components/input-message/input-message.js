@@ -38,5 +38,8 @@ async function sendMessage(text, chatId){
         chat_id: chatId
     }
 
-    ws.send(JSON.stringify(message))
+    console.log('Сообщение для отправки', message)
+
+    ws.send(JSON.stringify(message));
+    console.log('Сообщение отправлено через WebSocket');
 }

@@ -1,45 +1,38 @@
-<div class='home'>
-  <div class='header'>
-    <div class='header-wrapper'>
-      <div class='left-column'>
-        <div class='menu-btn'>
-          {{#if activeTabChats}}
-            <i class='menu-icon' id='menuBtn'></i>
-          {{/if}}
-          {{#if activeTabContacts}}
-            <i class='menu-icon' id='backBtn'></i>
-          {{/if}}
-        </div>
-        <div class='search-wrapper'>
-          <i class='search-icon'></i>
-          <input class='search' type='text' placeholder='Поиск' />
-        </div>
-      </div>
-      <div class='middle-column'>
-
-      </div>
-      <div class='right-column'>
-        <div class='user-header'>
-          <div class='user-info'>
-            <div class='user-details'>
-              <div class='user-name'>{{user.name}}</div>
-            </div>
-            <div class='avatar'>
-                      {{> components/avatar/avatar placeholder=user.placeholder }}
+<div class="home">
+  <div class="header">
+    <div class="header__wrapper">
+      <div class="header__column header__column--left">
+          {{> components/profile/header-profile open=isProfileOpen}}
+          <div class="menu">
+            {{> components/action-button/action-button type='menu' icon='menu'}}
+            <div class="menu__wrapper">
+              {{> components/context-menu/context-menu direction='top' items=mainMenu}}
             </div>
           </div>
-        </div>
-        <div class='signOut-btn' id="signOut">
-          <i class='signOut-icon'></i>
-        </div>
+          <div class="search">
+            <i class="search__icon"></i>
+            <input class="search__input" type="text" placeholder="Поиск">
+          </div>
+      </div>
+      
+      <div class="header__column header__column--middle">
+        <!-- Заголовок будет заполняться динамически -->
+      </div>
+      
+      <div class="header__column header__column--right">
       </div>
     </div>
   </div>
 
-  <div class='content'>
-    <!-- Левая колонка - список диалогов -->
-
-    <div class='content-left-column' id="contentLeftColumn">
+    <div class="chats-panel">
+      {{#if isProfileOpen}}
+        {{> components/profile/profile
+          placeholder=user.placeholder
+          name=user.name
+          username=user.username
+          phone_number=user.phone_number
+        }}
+      {{/if}}
       {{#if activeTabChats}}
         {{#if hasChats}}
           <div class='items-list-scrollable'>
@@ -108,3 +101,4 @@
       {{/if}}
     </div>
   </div>
+</div>

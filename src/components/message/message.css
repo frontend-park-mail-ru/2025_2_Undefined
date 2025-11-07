@@ -1,8 +1,8 @@
 .message{
-    background-color: #4D47C3;
+    background-color: var(--color-accent-primary);
     max-width: 480px;
     width: fit-content;
-    min-height: 40px;
+    height: fit-content;
     display: inline-flex;
     flex-direction: row;
     padding: 12px;
@@ -16,6 +16,8 @@
 .message-text{
     display: inline-flex;
     align-items: center;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 .message-time, .message-read{
@@ -23,4 +25,5 @@
     align-items: end;
     font-size: 10px;
     margin: 0 2px;
+    color: var(--color-text-secondary);
 }
