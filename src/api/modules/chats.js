@@ -130,6 +130,38 @@ class Chat {
 
 
     }
+
+
+    async addToGroup(members, chatId) {
+
+        try{
+            const csrfToken = localStorage.getItem('csrf_token');
+            if (!csrfToken) {
+                console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');
+            }
+
+            const response = await fetch(`${SERVER_API}chats/${chatId}/members`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(members),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    credentials: 'include',
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    const error = new Error(errorData.message || 'Ошибка удаления чата');
+                    error.errors = errorData.errors;
+                    throw error;
+                }            
+        } catch (error) {
+            console.error(error);
+        }
+
+
+    }
 }
 
 export default new Chat();

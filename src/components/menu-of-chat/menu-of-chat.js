@@ -1,9 +1,10 @@
 import menuOfChat from '@components/menu-of-chat/menu-of-chat.hbs';
 import Chat from '@api/modules/chats.js';
+import { renderAdduserDialog } from '@components/add-to-group/add-to-group';
 
 export async function renderMenuOfChat (parent, homeInstance, HomeData) {
     const html = menuOfChat({
-        isGroup: HomeData.isGroup === true // Строгая проверка на true
+        isGroup: HomeData.isGroup === true 
     });
     parent.insertAdjacentHTML('beforeend', html);
 
@@ -17,11 +18,7 @@ export async function renderMenuOfChat (parent, homeInstance, HomeData) {
     })
 
     addUser?.addEventListener('click', ()=>{
-        if (homeInstance && typeof homeInstance.renderContacts === 'function') {
-            homeInstance.renderContacts(); 
-        } else {
-            console.error("homeInstance или метод renderContacts не определен.");
-        }
+        renderAdduserDialog(document.body, homeInstance, HomeData);
     })
 
     const handleCancel = () => {
