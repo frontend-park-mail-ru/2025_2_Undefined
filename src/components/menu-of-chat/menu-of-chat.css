@@ -1,4 +1,4 @@
-.newChatMenu{
+.menuOfChat{
     position: absolute;
     /* top: 720px;
     right: 16px; */
@@ -14,7 +14,7 @@
     color: var(--color-text-secondary);
 }
 
-.newChatMenu-item {
+.menuOfChat-item {
     height: 32px;
     width: 100%;
     display: flex;
@@ -24,22 +24,26 @@
     box-sizing: border-box; 
 }
 
-.newChatMenu-item:hover{
+.menuOfChat-item:hover{
     background-color: var(--color-bg-primary);
     cursor: pointer;
 }
 
-.newChatMenu-item-icon i{
+.menuOfChat-item-icon i{
     width: 30px;
     height: 30px;
 }
 
-#newChatMenu{
+#menuOfChat{
     background-color: rgba(0, 0, 0, 0);
     width: 500px;
     height: 500px;
     position: absolute;
-    bottom: -120px;
-    right: -126px;
+    bottom: 580px;
+    right: 460px;
     z-index: 1000;
+}
+
+#deleteChat{
+    color: var(--color-status-error);
 }

@@ -44,6 +44,11 @@ export default defineConfig({
                 target: 'http://localhost:8080',
                 changeOrigin: true,
             },
+            '/api/v1/message/ws': {
+                target: 'ws://localhost:8080',
+                ws: true,
+                changeOrigin: true,
+            },
         },
     },
 });

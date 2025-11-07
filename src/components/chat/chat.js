@@ -1,4 +1,6 @@
-import { SERVER_API } from '../config.js';
+// import { SERVER_API } from '../config.js';
+import Chat from '@api/modules/chats.js'
+import {getPlaceholder} from '@components/avatar/avatar.js'
 
 class Auth {
     // Функция для получения токена из cookies
@@ -42,3 +44,23 @@ class Auth {
     }
 }
 export default new Auth();
+
+
+
+export async function openChat(HomeData, homeInstance) {
+    console.log('HomeData: ', HomeData)
+    const chat = document.querySelectorAll('.chat-item');
+    chat.forEach(item => {
+        item.addEventListener('click',async () => {
+            const clickedItem = event.target.closest('.chat-item');
+            if(clickedItem) {
+                const chat = await Chat.getChat(clickedItem.dataset.chatId);
+                console.log('Инфа о нажатом чате',chat);
+                HomeData.chatName = chat.name;
+                HomeData.placeholder = getPlaceholder(HomeData.chatName);
+                homeInstance.renderChat(HomeData, chat.id, chat.messages, chat.type==='group');
+            }
+        })
+    })
+}
+

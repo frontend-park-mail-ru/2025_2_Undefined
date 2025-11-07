@@ -4,7 +4,7 @@ import { Signup } from '@/pages/signup/signup';
 import { initRouter } from '@/router/router';
 
 const rootElement = document.getElementById('root');
-const home = new Home(rootElement);
+export const home = new Home(rootElement);
 const signup = new Signup(rootElement);
 const login = new Login(rootElement);
 
@@ -49,3 +49,4 @@ async function fetchUser() {
 }
 await fetchUser();
 initRouter(routes, 'root');
+

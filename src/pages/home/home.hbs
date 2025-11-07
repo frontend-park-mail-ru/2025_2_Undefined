@@ -16,7 +16,18 @@
         </div>
       </div>
       <div class='middle-column'>
-
+        {{#if isChatOpen}}
+          <div class='contact-item' id="nameOfChat"
+              data-contact-id='{{chatId}}'
+          >
+              <div class='contact-avatar'>
+                  {{> components/avatar/avatar placeholder=this.placeholder}}
+              </div>
+              <div class='contact-info'>
+                  <div class='contact-name'>{{chatName}}</div>
+              </div>
+          </div>
+        {{/if}}
       </div>
       <div class='right-column'>
         <div class='user-header'>
@@ -49,6 +60,7 @@
             name=this.name
             last-message-date=this.last_message.created_at_formatted
             last-message=this.this.last_message.string
+            id=this.id
             }}
             {{/each}}
 
@@ -68,10 +80,11 @@
         {{#if hasContacts}}
           <div class='items-list-scrollable'>
             {{#each contacts}}
-            {{> components/contact/contact
-            placeholder=contact.placeholder
-            name=contact.name
-            }}
+              {{> components/contact/contact
+              placeholder=contact.placeholder
+              name=contact.name
+              id=contact.id
+              }}
             {{/each}}
 
           </div>
@@ -84,10 +97,36 @@
           {{> components/add-contact-btn/add-contact-btn}}  
         </div>
       {{/if}}
+
+      {{#if activeTabProfile}}
+        {{> components/profile/profile
+          placeholder=user.placeholder
+          name=user.name
+          username=user.username
+          phone_number=user.phone_number
+        }}
+      {{/if}}
     </div>
 
     <!-- Средняя колонка - чат -->
     <div class='content-middle-column'>
+      {{#if isChatOpen}}
+        <div class="content-middle-column-center">
+          <div class="content-middle-column-center-messages">
+            {{#each messages}}
+              {{> components/message/message 
+                text=this.text
+                time=this.created_at
+                isMine=this.isMine
+                isSystem=this.isSystem
+              }}
+            {{/each}}
 
+          </div>
+          <div class="content-middle-column-center-input">
+            {{> components/input-message/input-message id=chatId}}
+          </div>
+        </div>
+      {{/if}}
     </div>
   </div>

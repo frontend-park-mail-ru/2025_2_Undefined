@@ -6,10 +6,12 @@ import { renderNewChatMenu } from '@/components/new-chat-menu/new-chat-menu.js';
 export class startNewChat {
     #element;
     #homeInstance;
+    #HomeData;
 
-    constructor(element, homeInstance) {
+    constructor(element, homeInstance, homeData) {
         this.#element = element;
         this.#homeInstance = homeInstance;
+        this.#HomeData = homeData;
 
         this.#element.addEventListener('click', this.handleClick);
     }
@@ -18,7 +20,7 @@ export class startNewChat {
         event.preventDefault();
         
         const parentElement = document.getElementById('contentLeftColumn');
-        renderNewChatMenu(parentElement, this.#homeInstance);
+        renderNewChatMenu(parentElement, this.#homeInstance, this.#HomeData);
     };
 
     destroy() {
