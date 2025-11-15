@@ -32,6 +32,12 @@ const mainMenu = [
         danger: false,
         action: 'contacts',
     },
+    {
+        text: 'Поддержка',
+        icon: 'compas',
+        danger: false,
+        action: 'support',
+    },
 ];
 
 const exit = [

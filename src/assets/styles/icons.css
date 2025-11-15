@@ -137,3 +137,8 @@
     -webkit-mask-image: url('../../assets/icons/at.svg');
     mask-image: url('../../assets/icons/at.svg');
 }
+
+.compas-icon {
+    -webkit-mask-image: url('../../assets/icons/compas_atl_light.svg');
+    mask-image: url('../../assets/icons/compas_atl_light.svg');
+}
