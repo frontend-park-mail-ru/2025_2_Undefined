@@ -2,8 +2,8 @@ import { app } from "../main";
 
 export class Router {
     constructor(routes, appElementId) {
-        this.routes = routes; 
-        this.appElementId = appElementId; 
+        this.routes = routes;
+        this.appElementId = appElementId;
     }
 
     navigateTo(path) {
@@ -13,35 +13,38 @@ export class Router {
 
     renderRoute(path) {
         const handler = this.routes[path];
-        if (handler) {                                                                  
+        if (handler) {
             handler();
         } else {
-            console.error('Route not found:', path);
-        }                                                                                                                                                                                                           
-    }                                           
+            console.error("Route not found:", path);
+        }
+    }
 
     handlePopState = () => {
         const path = window.location.pathname;
-        if (((!app.isAuth && (path === '/login' || path === '/signup'))) || (app.isAuth && !(path === '/login' || path === '/signup'))){
+
+        if ((!app.isAuth && (path === '/login' || path === '/signup')) ||
+            (app.isAuth && !(path === '/login' || path === '/signup'))) {
             this.renderRoute(path);
         } else {
             history.forward();
         }
-        
     };
 
     init() {
-        document.addEventListener('click', this.handleLinkClick);
         window.addEventListener('popstate', this.handlePopState);
-        if (app.isAuth){
-            this.navigateTo('/')
+
+        if (app.isAuth) {
+            this.navigateTo('/');
         } else {
-            if (window.location.pathname == '/login' || window.location.pathname == '/signup') {
-                this.navigateTo(window.location.pathname)
+            if (window.location.pathname === '/login' ||
+                window.location.pathname === '/signup') {
+
+                this.navigateTo(window.location.pathname);
+
             } else {
                 this.navigateTo('/login');
             }
-            
         }
     }
 }

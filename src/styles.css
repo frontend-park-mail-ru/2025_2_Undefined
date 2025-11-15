@@ -160,3 +160,15 @@ h1 {
     height: 30px;
     display: block;
 }
+
+
+.asddsa {
+    position: fixed;
+    right: 50%;
+    bottom: 50%;
+    background: white;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}

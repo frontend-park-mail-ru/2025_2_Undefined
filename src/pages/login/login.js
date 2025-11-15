@@ -1,4 +1,4 @@
-import { getRouter } from '@/router/router'
+import { getRouter } from '@/router/router';
 import { loginUser } from '@api/modules/auth';
 import loginTemplate from '@/templates/login/login.hbs';
 
