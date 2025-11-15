@@ -92,4 +92,5 @@
 
 body {
     font-family: 'Roboto', sans-serif;
+    background-color: var(--color-bg-primary);
 }
