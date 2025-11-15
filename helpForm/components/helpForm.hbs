@@ -1,0 +1,39 @@
+<div class="exit">
+    <i class='icon close-icon'></i>
+</div>
+
+<h1>Обращение</h1>
+<div>Расскажите о вашей проблеме, и мы поможем</div>
+<form action="" class="helpContainer__form">
+
+    <div>
+        <label for="selectProblem">С чем связано ваше обращение?</label>
+        <select name="selectProblem" id="selectProblem">
+            <option value="bug">Баг</option>
+            <option value="feature">Предложение</option>
+            <option value="claim">Продуктовая жалоба</option>
+            <option value="other">Другое </option>
+        </select>
+    </div>
+
+    <div>
+        <label for="selectProblem">Название обращения</label>
+        <input name="problemTitle" id="problemTitle" placeholder="Название"></input>
+    </div>
+
+    <div>
+        <label for="selectProblem">Напишите свое обращение</label>
+        <textarea name="problemDescription" id="problemDescription" cols="30" rows="10"
+            placeholder="Ваше обращение"></textarea>
+    </div>
+
+
+    <div class="helpContainer__footer">
+        <button type="button" class="btn btn-secondary" id="goBackBtn">
+            Назад
+        </button>
+        <button type="submit" class="btn btn-primary" id="createContactBtn">
+            Отправить
+        </button>
+    </div>
+</form>
