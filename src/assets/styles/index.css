@@ -1,4 +1,5 @@
 @import url('@/pages/home/home.css');
+@import url('@/pages/stats/stats.css');
 
 @import url('@components/chat/chat.css');
 @import url('@components/avatar/avatar.css');
