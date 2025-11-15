@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="./src/styles.css" />
         <link rel="stylesheet" href="./src/assets/styles/index.css" />
+        <link rel="stylesheet" href="./src/assets/styles/helpForm.css" />
         <link
             rel="icon"
             type="image/png"
@@ -15,6 +16,19 @@
     </head>
     <body>
         <div id="root"></div>
+
+        <button id="supportButton" class="support-button">
+            <i class="icon headphones-icon icon--size-lg"></i>
+        </button>
+        <div id="supportWindow" class="support-window">
+            <iframe
+                src="./helpForm/index.html"
+                id="supportIframe"
+                class="support-iframe"
+            ></iframe>
+        </div>
+
+        <script type="module" src="/src/helpFrame.js"></script>
         <script type="module" src="/src/main.js"></script>
     </body>
 </html>

@@ -61,11 +61,13 @@
 }
 
 .signOut-icon {
-    background-image: url('../../assets/icons/sign_out.svg');
+    -webkit-mask-image: url('../../assets/icons/sign_out.svg');
+    mask-image: url('../../assets/icons/sign_out.svg');
 }
 
 .search-icon {
-    background-image: url('../../assets/icons/search_light.svg');
+    -webkit-mask-image: url('../../assets/icons/search_light.svg');
+    mask-image: url('../../assets/icons/search_light.svg');
 }
 
 .read-icon {
@@ -138,7 +140,7 @@
     mask-image: url('../../assets/icons/at.svg');
 }
 
-.compas-icon {
-    -webkit-mask-image: url('../../assets/icons/compas_atl_light.svg');
-    mask-image: url('../../assets/icons/compas_atl_light.svg');
+.headphones-icon {
+    -webkit-mask-image: url('../../assets/icons/Headphones_fill_light.svg');
+    mask-image: url('../../assets/icons/Headphones_fill_light.svg');
 }
