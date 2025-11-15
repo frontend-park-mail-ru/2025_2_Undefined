@@ -1,0 +1,35 @@
+<div class="exit">
+    <i class='icon close-icon'></i>
+</div>
+
+<h1>Ваши обращения</h1>
+
+<button id='createAppeal' class="btn btn-primary">Создать обращение</button>
+
+<div class="appeals-list">
+    {{#each appeals}}
+    <div class='appeal-item' data-appeal-id='{{id}}'>
+        <div class='appeal-info'>
+            <div class="info-row">
+                <div class="appeal-title">
+                    <div class='appeal-name'>{{title}}</div>
+                </div>
+                <div class="separator"></div>
+            </div>
+            <div class="appeal-subtitle">
+                <div style="display: flex; gap: 60px; align-items: center;">
+                    <div class="appeal-category">{{category}}</div>
+                    <div class="appeal-status {{status}}">{{status}}</div>
+                </div>
+
+                <div class="appeal-text">
+                    {{#each messages}}
+                        {{this.text}} 
+                    {{/each}}
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    {{/each}}
+</div>

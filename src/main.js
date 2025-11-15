@@ -3,6 +3,7 @@ import { Login } from '@/pages/login/login';
 import { Signup } from '@/pages/signup/signup';
 import { Stats } from '@/pages/stats/stats';
 import { initRouter } from '@/router/router';
+import { sendPOSTRequest } from './api/modules/server';
 
 const rootElement = document.getElementById('root');
 export const home = new Home(rootElement);
@@ -18,6 +19,7 @@ export const app = {
     user: null,
     isAuth: false,
 };
+
 
 const routes = {
     '/': () => home.render(),
@@ -50,5 +52,6 @@ async function fetchUser() {
     app.isAuth = false;
     return false;
 }
+
 await fetchUser();
 initRouter(routes, 'root');
