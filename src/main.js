@@ -1,12 +1,14 @@
 import { Home } from '@/pages/home/home';
 import { Login } from '@/pages/login/login';
 import { Signup } from '@/pages/signup/signup';
+import { Stats } from '@/pages/stats/stats';
 import { initRouter } from '@/router/router';
 
 const rootElement = document.getElementById('root');
 export const home = new Home(rootElement);
 const signup = new Signup(rootElement);
 const login = new Login(rootElement);
+const stats = new Stats(rootElement);
 
 /**
  * Состояние приложения
@@ -21,6 +23,7 @@ const routes = {
     '/': () => home.render(),
     '/login': () => login.render(),
     '/signup': () => signup.render(),
+    '/stats': () => stats.render(),
 };
 
 /**
@@ -49,4 +52,3 @@ async function fetchUser() {
 }
 await fetchUser();
 initRouter(routes, 'root');
-

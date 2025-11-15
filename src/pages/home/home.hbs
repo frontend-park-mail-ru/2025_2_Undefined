@@ -1,145 +1,88 @@
-<div class='home'>
-  <div class='header'>
-    <div class='header-wrapper'>
-      <div class='left-column'>
-        <div class='menu-btn'>
-          {{#if activeTabChats}}
-            <i class='icon menu-icon' id='menuBtn'></i>
-          {{/if}}
-          {{#if activeTabContacts}}
-              <i class='icon menu-icon' id='backBtn'></i>
-          {{/if}}
-        </div>
-        {{#if activeTabChats}}
-        <div class='search-wrapper'>
-          <i class='search-icon'></i>
-          <input class='search' type='text' placeholder='Поиск' />
-        </div>
-        {{/if}}
-        {{#if activeTabContacts}}
-        <div class='search-wrapper'>
-          <i class='search-icon'></i>
-          <input class='search' type='text' placeholder='Поиск' />
-        </div>
-        {{/if}}
-        {{#if activeTabProfile}}
-          <button class="button action-button" dataAction='close-menu'>
-            <i class="icon leftArrow-icon"></i>
-          </button>
-        {{/if}} 
-      </div>
-      <div class='middle-column'>
-        {{#if isChatOpen}}
-          <div class='contact-item' id="nameOfChat"
-              data-contact-id='{{chatId}}'
-          >
-              <div class='contact-avatar'>
-                  {{> components/avatar/avatar placeholder=this.placeholder}}
-              </div>
-              <div class='contact-info'>
-                  <div class='contact-name'>{{chatName}}</div>
-              </div>
-          </div>
-        {{/if}}
-      </div>
-      <div class='right-column'>
-        <div class='user-header'>
-          <div class='user-info'>
-            <div class='user-details'>
-              <div class='user-name'>{{user.name}}</div>
-            </div>
-            <div class='avatar'>
-              {{> components/avatar/avatar placeholder=user.placeholder }}
-            </div>
+<div class="home">
+  <div class="header">
+    <div class="header__wrapper">
+      <div class="header__column header__column--left">
+        <div class="menu">
+            {{> components/action-button/action-button type='menu' icon='menu' action='menu'}}
+          <div class="menu__wrapper">
+            {{> components/context-menu/context-menu direction='top' items=mainMenu}}
           </div>
         </div>
-        <div class='signOut-btn' id="signOut">
-          <i class='signOut-icon'></i>
+        <div class="search">
+          <i class="icon search-icon"></i>
+          <input class="search__input" type="text" placeholder="Поиск">
         </div>
       </div>
-    </div>
-  </div>
-
-  <div class='content'>
-    <!-- Левая колонка - список диалогов -->
-
-    <div class='content-left-column' id="contentLeftColumn">
-      {{#if activeTabChats}}
-        {{#if hasChats}}
-          <div class='items-list-scrollable'>
-            {{#each chats}}
-            {{> components/chat/chat-template
-            placeholder=this.placeholder
-            name=this.name
-            last-message-date=this.last_message.created_at_formatted
-            last-message=this.this.last_message.string
-            id=this.id
-            }}
-            {{/each}}
-
-          </div>
-        {{else}}
-        <div class="hasNoItems">
-          <p>У вас пока нет чатов</p>
-        </div>
-        {{/if}}
-        <div class="newChatButton">
-          {{> components/action-button/action-button icon='edit'}}  
-        </div>
-      {{/if}}
-
       
-      {{#if activeTabContacts}}
-        {{#if hasContacts}}
-          <div class='items-list-scrollable'>
-            {{#each contacts}}
-              {{> components/contact/contact
-              placeholder=contact.placeholder
-              name=contact.name
-              id=contact.id
-              }}
-            {{/each}}
-
-          </div>
-        {{else}}
-        <div class="hasNoItems">
-          <p>У вас пока нет контактов</p>
-        </div>
-        {{/if}}
-        <div class="newContactButton">
-          {{> components/add-contact-btn/add-contact-btn}}  
-        </div>
-      {{/if}}
-
-      {{#if activeTabProfile}}
-        {{> components/profile/profile
-          placeholder=user.placeholder
-          name=user.name
-          username=user.username
-          phone_number=user.phone_number
-        }}
-      {{/if}}
-    </div>
-
-    <!-- Средняя колонка - чат -->
-    <div class='content-middle-column'>
-      {{#if isChatOpen}}
-        <div class="content-middle-column-center">
-          <div class="content-middle-column-center-messages">
-            {{#each messages}}
-              {{> components/message/message 
-                text=this.text
-                time=this.created_at
-                isMine=this.isMine
-                isSystem=this.isSystem
-              }}
-            {{/each}}
-
-          </div>
-          <div class="content-middle-column-center-input">
-            {{> components/input-message/input-message id=chatId}}
+      <div class="header__column header__column--middle">
+        <!-- Заголовок будет заполняться динамически -->
+      </div>
+      
+      <div class="header__column header__column--right">
+        <div class="user-header">
+          <div class="user-header__info">
+            <div class="user-header__details">
+              <div class="user-header__name">{{user.name}}</div>
+            </div>
+            <div class="user-header__avatar">
+              {{> components/avatar/avatar placeholder=user.placeholder}}
+            </div>
           </div>
         </div>
-      {{/if}}
+        <div class="header__sign-out" id="signOut">
+          <i class="icon icon--size-lg signOut-icon"></i>
+        </div>
+      </div>
     </div>
   </div>
+
+  <div class="content">
+    <div class="chats-panel">
+      {{#if isProfileOpen}}
+        <div class="profile">
+          <h2>Профиль</h2>
+          <div class="profile__info">
+            <div class="profile__avatar">{{user.placeholder}}</div>
+            <div class="profile__name">{{user.name}}</div>
+            <div class="profile__username">@{{user.username}}</div>
+            <div class="profile__phone">{{user.phone_number}}</div>
+          </div>
+        </div>
+      {{else}}
+        {{#if hasChats}}
+          <div class="chats-panel__list scrollable">
+            {{#each chats}}
+              <div class="chat-template" data-chat-id="{{id}}">
+                <div class="chat-template__avatar">{{placeholder}}</div>
+                <div class="chat-template__info">
+                  <div class="chat-template__name">{{name}}</div>
+                  <div class="chat-template__last-message">
+                    {{last_message.string}}
+                  </div>
+                </div>
+                <div class="chat-template__date">
+                  {{last_message.created_at_formatted}}
+                </div>
+              </div>
+            {{/each}}
+          </div>
+          <div class="chat-create">
+
+            {{> components/action-button/action-button type='action' icon='edit' action='create'}}
+            {{> components/context-menu/context-menu direction='bottom' items=newChats}} 
+          </div>
+        {{else}}
+          <div class="chats-panel__empty">
+            <p>У вас пока нет чатов</p>
+          </div>
+        {{/if}}
+      {{/if}}
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-area__placeholder">
+        <p>Выберите чат для начала общения</p>
+      </div>
+    </div>
+  </div>
+</div>
