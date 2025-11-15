@@ -38,6 +38,12 @@ const mainMenu = [
         danger: false,
         action: 'support',
     },
+    {
+        text: 'Выход',
+        icon: 'exit',
+        danger: true,
+        action: 'logout',
+    },
 ];
 
 const exit = [
