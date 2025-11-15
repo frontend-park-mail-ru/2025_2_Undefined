@@ -1,8 +1,162 @@
 <div class="stats">
-    {{> stats/header}}
-    
-    <div class="stats-content">
-        {{> stats/controls}}
-        {{> stats/grid}}
+    <div class="header">
+        <div class="header__wrapper">
+            <div class="header__column header__column--left">
+                <div class="menu">
+                    {{> components/action-button/action-button type='menu' icon='menu' action='menu'}}
+                    <div class="menu__wrapper">
+                        {{> components/context-menu/context-menu direction='top' items=mainMenu}}
+                    </div>
+                </div>
+                <div class="search">
+                    <i class="icon search-icon"></i>
+                    <input class="search__input" type="text" placeholder="Поиск">
+                </div>
+            </div>
+            
+            <div class="header__column header__column--middle">
+                <h1 style="color: #ffffff; margin: 0;">Статистика обращений</h1>
+            </div>
+            
+            <div class="header__column header__column--right">
+                <div class="user-header">
+                    <div class="user-header__info">
+                        <div class="user-header__details">
+                            <div class="user-header__name">{{user.name}}</div>
+                        </div>
+                        <div class="user-header__avatar">
+                            {{> components/avatar/avatar placeholder=user.placeholder}}
+                        </div>
+                    </div>
+                </div>
+                <div class="header__sign-out" id="signOut">
+                    <i class="icon icon--size-lg signOut-icon"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-content scrollable">
+        {{#if isLoading}}
+            <div class="stats-loading">
+                <p>Загрузка статистики...</p>
+            </div>
+        {{else if error}}
+            <div class="stats-error">
+                <p>Ошибка загрузки: {{error}}</p>
+            </div>
+        {{else}}
+            <!-- Фильтры -->
+            <div class="stats-filters">
+                <div class="stats-filter">
+                    <label class="stats-filter__label">Начальная дата</label>
+                    <input type="date" class="stats-filter__input" id="startDate">
+                </div>
+                <div class="stats-filter">
+                    <label class="stats-filter__label">Конечная дата</label>
+                    <input type="date" class="stats-filter__input" id="endDate">
+                </div>
+            </div>
+
+            <!-- Основные метрики -->
+            <div class="stats-cards">
+                <div class="stats-card">
+                    <div class="stats-card__title">Всего обращений</div>
+                    <div class="stats-card__value">{{stats.total.total_appeals}}</div>
+                    <div class="stats-card__description">За весь период</div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-card__title">Открытые обращения</div>
+                    <div class="stats-card__value">{{stats.total.open_appeals}}</div>
+                    <div class="stats-card__description">Требуют внимания</div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-card__title">В работе</div>
+                    <div class="stats-card__value">{{stats.total.in_work_appeals}}</div>
+                    <div class="stats-card__description">Обрабатываются</div>
+                </div>
+                
+                <div class="stats-card">
+                    <div class="stats-card__title">Закрытые</div>
+                    <div class="stats-card__value">{{stats.total.closed_appeals}}</div>
+                    <div class="stats-card__description">Завершённые обращения</div>
+                </div>
+            </div>
+
+            <!-- Статистика по категориям -->
+            <div class="stats-table">
+                <h3 class="stats-table__title">Статистика по категориям</h3>
+                <table class="stats-table__content">
+                    <thead class="stats-table__header">
+                        <tr>
+                            <th class="stats-table__header-cell">Категория</th>
+                            <th class="stats-table__header-cell">Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each stats.by_category}}
+                        <tr class="stats-table__row">
+                            <td class="stats-table__cell">{{@key}}</td>
+                            <td class="stats-table__cell">{{this}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Статистика по статусам -->
+            <div class="stats-table">
+                <h3 class="stats-table__title">Статистика по статусам</h3>
+                <table class="stats-table__content">
+                    <thead class="stats-table__header">
+                        <tr>
+                            <th class="stats-table__header-cell">Статус</th>
+                            <th class="stats-table__header-cell">Количество</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each stats.by_status}}
+                        <tr class="stats-table__row">
+                            <td class="stats-table__cell">{{@key}}</td>
+                            <td class="stats-table__cell">{{this}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Детальная статистика -->
+            <div class="stats-table">
+                <h3 class="stats-table__title">Детальная статистика</h3>
+                <table class="stats-table__content">
+                    <thead class="stats-table__header">
+                        <tr>
+                            <th class="stats-table__header-cell">Метрика</th>
+                            <th class="stats-table__header-cell">Значение</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="stats-table__row">
+                            <td class="stats-table__cell">Запросы функций</td>
+                            <td class="stats-table__cell">{{stats.total.feature_requests}}</td>
+                        </tr>
+                        <tr class="stats-table__row">
+                            <td class="stats-table__cell">Сообщения об ошибках</td>
+                            <td class="stats-table__cell">{{stats.total.bug_reports}}</td>
+                        </tr>
+                        <tr class="stats-table__row">
+                            <td class="stats-table__cell">Жалобы</td>
+                            <td class="stats-table__cell">{{stats.total.claims}}</td>
+                        </tr>
+                        <tr class="stats-table__row">
+                            <td class="stats-table__cell">Прочие</td>
+                            <td class="stats-table__cell">{{stats.total.others}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        {{/if}}
     </div>
 </div>
