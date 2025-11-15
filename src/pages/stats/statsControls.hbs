@@ -1,0 +1,40 @@
+<div class="stats-controls">
+    <div class="stats-filters">
+        <div class="filter-group">
+            <label class="filter-label">Период:</label>
+            <select class="filter-select" id="periodSelect">
+                <option value="today">Сегодня</option>
+                <option value="yesterday">Вчера</option>
+                <option value="week" selected>Неделя</option>
+                <option value="month">Месяц</option>
+                <option value="quarter">Квартал</option>
+                <option value="year">Год</option>
+                <option value="custom">Произвольный</option>
+            </select>
+        </div>
+        
+        <div class="filter-group custom-dates Hide" id="customDates">
+            <label class="filter-label">С:</label>
+            <input type="date" class="filter-date" id="dateFrom">
+            <label class="filter-label">По:</label>
+            <input type="date" class="filter-date" id="dateTo">
+        </div>
+        
+        <div class="filter-group">
+            <label class="filter-label">Тип обращения:</label>
+            <select class="filter-select" id="typeSelect">
+                <option value="all">Все</option>
+                <option value="question">Вопрос</option>
+                <option value="complaint">Жалоба</option>
+                <option value="suggestion">Предложение</option>
+                <option value="technical">Техническая</option>
+            </select>
+        </div>
+        
+        <button class="filter-apply" id="applyFilters">Применить</button>
+        <button class="filter-export" id="exportStats">
+            <i class="icon export-icon"></i>
+            Экспорт
+        </button>
+    </div>
+</div>

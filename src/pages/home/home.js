@@ -1,40 +1,23 @@
 import { logoutUser } from '@api/modules/auth.js';
 import Chat from '@api/modules/chats.js';
-import { getContacts } from '@api/modules/contacts';
 import User from '@api/modules/user.js';
-import { initWebSocket } from '@api/modules/websocket.js';
-import { AddContactButton } from '@components/add-contact-btn/add-contact-btn';
 import { getPlaceholder } from '@components/avatar/avatar.js';
-import { startNewDialog } from '@components/contact/contact';
-import { renderMenuOfChat } from '@components/menu-of-chat/menu-of-chat.js';
 
-import { startNewChat } from '@/components/action-button/action-button';
-import { openChat } from '@/components/chat/chat';
-import { inputMessage } from '@/components/input-message/input-message';
+import * as ContextMenu from '@/components/context-menu/context-menu.js';
 import { app } from '@/main.js';
 import HomeTemplate from '@/pages/home/home.hbs';
 import { getRouter } from '@/router/router';
-
-import '@components/menu-of-chat/menu-of-chat.css';
-import '@components/profile/profile.css';
-import '@/components/add-contact/add-contact.css';
-import '@/components/contact/contact.css';
-import '@/components/new-chat-menu/new-chat-menu.css';
-import '@/components/input-message/input-message.css';
-import '@components/message/message.css';
 
 /**
  * Класс для управления домашней страницей приложения
  */
 export class Home {
     #parent;
-    #addButtonInstance;
-    #activeTab = 'chats';
-    #isChatOpen = 'false';
-    #openChatId = '';
-    #messages = {};
-    #isGroup = false;
-    #isInitialized = false;
+    #isMainMenuOpen = false;
+    #isNewChatMenuOpen = false;
+    #isProfileOpen = false;
+    #currentUser = null;
+    #chats = [];
 
     /**
      * Создает экземпляр класса Home
@@ -42,67 +25,355 @@ export class Home {
      */
     constructor(parent) {
         this.#parent = parent;
+
+        // Привязываем контекст для обработчиков
+        this.globalClickHandler = this.globalClickHandler.bind(this);
+        this.globalKeydownHandler = this.globalKeydownHandler.bind(this);
     }
 
     /**
-     * Преобразует дату created_at в человеческий формат
-     * @param {string} dateString - Дата в строковом формате из API
-     * @returns {string} Дата в человеческом формате
+     * Переключает отображение главного меню
      */
-    formatMessageDate(dateString) {
-        const inputDate = new Date(dateString);
-        const now = new Date();
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    toggleMainMenu() {
+        this.#isMainMenuOpen = !this.#isMainMenuOpen;
+        this.updateMenuState();
+    }
 
-        // Приводим даты к локальному времени для корректного сравнения
-        const today = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate()
-        );
-        const inputDay = new Date(
-            inputDate.getFullYear(),
-            inputDate.getMonth(),
-            inputDate.getDate()
-        );
+    /**
+     * Переключает отображение меню создания нового чата
+     */
+    toggleNewChatMenu() {
+        this.#isNewChatMenuOpen = !this.#isNewChatMenuOpen;
+        this.updateNewChatMenuState();
+    }
 
-        // Разница в днях
-        const diffTime = inputDay - today;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-        // Начало текущей недели (понедельник)
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(
-            today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)
-        );
-
-        if (diffDays === 0) {
-            // Сегодня - возвращаем только время
-            return inputDate.toLocaleTimeString('ru-RU', {
-                timeZone,
-                hour: '2-digit',
-                minute: '2-digit',
-            });
-        } else if (diffDays >= -6 && diffDays < 0) {
-            // На этой неделе (но не сегодня) - возвращаем день недели
-            return inputDate.toLocaleDateString('ru-RU', {
-                timeZone,
-                weekday: 'short',
-            });
-        } else {
-            // Больше чем на этой неделе - возвращаем число и сокращенный месяц
-            return inputDate.toLocaleDateString('ru-RU', {
-                timeZone,
-                day: 'numeric',
-                month: 'short',
-            });
+    /**
+     * Обновляет состояние главного меню в DOM
+     */
+    updateMenuState() {
+        const menuWrapper = this.#parent.querySelector('.menu__wrapper');
+        if (menuWrapper) {
+            if (this.#isMainMenuOpen) {
+                menuWrapper.classList.add('show');
+            } else {
+                menuWrapper.classList.remove('show');
+            }
         }
     }
 
     /**
-     * Обрабатывает список чатов, преобразуя даты последних сообщений
-     * @param {Array} chats - Массив чатов из API
-     * @returns {Array} Обработанный массив чатов с человеческими датами
+     * Обновляет состояние меню создания чата в DOM
+     */
+    updateNewChatMenuState() {
+        const menuWrapper = this.#parent.querySelector('.chat-create__menu');
+        if (menuWrapper) {
+            if (this.#isNewChatMenuOpen) {
+                menuWrapper.classList.add('show');
+            } else {
+                menuWrapper.classList.remove('show');
+            }
+        }
+    }
+
+    /**
+     * Закрывает главное меню
+     */
+    closeMainMenu() {
+        this.#isMainMenuOpen = false;
+        this.updateMenuState();
+    }
+
+    /**
+     * Закрывает меню создания нового чата
+     */
+    closeNewChatMenu() {
+        this.#isNewChatMenuOpen = false;
+        this.updateNewChatMenuState();
+    }
+
+    /**
+     * Закрывает все открытые меню
+     */
+    closeAllMenus() {
+        this.closeMainMenu();
+        this.closeNewChatMenu();
+    }
+
+    /**
+     * Показывает кнопку создания нового чата
+     */
+    showNewChatButton() {
+        const newChatButton = this.#parent.querySelector('.chat-create');
+        if (newChatButton) {
+            newChatButton.classList.add('chat-create--visible');
+        }
+    }
+
+    /**
+     * Скрывает кнопку создания нового чата
+     */
+    hideNewChatButton() {
+        const newChatButton = this.#parent.querySelector('.chat-create');
+        if (newChatButton) {
+            newChatButton.classList.remove('chat-create--visible');
+        }
+        this.closeNewChatMenu();
+    }
+
+    /**
+     * Обрабатывает действия из меню
+     * @param {string} action - Действие из data-action
+     */
+    handleMenuAction(action) {
+        console.log('Menu action:', action);
+
+        const actionHandlers = {
+            profile: () => this.openProfile(),
+            contacts: () => this.handleContacts(),
+            logout: () => this.signOut(),
+            'create-channel': () => this.handleCreateChannel(),
+            'create-group': () => this.handleCreateGroup(),
+            'create-chat': () => this.handleCreateChat(),
+        };
+
+        const handler = actionHandlers[action];
+        if (handler) {
+            handler();
+            this.closeAllMenus();
+        } else {
+            console.warn('Unknown action:', action);
+        }
+    }
+
+    /**
+     * Обрабатывает открытие контактов
+     */
+    handleContacts() {
+        console.log('Open contacts');
+    }
+
+    /**
+     * Обрабатывает создание канала
+     */
+    handleCreateChannel() {
+        console.log('Create channel');
+    }
+
+    /**
+     * Обрабатывает создание группы
+     */
+    handleCreateGroup() {
+        console.log('Create group');
+    }
+
+    /**
+     * Обрабатывает создание чата
+     */
+    handleCreateChat() {
+        console.log('Create chat');
+    }
+
+    /**
+     * Открывает панель профиля
+     */
+    openProfile() {
+        console.log('Opening profile...');
+        this.#isProfileOpen = true;
+        this.render();
+        this.closeAllMenus();
+    }
+
+    /**
+     * Закрывает панель профиля
+     */
+    closeProfile() {
+        console.log('Closing profile...');
+        this.#isProfileOpen = false;
+        this.render();
+        this.closeAllMenus();
+    }
+
+    /**
+     * Обработчик глобальных кликов
+     */
+    globalClickHandler = (e) => {
+        if (this.#isMainMenuOpen || this.#isNewChatMenuOpen) {
+            const menuWrapper = this.#parent.querySelector('.menu__wrapper');
+            const newChatMenuWrapper =
+                this.#parent.querySelector('.chat-create__menu');
+            const menuButton = this.#parent.querySelector(
+                '.menu .action-button'
+            );
+            const newChatButton = this.#parent.querySelector(
+                '.chat-create .action-button'
+            );
+
+            const isClickOutsideMainMenu =
+                menuWrapper &&
+                !menuWrapper.contains(e.target) &&
+                !(menuButton && menuButton.contains(e.target));
+
+            const isClickOutsideNewChatMenu =
+                newChatMenuWrapper &&
+                !newChatMenuWrapper.contains(e.target) &&
+                !(newChatButton && newChatButton.contains(e.target));
+
+            if (isClickOutsideMainMenu && this.#isMainMenuOpen) {
+                this.closeMainMenu();
+            }
+
+            if (isClickOutsideNewChatMenu && this.#isNewChatMenuOpen) {
+                this.closeNewChatMenu();
+            }
+        }
+    };
+
+    /**
+     * Обработчик глобальных нажатий клавиш
+     */
+    globalKeydownHandler = (e) => {
+        if (e.key === 'Escape') {
+            if (this.#isMainMenuOpen || this.#isNewChatMenuOpen) {
+                this.closeAllMenus();
+            } else if (this.#isProfileOpen) {
+                this.closeProfile();
+            }
+        }
+    };
+
+    /**
+     * Инициализирует обработчики событий
+     */
+    initEventListeners() {
+        // Обработчик для главного меню
+        const menuButton = this.#parent.querySelector(
+            '.menu [data-action="menu"]'
+        );
+        if (menuButton) {
+            menuButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleMainMenu();
+            });
+        }
+
+        // Обработчик для создания нового чата
+        const newChatButton = this.#parent.querySelector(
+            '.chat-create [data-action="create"]'
+        );
+        if (newChatButton) {
+            newChatButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.toggleNewChatMenu();
+            });
+        }
+
+        // Обработчик для кнопки выхода
+        const signOutButton = this.#parent.querySelector('#signOut');
+        if (signOutButton) {
+            signOutButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.signOut();
+            });
+        }
+
+        // Обработчик для пунктов меню
+        this.#parent.addEventListener('click', (e) => {
+            const menuItem = e.target.closest('.MenuItem');
+            if (menuItem && menuItem.dataset.action) {
+                e.preventDefault();
+                e.stopPropagation();
+                this.handleMenuAction(menuItem.dataset.action);
+            }
+        });
+
+        // Показать/скрыть кнопку создания чата при наведении
+        const chatsList = this.#parent.querySelector('.chats-panel');
+        if (chatsList) {
+            chatsList.addEventListener('mouseenter', () =>
+                this.showNewChatButton()
+            );
+            chatsList.addEventListener('mouseleave', () =>
+                this.hideNewChatButton()
+            );
+        }
+
+        // Глобальные обработчики
+        document.addEventListener('click', this.globalClickHandler);
+        document.addEventListener('keydown', this.globalKeydownHandler);
+    }
+
+    /**
+     * Удаляет все обработчики событий
+     */
+    removeAllEventListeners() {
+        document.removeEventListener('click', this.globalClickHandler);
+        document.removeEventListener('keydown', this.globalKeydownHandler);
+    }
+
+    /**
+     * Восстанавливает состояния после рендера
+     */
+    restoreMenuStates() {
+        this.updateMenuState();
+        this.updateNewChatMenuState();
+
+        const chatsList = this.#parent.querySelector('.chats-panel');
+        if (chatsList && chatsList.matches(':hover')) {
+            this.showNewChatButton();
+        }
+    }
+
+    /**
+     * Преобразует дату created_at в человеческий формат
+     */
+    formatMessageDate(dateString) {
+        if (!dateString) {
+            return '';
+        }
+
+        try {
+            const inputDate = new Date(dateString);
+            const now = new Date();
+
+            const today = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
+            const inputDay = new Date(
+                inputDate.getFullYear(),
+                inputDate.getMonth(),
+                inputDate.getDate()
+            );
+
+            const diffTime = inputDay - today;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) {
+                return inputDate.toLocaleTimeString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                });
+            } else if (diffDays >= -6 && diffDays < 0) {
+                return inputDate.toLocaleDateString('ru-RU', {
+                    weekday: 'short',
+                });
+            } else {
+                return inputDate.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'short',
+                });
+            }
+        } catch (error) {
+            console.error('Error formatting date:', error);
+            return '';
+        }
+    }
+
+    /**
+     * Обрабатывает список чатов
      */
     processChats(chats) {
         if (!Array.isArray(chats)) {
@@ -111,51 +382,71 @@ export class Home {
         }
 
         return chats.map((chat) => {
-            // console.log(chat);
-            if (chat.last_message && chat.last_message.created_at) {
-                // Создаем копию, чтобы не мутировать исходные данные
+            try {
                 const processedChat = { ...chat };
-                processedChat.last_message = {
-                    ...chat.last_message,
-                    created_at_formatted: this.formatMessageDate(
-                        chat.last_message.created_at
-                    ),
-                    created_at_original: chat.last_message.created_at, // сохраняем оригинальную дату
-                };
-                processedChat.placeholder = getPlaceholder(chat.name);
+
+                if (chat.last_message && chat.last_message.created_at) {
+                    processedChat.last_message = {
+                        ...chat.last_message,
+                        created_at_formatted: this.formatMessageDate(
+                            chat.last_message.created_at
+                        ),
+                    };
+                } else {
+                    processedChat.last_message = {
+                        created_at_formatted: '',
+                        string: 'Нет сообщений',
+                        created_at: '',
+                    };
+                }
+
+                processedChat.placeholder = getPlaceholder(chat.name || 'Чат');
+                processedChat.name = chat.name || 'Без названия';
+                processedChat.id = chat.id || Date.now();
+
                 return processedChat;
+            } catch (error) {
+                console.error('Error processing chat:', error);
+                return {
+                    id: Date.now(),
+                    name: 'Ошибка загрузки',
+                    placeholder: '?',
+                    last_message: {
+                        created_at_formatted: '',
+                        string: 'Ошибка загрузки чата',
+                    },
+                };
             }
-            return chat;
         });
     }
 
     /**
      * Получает данные текущего пользователя
-     * @returns {Promise<Object>} Данные пользователя
      */
     async getCurrentUser() {
-        const userData = app.user;
-        if (userData) {
-            return userData;
-        } else {
-            try {
-                const response = await User.getMe();
+        if (this.#currentUser) {
+            return this.#currentUser;
+        }
 
-                if (response.ok) {
-                    const userData = await response.json();
-                    return userData;
-                } else {
-                    throw new Error(
-                        `Ошибка получения данных пользователя: ${response.status}`
-                    );
-                }
-            } catch (error) {
-                console.error(
-                    'Ошибка при получении данных пользователя:',
-                    error
+        try {
+            const response = await User.getMe();
+            if (response.ok) {
+                this.#currentUser = await response.json();
+                app.user = this.#currentUser;
+                return this.#currentUser;
+            } else {
+                throw new Error(
+                    `Ошибка получения данных пользователя: ${response.status}`
                 );
-                return null;
             }
+        } catch (error) {
+            console.error('Ошибка при получении данных пользователя:', error);
+            // Возвращаем fallback пользователя
+            return {
+                name: 'Пользователь',
+                username: 'user',
+                phone_number: '+7 XXX XXX XX XX',
+            };
         }
     }
 
@@ -163,291 +454,111 @@ export class Home {
      * Выполняет выход пользователя из системы
      */
     signOut() {
-        logoutUser().then(() => {
-            app.user = null;
-            const router = getRouter();
-            router.navigateTo('/login');
-        });
+        logoutUser()
+            .then(() => {
+                app.user = null;
+                this.#currentUser = null;
+                const router = getRouter();
+                router.navigateTo('/login');
+            })
+            .catch((error) => {
+                console.error('Ошибка при выходе:', error);
+            });
     }
 
     /**
-     * Инициализирует кнопку добавления (чат/контакт)
-     * @param {Object} homeData - Данные домашней страницы
+     * Подготавливает данные для рендеринга
      */
-    initAddButton(homeData) {
-        const buttonEl = this.#parent.querySelector('.action-button');
-        if (buttonEl && !buttonEl.hasAttribute('data-initialized')) {
-            // Помечаем кнопку как инициализированную
-            buttonEl.setAttribute('data-initialized', 'true');
+    async prepareRenderData() {
+        const homeData = {};
 
-            if (this.#activeTab === 'chats') {
-                this.#addButtonInstance = new startNewChat(
-                    buttonEl,
-                    this,
-                    homeData
-                );
-            } else if (this.#activeTab === 'contacts') {
-                this.#addButtonInstance = new AddContactButton(buttonEl, this);
-            }
-        }
-    }
-
-    /**
-     * Закрывает меню и возвращается к предыдущему состоянию
-     * @param {Object} HomeData - Данные для рендеринга
-     */
-    closeMenu(HomeData) {
-        // В зависимости от текущего активного таба, возвращаемся к соответствующему представлению
-        if (this.#activeTab === 'profile') {
-            // Если меню было открыто из чатов, возвращаемся к чатам
-            this.#activeTab = 'chats';
-            this.renderChats();
-        } else if (this.#activeTab === 'contacts') {
-            // Если меню было открыто из контактов, возвращаемся к контактам
-            this.renderContacts();
-        }
-        // Можно добавить дополнительную логику для других случаев
-    }
-
-    /**
-     * Очищает все обработчики событий
-     */
-    #cleanupEventListeners() {
-        // Здесь можно добавить логику очистки, если нужно
-        this.#addButtonInstance = null;
-    }
-
-    renderPage(HomeData) {
-        if (!HomeData.user) {
-            HomeData.user = app.user;
-        }
-
-        if (HomeData.messages && typeof HomeData.messages === 'object') {
-            for (const key in HomeData.messages) {
-                HomeData.messages[key].created_at = HomeData.messages[
-                    key
-                ].created_at.substring(11, 16);
-            }
-        }
-
-        console.log(HomeData);
-
-        // Очищаем перед рендером
-        this.#cleanupEventListeners();
-
-        this.#parent.innerHTML = HomeTemplate(HomeData);
-
-        const signOutButton = this.#parent.querySelector('#signOut');
-        const menuBtn = this.#parent.querySelector('#menuBtn');
-        const backBtn = this.#parent.querySelector('#backBtn');
-        const closeMenuButton = this.#parent.querySelector(
-            '[dataAction="close-menu"]'
-        );
-
-        console.log(menuBtn);
-
-        if (signOutButton) {
-            // Удаляем старые обработчики и добавляем новые
-            signOutButton.replaceWith(signOutButton.cloneNode(true));
-            const newSignOutButton = this.#parent.querySelector('#signOut');
-            newSignOutButton.addEventListener('click', () => this.signOut());
-        }
-
-        if (menuBtn) {
-            menuBtn.replaceWith(menuBtn.cloneNode(true));
-            const newMenuBtn = this.#parent.querySelector('#menuBtn');
-            newMenuBtn.addEventListener('click', () => {
-                console.log(123);
-                this.openMenu(HomeData);
-            });
-        }
-
-        if (backBtn) {
-            backBtn.replaceWith(backBtn.cloneNode(true));
-            const newBackBtn = this.#parent.querySelector('#backBtn');
-            newBackBtn.addEventListener('click', () => {
-                this.renderChats(this.menuOfChat(HomeData));
-            });
-        }
-
-        if (closeMenuButton) {
-            closeMenuButton.replaceWith(closeMenuButton.cloneNode(true));
-            const newCloseMenuButton = this.#parent.querySelector(
-                '[dataAction="close-menu"]'
-            );
-            newCloseMenuButton.addEventListener('click', () => {
-                this.closeMenu(HomeData);
-            });
-        }
-
-        if (this.#activeTab === 'contacts') {
-            startNewDialog(HomeData, this);
-        } else if (this.#activeTab === 'chats') {
-            openChat(HomeData, this);
-        }
-
-        const nameOfChat = document.querySelector('#nameOfChat');
-        if (nameOfChat) {
-            nameOfChat.replaceWith(nameOfChat.cloneNode(true));
-            const newNameOfChat = document.querySelector('#nameOfChat');
-            newNameOfChat.addEventListener('click', () =>
-                this.menuOfChat(HomeData)
-            );
-        }
-
-        //Выделение активного чата
-        if (this.#isChatOpen) {
-            const chatElement = document.querySelector(
-                `[data-chat-id="${this.#openChatId}"]`
-            );
-            if (chatElement) {
-                chatElement.classList.add('active');
-            }
-        }
-
-        inputMessage();
-        this.initAddButton(HomeData);
-    }
-
-    async menuOfChat(HomeData) {
-        const parentElement = document.querySelector('.header');
-        renderMenuOfChat(parentElement, this, HomeData);
-    }
-
-    async openMenu(HomeData) {
-        this.renderProfile(HomeData);
-    }
-
-    renderProfile(HomeData) {
-        this.#activeTab = 'profile';
-        HomeData.activeTabProfile = true;
-        HomeData.activeTabChats = this.#activeTab === 'chats';
-        HomeData.activeTabContacts = this.#activeTab === 'contacts';
-
-        this.renderPage(HomeData);
-    }
-
-    async renderChat(HomeData, chatId, messages, isGroup) {
-        this.#isChatOpen = true;
-        HomeData.isChatOpen = true;
-        this.#openChatId = chatId;
-        HomeData.chatId = chatId;
-        this.#messages = messages;
-        HomeData.messages = messages.reverse();
-        this.#isGroup = isGroup;
-        HomeData.isGroup = isGroup;
-        console.log(HomeData.messages);
-        HomeData.messages.forEach((message) => {
-            message.isMine = message.sender_id === app.user.id;
-            message.isSystem = message.type === 'system';
-        });
-
-        this.renderPage(HomeData);
-    }
-
-    async renderContacts() {
-        const HomeData = {};
-        HomeData.user = app.user;
-        this.#activeTab = 'contacts';
         try {
-            const contacts = await getContacts();
+            // Получаем данные пользователя
+            const userData = await this.getCurrentUser();
+            homeData.user = {
+                ...userData,
+                placeholder: getPlaceholder(
+                    userData.name || userData.username || 'Пользователь'
+                ),
+            };
 
-            HomeData.contacts = contacts.map((contactItem) => {
-                if (
-                    !contactItem.contact.placeholder &&
-                    contactItem.contact.name
-                ) {
-                    contactItem.contact.placeholder = getPlaceholder(
-                        contactItem.contact.name
-                    );
-                }
-                return contactItem;
-            });
-            HomeData.hasContacts = contacts.length > 0;
-            HomeData.activeTabChats = this.#activeTab === 'chats';
-            HomeData.activeTabContacts = this.#activeTab === 'contacts';
-            HomeData.activeTabProfile = this.#activeTab === 'profile;';
-            HomeData.isChatOpen = this.#isChatOpen;
-            HomeData.chatId = this.#openChatId;
-            HomeData.messages = this.#messages;
-
-            this.renderPage(HomeData);
-        } catch (error) {
-            console.error('Ошибка:', error);
-        }
-    }
-
-    async renderChats() {
-        const HomeData = {};
-        HomeData.user = app.user;
-        this.#activeTab = 'chats';
-        try {
+            // Загружаем чаты
             const response = await Chat.getChats();
-
-            if (response.ok) {
+            if (response && response.ok) {
                 const chats = await response.json();
-                HomeData.chats = this.processChats(chats).reverse();
-                HomeData.hasChats = this.processChats(chats).length > 0;
-                HomeData.activeTabChats = this.#activeTab === 'chats';
-                HomeData.activeTabContacts = this.#activeTab === 'contacts';
-                HomeData.activeTabProfile = this.#activeTab === 'profile;';
-                HomeData.isChatOpen = this.#isChatOpen;
-                HomeData.chatId = this.#openChatId;
-                HomeData.messages = this.#messages;
-
-                console.log('HomeData', HomeData);
-                this.renderPage(HomeData);
+                this.#chats = this.processChats(chats);
+                homeData.chats = this.#chats;
+                homeData.hasChats = this.#chats.length > 0;
             } else {
-                throw new Error(`Ошибка получения чатов: ${response.status}`);
+                homeData.chats = [];
+                homeData.hasChats = false;
             }
         } catch (error) {
-            console.error('Ошибка', error);
+            console.error('Ошибка при подготовке данных:', error);
+            homeData.chats = [];
+            homeData.hasChats = false;
         }
+
+        // Всегда добавляем эти данные
+        homeData.isProfileOpen = this.#isProfileOpen;
+        homeData.mainMenu = ContextMenu.mainMenu;
+        homeData.newChats = ContextMenu.newChats;
+
+        return homeData;
     }
 
     /**
-     * Рендерит домашнюю страницу с данными пользователя и чатами
-     * @returns {Promise<void>}
+     * Рендерит домашнюю страницу
      */
     async render() {
-        const HomeData = {};
-        this.#activeTab = 'chats';
-        this.#isChatOpen = false;
-        this.#messages = {};
-
         try {
-            const userData = await this.getCurrentUser();
-            if (userData) {
-                app.user = userData;
-                HomeData.user = userData;
+            console.log('Starting render...');
 
-                HomeData.user.placeholder = getPlaceholder(
-                    userData.name || userData.username
-                );
-            }
-            this.renderChats();
+            // Подготавливаем данные
+            const homeData = await this.prepareRenderData();
+            console.log('Render data prepared:', homeData);
 
-            initWebSocket();
-            window.addEventListener('beforeunload', () => {
-                if (ws && ws.readyState === WebSocket.OPEN) {
-                    ws.close(1000, 'Page reload');
-                }
-            });
+            // Удаляем старые обработчики
+            this.removeAllEventListeners();
+
+            // Рендерим шаблон
+            console.log('Rendering template...');
+            const html = HomeTemplate(homeData);
+            console.log('Template rendered successfully');
+
+            this.#parent.innerHTML = html;
+            console.log('DOM updated');
+
+            // Инициализируем новые обработчики
+            this.initEventListeners();
+            this.restoreMenuStates();
+
+            console.log('Render completed successfully');
         } catch (error) {
-            console.error('Ошибка при рендеринге домашней страницы:', error);
+            console.error('Критическая ошибка при рендеринге:', error);
 
-            HomeData.error = 'Не удалось загрузить данные';
-            this.#parent.innerHTML = HomeTemplate(HomeData);
+            // Показываем простой fallback
+            this.#parent.innerHTML = `
+                <div class="home">
+                    <div class="header">
+                        <div style="color: white; padding: 20px;">
+                            Ошибка загрузки. <button onclick="location.reload()">Перезагрузить</button>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <div style="color: white; padding: 20px;">
+                            ${error.message}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
-        this.initAddButton();
     }
 
     /**
-     * Создает массив чатов (заглушка для совместимости)
-     * @param {Array} chats - Массив чатов
-     * @returns {Array} Исходный массив чатов
+     * Очищает ресурсы
      */
-    createChats(chats) {
-        return chats || [];
+    destroy() {
+        this.removeAllEventListeners();
     }
 }

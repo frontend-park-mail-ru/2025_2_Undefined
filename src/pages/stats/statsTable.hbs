@@ -1,0 +1,34 @@
+<div class="stats-table-container">
+    <div class="table-header">
+        <h3 class="table-title">Детализация обращений</h3>
+        <div class="table-controls">
+            <select class="table-select" id="tableSort">
+                <option value="newest">Сначала новые</option>
+                <option value="oldest">Сначала старые</option>
+                <option value="type">По типу</option>
+                <option value="status">По статусу</option>
+            </select>
+        </div>
+    </div>
+    <div class="stats-table-wrapper scrollable">
+        <table class="stats-table" id="requestsTable">
+            <thead>
+                <tr>
+                    <th data-sort="id">ID</th>
+                    <th data-sort="created_at">Дата создания</th>
+                    <th data-sort="type">Тип</th>
+                    <th data-sort="theme">Тема</th>
+                    <th data-sort="status">Статус</th>
+                    <th data-sort="response_time">Время ответа</th>
+                    <th data-sort="operator">Оператор</th>
+                </tr>
+            </thead>
+            <tbody id="requestsTableBody">
+                <!-- Данные будут заполняться через JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <div class="table-pagination" id="tablePagination">
+        <!-- Пагинация будет генерироваться через JavaScript -->
+    </div>
+</div>

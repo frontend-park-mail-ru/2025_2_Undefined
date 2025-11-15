@@ -1,0 +1,478 @@
+/* ===== СТРАНИЦА СТАТИСТИКИ ===== */
+.stats {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-color: #101723;
+    overflow: hidden;
+    color: #ffffff; /* Белый цвет по умолчанию для всего текста */
+}
+
+.stats-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+/* Заголовок в хедере */
+.stats__title {
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* ===== КОНТРОЛЫ И ФИЛЬТРЫ ===== */
+.stats-controls {
+    background-color: #0a121f;
+    border: 1px solid #2a3546;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.stats-filters {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-label {
+    color: #8c8c8c; /* Серый цвет */
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.filter-select,
+.filter-date {
+    background-color: #0c0f15;
+    border: 1px solid #363634;
+    border-radius: 4px;
+    color: #ffffff; /* Белый цвет */
+    padding: 8px 12px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.filter-select:focus,
+.filter-date:focus {
+    border-color: #667eea;
+}
+
+.filter-select {
+    min-width: 120px;
+}
+
+.filter-date {
+    min-width: 140px;
+}
+
+.filter-apply,
+.filter-export {
+    background-color: #667eea;
+    border: none;
+    border-radius: 4px;
+    color: #ffffff; /* Белый цвет */
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-apply:hover,
+.filter-export:hover {
+    background-color: #5a6fd8;
+}
+
+.filter-export {
+    background-color: #2a3546;
+}
+
+.filter-export:hover {
+    background-color: #364153;
+}
+
+/* ===== КАРТОЧКИ СТАТИСТИКИ ===== */
+.stats-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background-color: #0a121f;
+    border: 1px solid #2a3546;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    border-color: #667eea;
+}
+
+.stat-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-card__icon--total {
+    background-color: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.stat-card__icon--resolved {
+    background-color: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+}
+
+.stat-card__icon--pending {
+    background-color: rgba(237, 137, 54, 0.1);
+    color: #ed8936;
+}
+
+.stat-card__icon--response {
+    background-color: rgba(159, 122, 234, 0.1);
+    color: #9f7aea;
+}
+
+.stat-card__content {
+    flex: 1;
+}
+
+.stat-card__value {
+    color: #ffffff; /* Белый цвет */
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-card__label {
+    color: #8c8c8c; /* Серый цвет */
+    font-size: 14px;
+}
+
+/* ===== ГРАФИКИ ===== */
+.stats-charts {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.chart-container {
+    background-color: #0a121f;
+    border: 1px solid #2a3546;
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.chart-title {
+    color: #ffffff; /* Белый цвет */
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 16px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.legend-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.legend-color--total {
+    background-color: #667eea;
+}
+
+.legend-color--resolved {
+    background-color: #48bb78;
+}
+
+.legend-text {
+    color: #8c8c8c; /* Серый цвет */
+    font-size: 12px;
+}
+
+.chart-wrapper {
+    height: 300px;
+    position: relative;
+}
+
+/* ===== ТАБЛИЦА ===== */
+.stats-table-container {
+    background-color: #0a121f;
+    border: 1px solid #2a3546;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #2a3546;
+}
+
+.table-title {
+    color: #ffffff; /* Белый цвет */
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+}
+
+.table-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.table-select {
+    background-color: #0c0f15;
+    border: 1px solid #363634;
+    border-radius: 4px;
+    color: #ffffff; /* Белый цвет */
+    padding: 6px 12px;
+    font-size: 14px;
+    outline: none;
+}
+
+.stats-table-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #ffffff; /* Белый цвет */
+}
+
+.stats-table th {
+    background-color: #0f1623;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 14px;
+    color: #8c8c8c; /* Серый цвет */
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.stats-table th:hover {
+    color: #ffffff; /* Белый цвет при наведении */
+}
+
+.stats-table th::after {
+    content: '↕';
+    margin-left: 4px;
+    opacity: 0.5;
+}
+
+.stats-table th[data-sort="asc"]::after {
+    content: '↑';
+    opacity: 1;
+}
+
+.stats-table th[data-sort="desc"]::after {
+    content: '↓';
+    opacity: 1;
+}
+
+.stats-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid #2a3546;
+    font-size: 14px;
+    color: #ffffff; /* Белый цвет */
+}
+
+.stats-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.stats-table tbody tr:hover {
+    background-color: rgba(42, 53, 70, 0.3);
+}
+
+/* Статусы обращений */
+.status-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-resolved {
+    background-color: rgba(72, 187, 120, 0.1);
+    color: #48bb78;
+}
+
+.status-pending {
+    background-color: rgba(237, 137, 54, 0.1);
+    color: #ed8936;
+}
+
+.status-new {
+    background-color: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.status-closed {
+    background-color: rgba(113, 128, 150, 0.1);
+    color: #718096;
+}
+
+/* Типы обращений */
+.type-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background-color: rgba(159, 122, 234, 0.1);
+    color: #9f7aea;
+}
+
+/* Пагинация */
+.table-pagination {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    border-top: 1px solid #2a3546;
+    color: #8c8c8c; /* Серый цвет */
+    font-size: 14px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-btn {
+    background-color: #0c0f15;
+    border: 1px solid #363634;
+    border-radius: 4px;
+    color: #ffffff; /* Белый цвет */
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    background-color: #667eea;
+    border-color: #667eea;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination-info {
+    margin: 0 16px;
+    color: #8c8c8c; /* Серый цвет */
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .stats-charts {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .stats-content {
+        padding: 16px;
+    }
+    
+    .stats-filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        justify-content: space-between;
+    }
+    
+    .stats-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+}
+
+/* Дополнительные утилиты для текста */
+.text-white {
+    color: #ffffff !important;
+}
+
+.text-gray {
+    color: #8c8c8c !important;
+}
+
+.text-muted {
+    color: #666666 !important;
+}
