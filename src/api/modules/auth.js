@@ -26,6 +26,8 @@ export async function signUpUser(userForm) {
             throw error;
         }
 
+        console.log('я зарегался')
+
         const data = await response.json();
         if (data.csrf_token) {
             localStorage.setItem('csrf_token', data.csrf_token);

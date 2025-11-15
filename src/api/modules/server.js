@@ -38,6 +38,8 @@ export async function sendPOSTRequest(path, data) {
                 errorData = { message: `HTTP error ${response.status}` };
             }
             const error = new Error(errorData.message || 'Ошибка');
+            console.log(errorData);
+            console.log("SERVER VALIDATION ERRORS:", errorData.errors);
             error.errors = errorData.errors;
             error.statusCode = response.status;
 

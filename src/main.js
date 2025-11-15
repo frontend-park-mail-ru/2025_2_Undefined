@@ -4,49 +4,52 @@ import { Signup } from '@/pages/signup/signup';
 import { initRouter } from '@/router/router';
 
 const rootElement = document.getElementById('root');
-export const home = new Home(rootElement);
-const signup = new Signup(rootElement);
-const login = new Login(rootElement);
 
-/**
- * Состояние приложения
- * @type {AppState}
- */
+export const home = new Home(rootElement);
+export const login = new Login(rootElement);
+export const signup = new Signup(rootElement);
+
 export const app = {
     user: null,
     isAuth: false,
 };
 
 const routes = {
-    '/': () => home.render(),
-    '/login': () => login.render(),
-    '/signup': () => signup.render(),
+    '/': () => {
+        console.log("Render /");
+        home.render();
+    },
+    '/login': () => {
+        console.log("Render /login");
+        login.render();
+    },
+    '/signup': () => {
+        console.log("Render /signup");
+        signup.render();
+    },
 };
 
-/**
- * Получает данные текущего пользователя
- * @returns {Promise<boolean>} Статус авторизации
- */
+
 async function fetchUser() {
     try {
         const response = await fetch('/api/v1/me', {
-            credentials: 'include',
+            credentials: "include"
         });
 
         if (response.ok) {
-            const userData = await response.json();
-            app.user = userData;
+            app.user = await response.json();
             app.isAuth = true;
             return true;
         }
-    } catch (error) {
-        console.error('Ошибка при получении пользователя:', error);
+    } catch (err) {
+        console.error("Ошибка получения пользователя:", err);
     }
 
     app.user = null;
     app.isAuth = false;
     return false;
 }
-await fetchUser();
-initRouter(routes, 'root');
 
+await fetchUser();
+
+initRouter(routes, 'root');

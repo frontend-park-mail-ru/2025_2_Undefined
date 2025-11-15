@@ -5,15 +5,20 @@ import handlebarsPlugin from '@yoichiro/vite-plugin-handlebars';
 
 export default defineConfig({
     // Root directory with source files
-     resolve: {
-    alias: {
-      '@': resolve(__dirname, './src'),
-      '@api': resolve(__dirname, './src/api'),
-      '@components': resolve(__dirname, './src/components'),
-      '@utils': resolve(__dirname, './src/utils'),
-      '@assets': resolve(__dirname, './src/assets')
-    }
-  },
+         resolve: {
+        alias: {
+            '@': resolve(__dirname, './src'),
+            '@api': resolve(__dirname, './src/api'),
+            '@components': resolve(__dirname, './src/components'),
+            '@utils': resolve(__dirname, './src/utils'),
+            '@assets': resolve(__dirname, './src/assets'),
+            // map React imports to the local my-react implementation
+            'minireact': resolve(__dirname, './lib/my-react/src/index.js'),
+            'minireact/jsx-runtime': resolve(__dirname, './lib/my-react/src/jsx-runtime.js'),
+            'minireact/jsx-dev-runtime': resolve(__dirname, './lib/my-react/src/jsx-runtime.js'),
+            'minireact-dom': resolve(__dirname, './lib/my-react/src/react-dom.js')
+        }
+    },
 
     // The directory for the build
     build: {
