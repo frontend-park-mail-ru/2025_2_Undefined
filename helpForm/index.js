@@ -33,7 +33,6 @@ async function fetchUser() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => { 
-    await fetchUser();
 
     const container = document.getElementById('helpContainer');
     if (!container) return;
@@ -96,6 +95,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             renderForm();
             return;
         }
+
+        if (e.target.closest('#exit')) {
+            e.preventDefault();
+            console.log('Закрытие окна поддержки через exit');
+            closeSupportWindow(); // Используем импортированную функцию
+            return;
+        }
     });
 
     container.addEventListener('submit', async (e) => { 
@@ -149,3 +155,4 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     await renderList();
 });
+await fetchUser();

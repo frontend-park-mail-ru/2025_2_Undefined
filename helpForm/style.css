@@ -1,5 +1,12 @@
 @import url('../src/assets/styles/index.css');
 
+.close-icon {
+    -webkit-mask-image: url('../src/assets/icons/close_round_light.svg');
+    mask-image: url('../src/assets/icons/close_round_light.svg');
+    width: 24px;
+    height: 24px;
+    display: block;
+}
 .helpContainer {
     display: flex;
     flex-direction: column;

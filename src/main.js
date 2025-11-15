@@ -1,7 +1,7 @@
 import { Home } from '@/pages/home/home';
 import { Login } from '@/pages/login/login';
 import { Signup } from '@/pages/signup/signup';
-import { Stats } from '@/pages/stats/stats';
+// import { Stats } from '@/pages/stats/stats';
 import { initRouter } from '@/router/router';
 import { sendPOSTRequest } from './api/modules/server';
 
@@ -9,7 +9,7 @@ const rootElement = document.getElementById('root');
 export const home = new Home(rootElement);
 const signup = new Signup(rootElement);
 const login = new Login(rootElement);
-const stats = new Stats(rootElement);
+// const stats = new Stats(rootElement);
 
 /**
  * Состояние приложения
