@@ -9,6 +9,9 @@
     justify-content: center;
     cursor: pointer;
     transition: background 0.2s ease;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
 }
 
 .button:hover {
