@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'minireact';
-import ReactDOM from 'minireact-dom';
 import { logoutUser } from '@api/modules/auth.js';
 import Chat from '@api/modules/chats.js';
 import { getContacts } from '@api/modules/contacts.js';
@@ -13,16 +12,22 @@ import { openChat } from '@/components/chat/chat';
 import { inputMessage } from '@/components/input-message/input-message';
 import { app } from '@/main.js';
 import { getRouter } from '@/router/router.js';
+import { ContextMenu } from '@components/context-menu/context-menu.jsx';
+import { ActionButton } from '@components/action-button/action-button.jsx'
 
 import '@components/menu-of-chat/menu-of-chat.css';
 import '@components/profile/profile.css';
-import '@/components/add-contact/add-contact.css';
-import '@/components/contact/contact.css';
-import '@/components/new-chat-menu/new-chat-menu.css';
-import '@/components/input-message/input-message.css';
+import '@components/add-contact/add-contact.css';
+import '@components/contact/contact.css';
+import '@components/new-chat-menu/new-chat-menu.css';
+import '@components/input-message/input-message.css';
 import '@components/message/message.css';
+import '@components/context-menu/context-menu.css';
 
 const Home = () => {
+  /* ===============================
+     СТЕЙТЫ
+  =============================== */
   const [activeTab, setActiveTab] = useState('chats');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [openChatId, setOpenChatId] = useState('');
@@ -30,9 +35,22 @@ const Home = () => {
   const [chats, setChats] = useState([]);
   const [contacts, setContacts] = useState([]);
   const [user, setUser] = useState(app.user || {});
+  const [search, setSearch] = useState('');
+
   const parentRef = useRef(null);
   const addButtonRef = useRef(null);
+  const menuButtonRef = useRef(null);
+  const menuNewChatButtonRef = useRef(null);
+  const menuRef = useRef(null);
 
+  const [menuState, setMenuState] = useState({
+    visible: false,
+    position: { x: 0, y: 0 }
+  })
+
+  /* ===============================
+     ПАРСИНГ ДАТЫ
+  =============================== */
   const formatMessageDate = (dateString) => {
     if (!dateString) return '';
     const inputDate = new Date(dateString);
@@ -50,17 +68,24 @@ const Home = () => {
     }
   };
 
+  /* ===============================
+     ПОДГОТОВКА ЧАТОВ
+  =============================== */
   const processChats = (chatsData) => {
     if (!Array.isArray(chatsData)) return [];
     return chatsData.map((chat) => ({
       ...chat,
-      last_message: chat.last_message && chat.last_message.created_at
-        ? { ...chat.last_message, created_at_formatted: formatMessageDate(chat.last_message.created_at) }
-        : null,
+      last_message:
+        chat.last_message && chat.last_message.created_at
+          ? { ...chat.last_message, created_at_formatted: formatMessageDate(chat.last_message.created_at) }
+          : null,
       placeholder: getPlaceholder(chat.name || ''),
     }));
   };
 
+  /* ===============================
+     ЗАПРОС ПОЛЬЗОВАТЕЛЯ, ЧАТОВ, КОНТАКТОВ
+  =============================== */
   const fetchUser = async () => {
     try {
       const response = await User.getMe();
@@ -94,9 +119,9 @@ const Home = () => {
       setContacts(
         Array.isArray(contactsData)
           ? contactsData.map((c) => ({
-              ...c.contact,
-              placeholder: c.contact?.placeholder || getPlaceholder(c.contact?.name || ''),
-            }))
+            ...c.contact,
+            placeholder: c.contact?.placeholder || getPlaceholder(c.contact?.name || ''),
+          }))
           : []
       );
     } catch (error) {
@@ -105,6 +130,9 @@ const Home = () => {
     }
   };
 
+  /* ===============================
+     ВЫХОД ИЗ АККАУНТА
+  =============================== */
   const signOut = () => {
     logoutUser().then(() => {
       app.user = null;
@@ -113,25 +141,63 @@ const Home = () => {
     });
   };
 
+  /* ===============================
+     ОТКРЫТЬ ЧАТ
+  =============================== */
   const openChatHandler = (chatId, chatMessages = [], isGroup = false) => {
     setOpenChatId(chatId);
     setIsChatOpen(true);
     setMessages(
       Array.isArray(chatMessages)
         ? chatMessages.reverse().map((m) => ({
-            ...m,
-            isMine: m.sender_id === app.user?.id,
-            isSystem: m.type === 'system',
-          }))
+          ...m,
+          isMine: m.sender_id === app.user?.id,
+          isSystem: m.type === 'system',
+        }))
         : []
     );
   };
 
+  /* ===============================
+     ИНИЦИАЛИЗАЦИЯ КНОПКИ ДОБАВЛЕНИЯ
+  =============================== */
   const initAddButton = () => {
     const btn = addButtonRef.current;
     if (!btn) return;
-    if (activeTab === 'chats') new startNewChat(btn, null, { chats: chats || [] });
-    else if (activeTab === 'contacts') new AddContactButton(btn, null);
+
+    if (activeTab === 'chats') {
+      new startNewChat(btn, null, { chats: chats || [] });
+    } else if (activeTab === 'contacts') {
+      new AddContactButton(btn, null);
+    }
+  };
+
+  /* ===============================
+     КОНТЕКСТНОЕ МЕНЮ
+  =============================== */
+  const handleMenuClick = () => {
+    if (!menuButtonRef.current) return;
+    const rect = menuButtonRef.current.getBoundingClientRect();
+    setMenuState(prev => ({
+      visible: !prev.visible,
+      position: { x: rect.left, y: rect.bottom }
+    }))
+
+  };
+
+  const handleClickOutside = (e) => {
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(e.target) &&
+      !menuButtonRef.current.contains(e.target) &&
+      !menuNewChatButtonRef.current.contains(e.target)
+    ) {
+      console.log(menuButtonRef.current.contains(e.target))
+      setMenuState({
+        visible: false,
+        position: { x: 0, y: 0 }
+      })
+    }
   };
 
   useEffect(() => {
@@ -139,101 +205,90 @@ const Home = () => {
     fetchChats();
     fetchContacts();
     initWebSocket();
+    initAddButton();
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  const handleNewChatMenuClick = () => {
+    console.log(menuNewChatButtonRef.current)
+    if (!menuNewChatButtonRef.current) return;
+    const rect = menuNewChatButtonRef.current.getBoundingClientRect();
+    console.log(rect.left)
+    setMenuState(prev => ({
+      visible: !prev.visible,
+      position: { x: rect.left, y: rect.bottom }
+    }))
+  };
+
+  /* ===============================
+     ЭЛЕМЕНТЫ МЕНЮ
+  =============================== */
+  const menuItems = [
+    { text: 'Профиль', icon: '/icons/trash.svg', danger: false, onClick: () => alert('Профиль') },
+    { text: 'Контакты', icon: '/icons/edit.svg', danger: false, onClick: () => alert('Контакты') },
+  ];
+
+  /* ===============================
+     JSX
+  =============================== */
   return (
-    <div className="home" ref={parentRef}>
-      <div className="header">
-        <div className="header-wrapper">
-          <div className="left-column">
-            {activeTab === 'chats' && <i className="icon menu-icon" id="menuBtn"></i>}
-            {activeTab === 'contacts' && <i className="icon menu-icon" id="backBtn"></i>}
-            <div className="search-wrapper">
-              <i className="search-icon"></i>
-              <input className="search" type="text" placeholder="Поиск" />
-            </div>
-            {activeTab === 'profile' && (
-              <button className="button action-button" dataAction="close-menu">
-                <i className="icon leftArrow-icon"></i>
-              </button>
-            )}
+    <div class="home">
+      <div class="sidebar-left">
+        <div class="sidebar-top">
+          {/* Бургер-кнопка */}
+          <div class="sidebar-menu-btn" ref={menuButtonRef} onClick={handleMenuClick}>
+            <i class="icon menu-icon" style="background-color: white;"></i>
           </div>
 
-          <div className="middle-column">
-            {isChatOpen && (
-              <div className="contact-item" id="nameOfChat" data-contact-id={openChatId || ''}>
-                <div className="contact-avatar">{null}</div>
-                <div className="contact-info">
-                  <div className="contact-name">Chat Name</div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="right-column">
-            <div className="user-header">
-              <div className="user-info">
-                <div className="user-details">
-                  <div className="user-name">{user?.name || ''}</div>
-                </div>
-                <div className="avatar">{null}</div>
-              </div>
-            </div>
-            <div className="signOut-btn" onClick={signOut}>
-              <i className="signOut-icon"></i>
-            </div>
+          {/* Поиск */}
+          <div class="search-wrapper">
+            <div class="search-icon" style={{ backgroundImage: "url('./icons/search.svg')" }}></div>
+            <input
+              class="search-input"
+              placeholder="Поиск…"
+              value={search}
+              onInput={(e) => setSearch(e.target.value)}
+            />
           </div>
         </div>
+
+        {/* Контекстное меню */}
+        {menuState.visible && (
+          <div
+            ref={menuRef}
+            style={{
+              position: 'fixed',
+              top: menuState.position.y + 'px',
+              left: menuState.position.x + 'px',
+              zIndex: 1000,
+            }}
+          >
+            <ContextMenu items={menuItems} />
+          </div>
+        )}
+
+        {/* Контент */}
+        <div class="sidebar-content">
+          <ActionButton
+            icon="edit"
+            onClick={handleNewChatMenuClick}
+            ref={menuNewChatButtonRef}
+          />
+
+        </div>
+
       </div>
 
-      <div className="content">
-        <div className="content-left-column">
-          {activeTab === 'chats' && (
-            <div>
-              {Array.isArray(chats) && chats.length > 0 ? (
-                <div className="items-list-scrollable">
-                  {chats.map((chat) => (
-                    <div key={chat.id || Math.random()} className="chat-item">{chat.name || 'Без названия'}</div>
-                  ))}
-                </div>
-              ) : (
-                <div className="hasNoItems"><p>У вас пока нет чатов</p></div>
-              )}
-              <div className="newChatButton" ref={addButtonRef}></div>
-            </div>
-          )}
-
-          {activeTab === 'contacts' && (
-            <div>
-              {Array.isArray(contacts) && contacts.length > 0 ? (
-                <div className="items-list-scrollable">
-                  {contacts.map((contact) => (
-                    <div key={contact.id || Math.random()} className="contact-item">{contact.name || 'Без имени'}</div>
-                  ))}
-                </div>
-              ) : (
-                <div className="hasNoItems"><p>У вас пока нет контактов</p></div>
-              )}
-              <div className="newContactButton" ref={addButtonRef}></div>
-            </div>
-          )}
-
-          {activeTab === 'profile' && <div className="profile">{null}</div>}
+      <div class="main-panel">
+        <div class="header">
+          <div class="header-wrapper">
+            <div>Заголовок</div>
+          </div>
         </div>
-
-        <div className="content-middle-column">
-          {isChatOpen && (
-            <div className="content-middle-column-center">
-              <div className="content-middle-column-center-messages">
-                {Array.isArray(messages) && messages.map((msg, index) => (
-                  <div key={index} className={`message ${msg.isMine ? 'mine' : ''}`}>
-                    {msg.text || ''}
-                  </div>
-                ))}
-              </div>
-              <div className="content-middle-column-center-input">{null}</div>
-            </div>
-          )}
+        <div class="content">
+          {/* Можно вставлять другие компоненты */}
         </div>
       </div>
     </div>

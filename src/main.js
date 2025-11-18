@@ -1,33 +1,33 @@
-import { Home } from '@/pages/home/home';
-import { Login } from '@/pages/login/login';
-import { Signup } from '@/pages/signup/signup';
-import { initRouter } from '@/router/router';
+// import { Home } from '@/pages/home/home';
+// import { Login } from '@/pages/login/login';
+// import { Signup } from '@/pages/signup/signup';
+// import { initRouter } from '@/router/router';
 
 const rootElement = document.getElementById('root');
 
-export const home = new Home(rootElement);
-export const login = new Login(rootElement);
-export const signup = new Signup(rootElement);
+// export const home = new Home(rootElement);
+// export const login = new Login(rootElement);
+// export const signup = new Signup(rootElement);
 
 export const app = {
     user: null,
     isAuth: false,
 };
 
-const routes = {
-    '/': () => {
-        console.log("Render /");
-        home.render();
-    },
-    '/login': () => {
-        console.log("Render /login");
-        login.render();
-    },
-    '/signup': () => {
-        console.log("Render /signup");
-        signup.render();
-    },
-};
+// const routes = {
+//     '/': () => {
+//         console.log("Render /");
+//         home.render();
+//     },
+//     '/login': () => {
+//         console.log("Render /login");
+//         login.render();
+//     },
+//     '/signup': () => {
+//         console.log("Render /signup");
+//         signup.render();
+//     },
+// };
 
 
 async function fetchUser() {
@@ -52,4 +52,4 @@ async function fetchUser() {
 
 await fetchUser();
 
-initRouter(routes, 'root');
+// initRouter(routes, 'root');

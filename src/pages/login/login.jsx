@@ -284,6 +284,7 @@ await fetchUser();
 if (app.isAuth) {
     console.log('Я зареган');
     ReactDOM.render(<Home />, document.getElementById('root'));
+    // logoutUser();
 } else {
     console.log('я не зареган');
 }

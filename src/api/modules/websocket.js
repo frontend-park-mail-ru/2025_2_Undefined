@@ -1,5 +1,4 @@
 import {WEBSOCKET} from '@api/config.js';
-import {home} from '@/main.js'
 
 let globalWs = null;
 
@@ -18,7 +17,6 @@ export function initWebSocket() {
         const message = JSON.parse(data);
     
         console.log('Прислали сообщение: ' + message.text);
-        // home.renderChats();
     }
 
     globalWs.onerror = (error) => console.log('WebSocket ошибка:', error);
