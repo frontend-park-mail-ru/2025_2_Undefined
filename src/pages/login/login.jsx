@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'minireact';
+import React, { useState, useRef, createRoot } from 'minireact';
 import ReactDOM from 'minireact-dom';
 import Signup from '../signup/signup.jsx';
 import { loginUser, logoutUser } from '@api/modules/auth';
@@ -250,7 +250,8 @@ const Login = () => {
     );
 };
 
-ReactDOM.render(<Login />, document.getElementById('root'));
+const container = document.getElementById('root');
+createRoot(<Login />, container);
 export default Login;
 
 export const app = {
@@ -283,7 +284,7 @@ await fetchUser();
 
 if (app.isAuth) {
     console.log('Я зареган');
-    ReactDOM.render(<Home />, document.getElementById('root'));
+    createRoot(<Home />, container);
     // logoutUser();
 } else {
     console.log('я не зареган');
