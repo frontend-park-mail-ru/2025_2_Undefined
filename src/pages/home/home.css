@@ -131,3 +131,9 @@
     background: var(--color-bg-secondary);
     color: var(--color-text-primary);
 }
+
+.actionButton-wrapper {
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+}

@@ -14,6 +14,7 @@ import { app } from '@/main.js';
 import { getRouter } from '@/router/router.js';
 import { ContextMenu } from '@components/context-menu/context-menu.jsx';
 import { ActionButton } from '@components/action-button/action-button.jsx'
+import { Button } from '@components/button/button.jsx';
 
 import '@components/menu-of-chat/menu-of-chat.css';
 import '@components/profile/profile.css';
@@ -23,6 +24,7 @@ import '@components/new-chat-menu/new-chat-menu.css';
 import '@components/input-message/input-message.css';
 import '@components/message/message.css';
 import '@components/context-menu/context-menu.css';
+import '@components/button/button.css';
 
 const Home = () => {
   /* ===============================
@@ -238,9 +240,14 @@ const Home = () => {
       <div class="sidebar-left">
         <div class="sidebar-top">
           {/* Бургер-кнопка */}
-          <div class="sidebar-menu-btn" ref={menuButtonRef} onClick={handleMenuClick}>
-            <i class="icon menu-icon" style="background-color: white;"></i>
-          </div>
+          <Button
+            variant="secondary"
+            icon="menu"
+            iconOnly
+            onClick={handleMenuClick}
+            ref={menuButtonRef}
+            className="sidebar-menu-btn"
+          />
 
           {/* Поиск */}
           <div class="search-wrapper">
@@ -271,14 +278,18 @@ const Home = () => {
 
         {/* Контент */}
         <div class="sidebar-content">
-          <ActionButton
-            icon="edit"
-            onClick={handleNewChatMenuClick}
-            ref={menuNewChatButtonRef}
-          />
-
+          {/* Можно вставлять другие компоненты */}
+          <div class='actionButton-wrapper'>
+            <Button
+              icon="edit"
+              iconOnly
+              onClick={handleNewChatMenuClick}
+              ref={menuNewChatButtonRef}
+              variant="primary"
+              size="lg"
+            />
+          </div>
         </div>
-
       </div>
 
       <div class="main-panel">
