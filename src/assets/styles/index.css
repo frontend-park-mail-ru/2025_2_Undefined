@@ -2,7 +2,7 @@
 
 @import url('@components/chat/chat.css');
 @import url('@components/avatar/avatar.css');
-@import url('@components/action-button/action-button.css');
+/* @import url('@components/action-button/action-button.css'); */
 
 @import url('@assets/styles/icons.css');
 
@@ -51,37 +51,138 @@
 }
 
 /* Dark theme */
-:root[data-theme='dark'] {
-    --color-bg-primary: #101723;
-    --color-bg-secondary: #0a121f;
-    --color-bg-tertiary: #2d3137;
+/* [data-theme='dark'] { */
+:root {
+    /* BRAND COLORS */
+    --color-primary: #3d8bff;
+    --color-primary-alt: #2970e6;
+    --color-success: #4caf50;
+    --color-error: #ef5350;
+    --color-warning: #ffd54f;
+    --color-info: #42a5f5;
 
-    --color-text-primary: #ffffff;
-    --color-text-secondary: #8c8c8c;
-    --color-text-tertiary: #d9d9d9;
+    /* BACKGROUNDS */
+    --color-bg-base: #0d1117;
+    --color-bg-secondary: #161b22;
+    --color-bg-sidebar: #1c2128;
+    --color-bg-input: #21262d;
+    --color-bg-message-inbound: #2a3038;
+    --color-bg-message-outbound: #1e4b89;
+    --color-border-default: #2d333b;
 
-    --color-accent-primary: #4d47c3;
-    --color-accent-primary-hover: #2d2987;
+    /* TEXT & ICONS */
+    --color-text-primary: #e6edf3;
+    --color-text-secondary: #8b949e;
+    --color-text-muted: #6e7681;
+    --color-text-on-primary: #ffffff;
+    --color-text-link: #3d8bff;
 
-    --color-status-error: #ff4444;
-    --color-border: #2d3137;
+    /* BUTTONS */
+    --color-button-primary-bg: #3d8bff;
+    --color-button-primary-hover: #2970e6;
+    --color-button-primary-active: #205bb5;
+    --color-button-primary-disabled: #384d6a;
+
+    --color-button-secondary-bg: #2a3038;
+    --color-button-secondary-hover: #323a44;
+    --color-button-secondary-active: #39424c;
+    --color-button-secondary-disabled: #2d333b;
+
+    /* INPUTS */
+    --color-input-bg: #21262d;
+    --color-input-border: #2d333b;
+    --color-input-hover: #262c34;
+    --color-input-active: #2a3038;
+    --color-input-disabled: #1a1f26;
+
+    /* STATES */
+    --color-state-hover: #1c2128;
+    --color-state-active: #2a3038;
+    --color-state-focus: #3d8bff;
+    --color-state-disabled: #2d333b;
+    --color-state-success-bg: #1e4620;
+    --color-state-error-bg: #4a1c1a;
+    --color-state-warning-bg: #4a3b0a;
+    --color-state-info-bg: #0c2d4a;
+
+    /* CHAT & MESSAGES */
+    --color-message-inbound-bg: #2a3038;
+    --color-message-outbound-bg: #1e4b89;
+    --color-message-timestamp: #8b949e;
+    --color-message-sent: #4caf50;
+    --color-badge-unread: #3d8bff;
+
+    /* CHAT LIST */
+    --color-chat-hover: #1f2630;
+    --color-chat-selected: #223045;
+    --color-chat-highlight: #223045;
 }
 
 /* Light theme */
 :root[data-theme='light'] {
-    --color-bg-primary: #ffffff;
-    --color-bg-secondary: #f5f5f5;
-    --color-bg-tertiary: #f8f9fa;
+    /* BRAND COLORS */
+    --color-primary: #2a7dfb;
+    --color-primary-alt: #1e5cd6;
+    --color-success: #3bb273;
+    --color-error: #e84545;
+    --color-warning: #f9a825;
+    --color-info: #1e88e5;
 
-    --color-text-primary: #101723;
-    --color-text-secondary: #666666;
-    --color-text-tertiary: #404040;
+    /* BACKGROUNDS */
+    --color-bg-base: #ffffff;
+    --color-bg-secondary: #f6f7f9;
+    --color-bg-sidebar: #eceff4;
+    --color-bg-input: #f2f3f5;
+    --color-bg-message-inbound: #e9eef6;
+    --color-bg-message-outbound: #d2e4ff;
+    --color-border-default: #dadfe6;
 
-    --color-accent-primary: #4d47c3;
-    --color-accent-primary-hover: #6c67ff;
+    /* TEXT & ICONS */
+    --color-text-primary: #1a1a1a;
+    --color-text-secondary: #5a5a5a;
+    --color-text-muted: #9aa0a6;
+    --color-text-on-primary: #ffffff;
+    --color-text-link: #2a7dfb;
 
-    --color-status-error: #dc2626;
-    --color-border: #e5e5e5;
+    /* BUTTONS */
+    --color-button-primary-bg: #2a7dfb;
+    --color-button-primary-hover: #1e5cd6;
+    --color-button-primary-active: #184ba8;
+    --color-button-primary-disabled: #b0c6f0;
+
+    --color-button-secondary-bg: #eceff4;
+    --color-button-secondary-hover: #e2e6eb;
+    --color-button-secondary-active: #d8dde3;
+    --color-button-secondary-disabled: #f2f4f7;
+
+    /* INPUTS */
+    --color-input-bg: #ffffff;
+    --color-input-border: #dadfe6;
+    --color-input-hover: #f8fafb;
+    --color-input-active: #e3e7ed;
+    --color-input-disabled: #f0f2f5;
+
+    /* STATES */
+    --color-state-hover: #f3f6fa;
+    --color-state-active: #e5ecf7;
+    --color-state-focus: #2a7dfb;
+    --color-state-disabled: #e0e0e0;
+    --color-state-success-bg: #e8f5e9;
+    --color-state-error-bg: #fdecea;
+    --color-state-warning-bg: #fff8e1;
+    --color-state-info-bg: #e3f2fd;
+
+    /* CHAT & MESSAGES */
+    --color-message-inbound-bg: #e9eef6;
+    --color-message-outbound-bg: #d2e4ff;
+    --color-message-timestamp: #9aa0a6;
+    --color-message-sent: #3bb273;
+    --color-badge-unread: #2a7dfb;
+
+    /* CHAT LIST */
+    --color-chat-hover: #f0f4fa;
+    --color-chat-selected: #d9e6ff;
+    --color-chat-highlight: #e3ebf7;
 }
 
 * {

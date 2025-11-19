@@ -61,11 +61,13 @@
 }
 
 .signOut-icon {
-    background-image: url('../../assets/icons/sign_out.svg');
+    -webkit-mask-image: url('../../assets/icons/sign_out.svg');
+    mask-image: url('../../assets/icons/sign_out.svg');
 }
 
 .search-icon {
-    background-image: url('../../assets/icons/search_light.svg');
+    -webkit-mask-image: url('../../assets/icons/search_light.svg');
+    mask-image: url('../../assets/icons/search_light.svg');
 }
 
 .read-icon {
