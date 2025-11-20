@@ -6,6 +6,7 @@ import { ChatItem } from '@components/chat/chat.jsx';
 import { ContactItem } from '@components/contact/contact.jsx';
 import { getPlaceholder } from '@components/avatar/avatar.js';
 import { Form } from '@components/form/form.jsx';
+import { getContacts } from '@api/modules/contacts';
 
 export function LeftSidebar() {
     /* ===============================
@@ -22,6 +23,8 @@ export function LeftSidebar() {
         visible: false,
         position: { x: 0, y: 0 }
     });
+
+    const [contacts, setContacts] = useState([]);
 
     const menuButtonRef = useRef(null);
     const menuNewChatButtonRef = useRef(null);
@@ -146,7 +149,40 @@ export function LeftSidebar() {
     =============================== */
     useEffect(() => {
         document.addEventListener('mousedown', handleClickOutside);
-        return () => document.removeEventListener('mousedown', handleClickOutside);
+
+        const loadContacts = async () => {
+            try {
+                console.log(contacts)
+                const rawContacts = await getContacts()
+
+                const isArray = Array.isArray(rawContacts);
+                const contactList = isArray ? rawContacts : [];
+
+                const processedContacts = contactList.map(item => {
+                    const name = item.contact.name || '';
+                    console.log(item.contact)
+                    return {
+                        ...item,
+                        contact: {
+                            ...item.contact,
+                            placeholder: item.contact.placeholder || getPlaceholder(name)
+                        }
+                    };
+
+                });
+
+                setContacts(processedContacts);
+                console.log(contacts)
+            } catch (error) {
+                console.error('Ошибка загрузки контактов:', error);
+            }
+        }
+        loadContacts();
+
+        // 3️⃣ Отписка от событий при размонтировании
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
     }, []);
 
     /* ===============================
@@ -239,13 +275,13 @@ export function LeftSidebar() {
                         />
                     ))}
 
-                    {activeTab === 'contacts' && dummyContacts.map(contact => (
+                    {activeTab === 'contacts' && contacts.map(contact => (
                         <ContactItem
-                            key={contact.id}
-                            id={contact.id}
-                            name={contact.name}
-                            placeholder={contact.placeholder}
-                            onClick={() => console.log("open contact:", contact.id)}
+                            key={contact.contact.id}
+                            id={contact.contact.id}
+                            name={contact.contact.name}
+                            placeholder={contact.contact.placeholder}
+                            onClick={() => console.log("open contact:", contact.contact.id)}
                         />
                     ))}
                 </div>
