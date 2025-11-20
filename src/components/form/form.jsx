@@ -50,51 +50,45 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
         }
     };
 
-    const formatPhoneNumber = (value) => {
-        let digits = value.replace(/\D/g, '');
+    const telValidate = (event) => {
+        let value = event.target.value.replace(/\D/g, '');
 
-        if (digits.startsWith('7') || digits.startsWith('8')) {
-            digits = digits.substring(1);
+        if (value.startsWith('7') || value.startsWith('8')) {
+            value = value.substring(1);
         }
 
-        let formatted = '+7 ';
-        if (digits.length >= 3) {
-            formatted += `(${digits.substring(0, 3)})`;
-            if (digits.length >= 6) {
-                formatted += ` ${digits.substring(3, 6)}`;
-                if (digits.length >= 8) {
-                    formatted += `-${digits.substring(6, 8)}`;
-                    if (digits.length >= 10) {
-                        formatted += `-${digits.substring(8, 10)}`;
-                    }
-                }
-            }
-        } else if (digits.length > 0) {
-            formatted += `(${digits}`;
+        let formattedValue = '+7 (';
+
+        if (value.length > 0) {
+            formattedValue += value.substring(0, 3);
+        }
+        if (value.length > 3) {
+            formattedValue += ') ' + value.substring(3, 6);
+        }
+        if (value.length > 6) {
+            formattedValue += '-' + value.substring(6, 8);
+        }
+        if (value.length > 8) {
+            formattedValue += '-' + value.substring(8, 10);
         }
 
-        return formatted;
-    };
-
-    const handleInput = (e) => {
-        const rawValue = e.target.value || '';
-        const formatted = formatPhoneNumber(rawValue);
-        setInputValue(formatted);
-        clearError();
-    };
-
+        event.target.value = formattedValue;
+    }
     const handleSubmit = async () => {
+
         if (isSubmitting) return;
 
-        const rawNumber = inputValue.replace(/\D/g, '');
+        const rawNumber = inputRef.current.value.replace(/\D/g, '');
         if (rawNumber.length < 10) {
             showError('Введите номер полностью');
             return;
         }
+        console.log(rawNumber)
 
         setIsSubmitting(true);
         try {
-            await addContact(`+7${rawNumber}`);
+
+            await addContact(`+${rawNumber}`);
             if (onSuccess) onSuccess();
             if (onClose) onClose();
         } catch (error) {
@@ -129,14 +123,14 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
             <div class="modal-dialog" role="dialog" aria-modal="true" aria-label={title || 'Modal'}>
                 <div class="modal-header">
                     <h2>{title}</h2>
-                    <button
+                    {/* <button
                         type="button"
                         class="modal-close-btn"
                         onClick={handleClose}
                         aria-label="Закрыть"
                     >
                         &times;
-                    </button>
+                    </button> */}
                 </div>
 
                 <div class="modal-body">
@@ -148,7 +142,7 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
                             placeholder={placeholderForInput}
                             maxlength="50"
                             value={inputValue}
-                            onInput={handleInput}
+                            onInput={telValidate}
                             onKeyDown={handleKeyDown}
                         />
                         {error && (
@@ -165,12 +159,12 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
                         class="btn btn-secondary"
                         disabled={isSubmitting}
                         ref={cancelBtnRef}
-                        onClick={() => console.log(123)}
+                        onClick={handleClose}
                     >
                         Отменить
                     </div>
 
-                    <button
+                    <div
                         type="button"
                         class={`btn btn-primary ${isSubmitting ? 'loading' : ''}`}
                         disabled={isSubmitting}
@@ -178,7 +172,7 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
                         onClick={handleSubmit}
                     >
                         {isSubmitting ? 'Добавление...' : action}
-                    </button>
+                    </div>
                 </div>
             </div>
         </div>
