@@ -7,106 +7,130 @@ import { ContactItem } from '@components/contact/contact.jsx';
 import { getPlaceholder } from '@components/avatar/avatar.js';
 import { Form } from '@components/form/form.jsx';
 import { getContacts } from '@api/modules/contacts';
+import { Profile } from '@components/profile/profile.jsx';
+import { EditProfile } from '@components/profile/editProfile.jsx';
+import Chat from '@api/modules/chats.js';
+
+import { app, fetchUser } from '@/main.js'
 
 export function LeftSidebar() {
+    console.log(app)
     /* ===============================
        СТЕЙТЫ КОМПОНЕНТА
     =============================== */
     const [activeTab, setActiveTab] = useState('chats');
     const [search, setSearch] = useState('');
     const [isFormOpen, setIsFormOpen] = useState(false);
-    const [menuState, setMenuState] = useState({
-        visible: false,
-        position: { x: 0, y: 0 }
-    });
-    const [newChatMenuState, setNewChatMenuState] = useState({
-        visible: false,
-        position: { x: 0, y: 0 }
+
+    // Объединенный стейт для всех меню
+    const [menus, setMenus] = useState({
+        main: { visible: false, position: { x: 0, y: 0 } },
+        newChat: { visible: false, position: { x: 0, y: 0 } },
+        exit: { visible: false, position: { x: 0, y: 0 } }
     });
 
     const [contacts, setContacts] = useState([]);
+    const [chats, setChats] = useState([]);
 
     const menuButtonRef = useRef(null);
     const menuNewChatButtonRef = useRef(null);
     const menuRef = useRef(null);
     const menuNewChatRef = useRef(null);
+    const exitMenuButtonRef = useRef(null);
+    const exitMenuRef = useRef(null);
 
-    /* ===============================
-       ЗАГЛУШКИ ДАННЫХ
-    =============================== */
-    const dummyChats = [
-        {
-            id: "1",
-            name: "Telegram Team",
-            placeholder: "TT",
-            isChannel: false,
-            isGroup: false,
-            last_message: { text: "Welcome to Telegram!" },
-            lastMessageDate: "10:12",
-            messageStatus: "sent",
-            unreadCount: 0,
-            muted: false,
-        },
-        {
-            id: "2",
-            name: "Рабочий чат",
-            placeholder: "РЧ",
-            isChannel: false,
-            isGroup: true,
-            last_message: { text: "Планёрка переносится" },
-            lastMessageDate: "09:01",
-            messageStatus: "read",
-            unreadCount: 3,
-            muted: false,
-        },
-        {
-            id: "3",
-            name: "Новости",
-            placeholder: "Н",
-            isChannel: true,
-            isGroup: false,
-            last_message: { text: "🔥 Срочная новость!" },
-            lastMessageDate: "08:40",
-            messageStatus: "",
-            unreadCount: 1,
-            muted: true,
-        },
-    ];
-
-    const dummyContacts = [
-        { id: 1, name: "Алексей Петров", lastMessage: "Привет! Как дела?" },
-        { id: 2, name: "Мария Иванова", lastMessage: "Окей, договорились." },
-        { id: 3, name: "Дмитрий Соколов", lastMessage: "Список я отправил." },
-        { id: 4, name: "Ольга Сергеева", lastMessage: "Нужно обсудить." },
-        { id: 5, name: "Илья Смирнов", lastMessage: "Спасибо!" },
-        { id: 6, name: "Екатерина Волкова", lastMessage: "Когда встретимся?" },
-        { id: 7, name: "Антон Кузнецов", lastMessage: "Понял." },
-        { id: 8, name: "Виктория Крылова", lastMessage: "Буду позже." },
-        { id: 9, name: "Роман Федоров", lastMessage: "Супер!" },
-        { id: 10, name: "Алина Лебедева", lastMessage: "Да, конечно." },
-    ].map(contact => ({
-        ...contact,
-        placeholder: getPlaceholder(contact.name)
-    }));
+    // Используем ref для хранения актуального состояния меню
+    const menusRef = useRef(menus);
+    menusRef.current = menus;
 
     /* ===============================
        ЭЛЕМЕНТЫ МЕНЮ
     =============================== */
     const menuItems = [
-        { text: 'Профиль', icon: '/icons/trash.svg', danger: false, onClick: () => alert('Профиль') },
         {
-            text: 'Контакты', icon: '/icons/edit.svg', danger: false, onClick: () => {
+            text: 'Профиль',
+            icon: '/icons/trash.svg',
+            danger: false,
+            onClick: () => {
+                setActiveTab('profile');
+                setMenus({
+                    main: { visible: false, position: { x: 0, y: 0 } },
+                    newChat: { visible: false, position: { x: 0, y: 0 } },
+                    exit: { visible: false, position: { x: 0, y: 0 } }
+                });
+            }
+        },
+        {
+            text: 'Контакты',
+            icon: '/icons/edit.svg',
+            danger: false,
+            onClick: () => {
                 setActiveTab('contacts');
-                setMenuState({ visible: false, position: { x: 0, y: 0 } });
-                setNewChatMenuState({ visible: false, position: { x: 0, y: 0 } });
+                setMenus({
+                    main: { visible: false, position: { x: 0, y: 0 } },
+                    newChat: { visible: false, position: { x: 0, y: 0 } },
+                    exit: { visible: false, position: { x: 0, y: 0 } }
+                });
             }
         },
     ];
 
     const newChatMenuItems = [
-        { text: 'Создать канал', icon: '/icons/trash.svg', danger: false, onClick: () => alert('Канал') },
-        { text: 'Создать группу', icon: '/icons/edit.svg', danger: false, onClick: () => alert('Группа') },
-        { text: 'Начать чат', icon: '/icons/edit.svg', danger: false, onClick: () => alert('Чат') },
+        {
+            text: 'Создать канал',
+            icon: '/icons/trash.svg',
+            danger: false,
+            onClick: () => {
+                alert('Канал');
+                setMenus({
+                    main: { visible: false, position: { x: 0, y: 0 } },
+                    newChat: { visible: false, position: { x: 0, y: 0 } },
+                    exit: { visible: false, position: { x: 0, y: 0 } }
+                });
+            }
+        },
+        {
+            text: 'Создать группу',
+            icon: '/icons/edit.svg',
+            danger: false,
+            onClick: () => {
+                alert('Группа');
+                setMenus({
+                    main: { visible: false, position: { x: 0, y: 0 } },
+                    newChat: { visible: false, position: { x: 0, y: 0 } },
+                    exit: { visible: false, position: { x: 0, y: 0 } }
+                });
+            }
+        },
+        {
+            text: 'Начать чат',
+            icon: '/icons/edit.svg',
+            danger: false,
+            onClick: () => {
+                alert('Чат');
+                setMenus({
+                    main: { visible: false, position: { x: 0, y: 0 } },
+                    newChat: { visible: false, position: { x: 0, y: 0 } },
+                    exit: { visible: false, position: { x: 0, y: 0 } }
+                });
+            }
+        },
+    ];
+
+    const exitMenuItems = [
+        {
+            text: 'Выйти',
+            icon: '/icons/trash.svg',
+            danger: true,
+            onClick: () => {
+                alert('Выход');
+                setMenus({
+                    main: { visible: false, position: { x: 0, y: 0 } },
+                    newChat: { visible: false, position: { x: 0, y: 0 } },
+                    exit: { visible: false, position: { x: 0, y: 0 } }
+                });
+            }
+        }
     ];
 
     /* ===============================
@@ -115,75 +139,145 @@ export function LeftSidebar() {
     const handleMenuClick = () => {
         if (!menuButtonRef.current) return;
         const rect = menuButtonRef.current.getBoundingClientRect();
-        setMenuState(prev => ({
-            visible: !prev.visible,
-            position: { x: rect.left, y: rect.bottom }
+        setMenus(prev => ({
+            main: {
+                visible: !prev.main.visible,
+                position: { x: rect.left, y: rect.bottom }
+            },
+            newChat: { visible: false, position: { x: 0, y: 0 } },
+            exit: { visible: false, position: { x: 0, y: 0 } }
         }));
     };
 
     const handleNewChatMenuClick = () => {
         if (!menuNewChatButtonRef.current) return;
         const rect = menuNewChatButtonRef.current.getBoundingClientRect();
-        setNewChatMenuState(prev => ({
-            visible: !prev.visible,
-            position: { x: rect.left, y: rect.top }
+        setMenus(prev => ({
+            main: { visible: false, position: { x: 0, y: 0 } },
+            newChat: {
+                visible: !prev.newChat.visible,
+                position: { x: rect.left, y: rect.top }
+            },
+            exit: { visible: false, position: { x: 0, y: 0 } }
         }));
     };
 
-    const handleClickOutside = (e) => {
-        if (
-            menuRef.current &&
-            menuNewChatRef.current &&
-            !menuRef.current.contains(e.target) &&
-            !menuNewChatRef.current.contains(e.target) &&
-            !menuButtonRef.current.contains(e.target) &&
-            !menuNewChatButtonRef.current.contains(e.target)
-        ) {
-            setMenuState({ visible: false, position: { x: 0, y: 0 } });
-            setNewChatMenuState({ visible: false, position: { x: 0, y: 0 } });
-        }
+    const handleExitMenuClick = () => {
+        if (!exitMenuButtonRef.current) return;
+        const rect = exitMenuButtonRef.current.getBoundingClientRect();
+        setMenus(prev => ({
+            main: { visible: false, position: { x: 0, y: 0 } },
+            newChat: { visible: false, position: { x: 0, y: 0 } },
+            exit: {
+                visible: !prev.exit.visible,
+                position: { x: rect.left, y: rect.top }
+            }
+        }));
     };
 
     /* ===============================
        ЭФФЕКТЫ
     =============================== */
     useEffect(() => {
+        const handleClickOutside = (e) => {
+            const currentMenus = menusRef.current;
+            let shouldCloseMain = false;
+            let shouldCloseNewChat = false;
+            let shouldCloseExit = false;
+
+            // Проверяем main menu
+            if (currentMenus.main.visible) {
+                if (menuRef.current && menuButtonRef.current) {
+                    shouldCloseMain = !menuRef.current.contains(e.target) &&
+                        !menuButtonRef.current.contains(e.target);
+                }
+            }
+
+            // Проверяем newChat menu
+            if (currentMenus.newChat.visible) {
+                if (menuNewChatRef.current && menuNewChatButtonRef.current) {
+                    shouldCloseNewChat = !menuNewChatRef.current.contains(e.target) &&
+                        !menuNewChatButtonRef.current.contains(e.target);
+                }
+            }
+
+            // Проверяем exit menu
+            if (currentMenus.exit.visible) {
+                if (exitMenuRef.current && exitMenuButtonRef.current) {
+                    shouldCloseExit = !exitMenuRef.current.contains(e.target) &&
+                        !exitMenuButtonRef.current.contains(e.target);
+                }
+            }
+
+            // Закрываем только нужные меню
+            if (shouldCloseMain || shouldCloseNewChat || shouldCloseExit) {
+                setMenus({
+                    main: shouldCloseMain ? { visible: false, position: { x: 0, y: 0 } } : currentMenus.main,
+                    newChat: shouldCloseNewChat ? { visible: false, position: { x: 0, y: 0 } } : currentMenus.newChat,
+                    exit: shouldCloseExit ? { visible: false, position: { x: 0, y: 0 } } : currentMenus.exit
+                });
+            }
+        };
+
         document.addEventListener('mousedown', handleClickOutside);
 
-        const loadContacts = async () => {
-            try {
-                console.log(contacts)
-                const rawContacts = await getContacts()
-
-                const isArray = Array.isArray(rawContacts);
-                const contactList = isArray ? rawContacts : [];
-
-                const processedContacts = contactList.map(item => {
-                    const name = item.contact.name || '';
-                    console.log(item.contact)
-                    return {
-                        ...item,
-                        contact: {
-                            ...item.contact,
-                            placeholder: item.contact.placeholder || getPlaceholder(name)
-                        }
-                    };
-
-                });
-
-                setContacts(processedContacts);
-                console.log(contacts)
-            } catch (error) {
-                console.error('Ошибка загрузки контактов:', error);
-            }
-        }
         loadContacts();
+        loadChats();
 
-        // 3️⃣ Отписка от событий при размонтировании
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    const loadContacts = async () => {
+        try {
+            const rawContacts = await getContacts()
+
+            const isArray = Array.isArray(rawContacts);
+            const contactList = isArray ? rawContacts : [];
+
+            const processedContacts = contactList.map(item => {
+                const name = item.contact.name || '';
+                return {
+                    ...item,
+                    contact: {
+                        ...item.contact,
+                        placeholder: item.contact.placeholder || getPlaceholder(name)
+                    }
+                };
+
+            });
+
+            setContacts(processedContacts);
+        } catch (error) {
+            console.error('Ошибка загрузки контактов:', error);
+        }
+    }
+
+    const loadChats = async () => {
+        try {
+            const rawChats = await Chat.getChats()
+
+            const isArray = Array.isArray(rawChats.chats);
+            const chatList = isArray ? rawChats.chats : [];
+            console.log(chatList)
+
+            const processedChats = chatList.map(item => {
+                const name = item.name || '';
+                return {
+                    ...item,
+                    chat: {
+                        ...item.chat,
+                        placeholder: item.placeholder || getPlaceholder(name)
+                    }
+                };
+
+            });
+            setChats(processedChats);
+        } catch (error) {
+            console.error('Ошибка загрузки чатов:', error);
+        }
+    }
 
     /* ===============================
        ОТРИСОВКА КОМПОНЕНТА
@@ -197,51 +291,110 @@ export function LeftSidebar() {
                     onClick={() => {
                         if (activeTab === 'chats') {
                             handleMenuClick();
-                        } else if (activeTab === 'contacts') {
-                            setActiveTab('chats')
+                        } else if (activeTab === 'contacts' || activeTab === 'profile') {
+                            loadChats();
+                            setActiveTab('chats');
+                        } else if (activeTab === 'editProfile') {
+                            setActiveTab('profile');
                         }
                     }}
                 >
                     {activeTab === 'chats' &&
                         <i class="icon menu-icon" style={{ backgroundColor: 'white' }}></i>
                     }
-                    {activeTab === 'contacts' &&
+                    {(activeTab !== 'chats') &&
                         <i class="icon leftArrow-icon" style={{ backgroundColor: 'white' }}></i>
                     }
                 </div>
 
+                {activeTab === 'profile' &&
+                    <div
+                        style="display:flex; flex-direction:row;"
+                    >
+                        <div
+                            className="editProfile"
+                            onClick={() => setActiveTab('editProfile')}
+                        >
+                            <i class="icon edit-icon" style={{ backgroundColor: 'white' }}></i>
+                        </div>
+                        <div
+                            className="exitProfile"
+                            onClick={handleExitMenuClick}
+                            ref={exitMenuButtonRef}
+                        >
+                            <i class="icon exit-icon" style={{ backgroundColor: 'white' }}></i>
+                        </div>
+                    </div>
+                }
 
                 {/* Поиск */}
-                <div class="search-wrapper">
-                    <div
-                        class="search-icon"
-                        style={{ backgroundImage: "url('./icons/search.svg')" }}
-                    ></div>
-                    <input
-                        class="search-input"
-                        placeholder="Поиск…"
-                        value={search}
-                        onInput={(e) => setSearch(e.target.value)}
-                    />
-                </div>
+                {(activeTab === 'chats' || activeTab === 'contacts') &&
+                    <div class="input-wrapper">
+                        <div
+                            class="search-icon"
+                            style={{ backgroundImage: "url('./icons/search.svg')" }}
+                        ></div>
+                        <input
+                            class="search-input"
+                            placeholder="Поиск"
+                            value={search}
+                            onInput={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                }
             </div>
 
-            {/* Контекстное меню профиля */}
-            {menuState.visible && (
-                <div
-                    ref={menuRef}
-                    style={{
-                        position: 'fixed',
-                        top: `${menuState.position.y + 10}px`,
-                        left: `${menuState.position.x}px`,
-                        zIndex: 1000,
-                    }}
-                >
-                    <ContextMenu items={menuItems} />
-                </div>
-            )}
-
             {/* Основной контент сайдбара */}
+            <div class="chat-list sidebar-main">
+                {activeTab === 'chats' && chats.map(chat => (
+                    <ChatItem
+                        key={chat.id}
+                        id={chat.id}
+                        name={chat.name}
+                        placeholder={chat.placeholder}
+                        isChannel={chat.isChannel}
+                        isGroup={chat.isGroup}
+                        last_message={chat.last_message}
+                        lastMessageDate={chat.lastMessageDate}
+                        messageStatus={chat.messageStatus}
+                        unreadCount={chat.unreadCount}
+                        muted={chat.muted}
+                        onClick={() => console.log("open chat:", chat.id)}
+                    />
+                ))}
+
+                {activeTab === 'contacts' && contacts.map(contact => (
+                    <ContactItem
+                        key={contact.contact.id}
+                        id={contact.contact.id}
+                        name={contact.contact.name}
+                        placeholder={contact.contact.placeholder}
+                        onClick={() => console.log("open contact:", contact.contact.id)}
+                    />
+                ))}
+
+                {activeTab === 'profile' &&
+                    <Profile
+                        name={app.user.name}
+                        username={app.user.username}
+                        phone_number={app.user.phone_number}
+                    />
+                }
+
+                {activeTab === 'editProfile' &&
+                    <EditProfile
+                        name={app.user.name}
+                        username={app.user.username}
+                        phone_number={app.user.phone_number}
+                        onSave={async () => {
+                            await fetchUser();
+                            setActiveTab('profile');
+                        }}
+                    />
+                }
+            </div>
+
+            {/* Круглые кнопки */}
             <div class="sidebar-content">
                 {activeTab === 'chats' &&
                     <ActionButton
@@ -257,47 +410,47 @@ export function LeftSidebar() {
                         ref={menuNewChatButtonRef}
                     />
                 }
-                <div class="chat-list">
-                    {activeTab === 'chats' && dummyChats.map(chat => (
-                        <ChatItem
-                            key={chat.id}
-                            id={chat.id}
-                            name={chat.name}
-                            placeholder={chat.placeholder}
-                            isChannel={chat.isChannel}
-                            isGroup={chat.isGroup}
-                            last_message={chat.last_message}
-                            lastMessageDate={chat.lastMessageDate}
-                            messageStatus={chat.messageStatus}
-                            unreadCount={chat.unreadCount}
-                            muted={chat.muted}
-                            onClick={() => console.log("open chat:", chat.id)}
-                        />
-                    ))}
 
-                    {activeTab === 'contacts' && contacts.map(contact => (
-                        <ContactItem
-                            key={contact.contact.id}
-                            id={contact.contact.id}
-                            name={contact.contact.name}
-                            placeholder={contact.contact.placeholder}
-                            onClick={() => console.log("open contact:", contact.contact.id)}
-                        />
-                    ))}
-                </div>
+                {/* Контекстные меню */}
+                {menus.main.visible && (
+                    <div
+                        ref={menuRef}
+                        style={{
+                            position: 'fixed',
+                            top: `${menus.main.position.y + 10}px`,
+                            left: `${menus.main.position.x}px`,
+                            zIndex: 1000,
+                        }}
+                    >
+                        <ContextMenu items={menuItems} />
+                    </div>
+                )}
 
-                {/* Контекстное меню нового чата */}
-                {newChatMenuState.visible && (
+                {menus.newChat.visible && (
                     <div
                         ref={menuNewChatRef}
                         style={{
                             position: 'fixed',
-                            top: `${newChatMenuState.position.y - 120}px`,
-                            left: `${newChatMenuState.position.x - 120}px`,
+                            top: `${menus.newChat.position.y - 120}px`,
+                            left: `${menus.newChat.position.x - 120}px`,
                             zIndex: 1000,
                         }}
                     >
                         <ContextMenu items={newChatMenuItems} />
+                    </div>
+                )}
+
+                {menus.exit.visible && (
+                    <div
+                        ref={exitMenuRef}
+                        style={{
+                            position: 'fixed',
+                            top: `${menus.exit.position.y + 10}px`,
+                            left: `${menus.exit.position.x}px`,
+                            zIndex: 1000,
+                        }}
+                    >
+                        <ContextMenu items={exitMenuItems} />
                     </div>
                 )}
             </div>
@@ -308,10 +461,7 @@ export function LeftSidebar() {
                     placeholderForInput="Введите номер телефона"
                     action="Добавить"
                     onClose={() => setIsFormOpen(false)}
-                    onSuccess={() => {
-                        console.log('все четко');
-                    }}
-                    onClick={() => console.log(123321)}
+                    onSuccess={() => loadContacts()}
                 />
             )}
         </div>

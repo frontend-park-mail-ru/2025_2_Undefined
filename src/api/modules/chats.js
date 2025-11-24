@@ -29,16 +29,19 @@ class Chat {
             },
             credentials: 'include',
         });
-        return response;
+        const chats = await response.json();
+        return chats;
     }
 
     async createChat(data) {
         try {
+            console.log('data', data)
             const response = await sendPOSTRequest ('/chats', {
                 members: data.members,
                 name: data.name,
                 type: data.type,
             })
+            console.log(response)
 
             if (!response.ok) {
                 const errorData = await response.json();
@@ -47,7 +50,9 @@ class Chat {
                 throw error;
             }       
             
+            console.log(response)
             const dataOfResponse = await response.json();
+            console.log(dataOfResponse)
             return dataOfResponse;
         } catch(error) {
             console.error('Ошибка при получении диалога' + error);
