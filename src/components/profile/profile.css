@@ -67,7 +67,8 @@
 }
 
 .profile__phone,
-.profile__username {
+.profile__username,
+.profile__name {
     display: flex;
     align-items: center;
     gap: 12px;

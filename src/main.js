@@ -30,7 +30,7 @@ export const app = {
 // };
 
 
-async function fetchUser() {
+export async function fetchUser() {
     try {
         const response = await fetch('/api/v1/me', {
             credentials: "include"

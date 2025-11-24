@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'minireact';
 import { addContact } from '@api/modules/contacts';
 
-export function Form({ title, placeholderForInput, action = 'Добавить', onClose, onSuccess, onClick }) {
+export function Form({ title, placeholderForInput, action = 'Добавить', onClose, onSuccess }) {
     const [inputValue, setInputValue] = useState('');
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -141,7 +141,6 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
                             class={`modal-input ${error ? 'error' : ''}`}
                             placeholder={placeholderForInput}
                             maxlength="50"
-                            value={inputValue}
                             onInput={telValidate}
                             onKeyDown={handleKeyDown}
                         />
@@ -154,25 +153,23 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
                 </div>
 
                 <div class="modal-footer">
-                    <div
+                    <button
                         type="button"
                         class="btn btn-secondary"
-                        disabled={isSubmitting}
                         ref={cancelBtnRef}
                         onClick={handleClose}
                     >
                         Отменить
-                    </div>
+                    </button>
 
-                    <div
+                    <button
                         type="button"
                         class={`btn btn-primary ${isSubmitting ? 'loading' : ''}`}
-                        disabled={isSubmitting}
                         ref={submitBtnRef}
                         onClick={handleSubmit}
                     >
                         {isSubmitting ? 'Добавление...' : action}
-                    </div>
+                    </button>
                 </div>
             </div>
         </div>
