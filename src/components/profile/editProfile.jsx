@@ -1,7 +1,6 @@
 import { getPlaceholder } from '@components/avatar/avatar.js';
 import React, { useRef } from 'minireact';
 import { ActionButton } from '@components/action-button/action-button.jsx';
-import { app } from '@/main.js'
 import User from '@api/modules/user.js';
 
 
@@ -12,6 +11,7 @@ export const EditProfile = ({ placeholder, name, username, onSave }) => {
     const handleSubmit = async () => {
         const nameValue = nameRef.current?.value ?? '';
         const usernameValue = usernameRef.current?.value ?? '';
+        console.log(usernameValue)
 
         const updateData = {
             bio: '',
@@ -35,9 +35,9 @@ export const EditProfile = ({ placeholder, name, username, onSave }) => {
 
     return (
         <div class="profile">
-            <div class="profile__avatar">
+            {/* <div class="profile__avatar">
                 {placeholder || getPlaceholder(nameRef.current?.value || name || '')}
-            </div>
+            </div> */}
 
             <div class="profile__info">
                 <div class="profile__name">

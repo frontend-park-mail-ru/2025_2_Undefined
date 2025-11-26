@@ -1,4 +1,4 @@
-import { app } from '@/main.js';
+import { } from '@/main.js';
 import Chat from '@api/modules/chats.js';
 
 export async function startNewDialog(HomeData, homeInstance) {

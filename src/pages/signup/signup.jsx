@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'minireact';
 import ReactDOM from 'minireact-dom';
 import Login from '../login/login.jsx';
 import { signUpUser } from '@api/modules/auth';
+import { checkAuth } from '../login/login.jsx';
+import { fetchUser } from '../login/login.jsx';
 
 const Signup = () => {
     const formRef = useRef(null);
@@ -189,8 +191,8 @@ const Signup = () => {
 
         try {
             await signUpUser(data);
-            form.reset();
-            ReactDOM.render(<Login />, document.getElementById('root'));
+            await fetchUser();
+            checkAuth();
         } catch (error) {
             if (error.errors) {
                 error.errors.forEach((err) =>

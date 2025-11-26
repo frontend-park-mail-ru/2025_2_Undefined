@@ -5,9 +5,9 @@ export const Profile = ({ placeholder, name, phone_number, username }) => {
     console.log(name, phone_number, username)
     return (
         <div class="profile">
-            <div class="profile__avatar">
+            {/* <div class="profile__avatar">
                 {placeholder || getPlaceholder(name)}
-            </div>
+            </div> */}
 
             <div class="profile__name">{name}</div>
 

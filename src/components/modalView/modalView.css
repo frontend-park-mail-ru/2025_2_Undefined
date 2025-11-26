@@ -1,0 +1,204 @@
+/* Стили для модального окна информации о группе/канале */
+.group-info-modal {
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: #2D3137;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.group-info-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Секция аватара и названия */
+.group-info-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #40444a;
+}
+
+.group-info-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4D47C3;
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.group-info-name {
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+    text-align: center;
+}
+
+/* Поля информации */
+.group-info-field {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
+
+.group-info-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #8C8C8C;
+    font-weight: 500;
+}
+
+.group-info-label .icon {
+    width: 16px;
+    height: 16px;
+}
+
+.group-info-value {
+    font-size: 16px;
+    color: white;
+    line-height: 1.4;
+    padding: 12px;
+    /* background: #40444a; */
+    border-radius: 8px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+/* Участники */
+.group-info-members {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.members-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.member-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: #40444a;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.member-item:hover {
+    background: #4a4e54;
+}
+
+.member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #667eea;
+    color: white;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.member-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.member-name {
+    font-size: 14px;
+    color: white;
+    font-weight: 500;
+}
+
+.member-role {
+    font-size: 12px;
+    color: #8C8C8C;
+}
+
+.no-members {
+    text-align: center;
+    color: #8C8C8C;
+    font-style: italic;
+    padding: 20px;
+    background: #40444a;
+    border-radius: 8px;
+}
+
+/* Стилизация скроллбара */
+.group-info-members::-webkit-scrollbar {
+    width: 6px;
+}
+
+.group-info-members::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.group-info-members::-webkit-scrollbar-thumb {
+    background: #4D47C3;
+    border-radius: 3px;
+}
+
+.group-info-members::-webkit-scrollbar-thumb:hover {
+    background: #2D2987;
+}
+
+.group-info-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.group-info-modal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.group-info-modal::-webkit-scrollbar-thumb {
+    background: #4D47C3;
+    border-radius: 4px;
+}
+
+.group-info-modal::-webkit-scrollbar-thumb:hover {
+    background: #2D2987;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .group-info-modal {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .group-info-body {
+        padding: 16px;
+    }
+    
+    .group-info-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 18px;
+    }
+    
+    .group-info-name {
+        font-size: 20px;
+    }
+}

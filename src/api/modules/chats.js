@@ -35,27 +35,25 @@ class Chat {
 
     async createChat(data) {
         try {
-            console.log('data', data)
-            const response = await sendPOSTRequest ('/chats', {
+            const response = await sendPOSTRequest('/chats', {
                 members: data.members,
                 name: data.name,
                 type: data.type,
             })
-            console.log(response)
 
             if (!response.ok) {
                 const errorData = await response.json();
-                const error = new Error(errorData.message || 'Ошибка получения чата');
+                const error = new Error(errorData.message || 'Ошибка создания чата');
                 error.errors = errorData.errors;
                 throw error;
-            }       
-            
+            }
+
             console.log(response)
             const dataOfResponse = await response.json();
             console.log(dataOfResponse)
             return dataOfResponse;
-        } catch(error) {
-            console.error('Ошибка при получении диалога' + error);
+        } catch (error) {
+            console.error('Ошибка при создании чата' + error);
         }
 
     }
@@ -63,30 +61,6 @@ class Chat {
     async getChat(chatId) {
         try {
             const response = await fetch(`${SERVER_API}chats/${chatId}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include',
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            const error = new Error(errorData.message || 'Ошибка получения чата');
-            error.errors = errorData.errors;
-            throw error;
-        }
-
-        const data = await response.json();
-        return data;
-
-    } catch(error) {
-            console.error('Ошибка при получении диалога' + error);
-    }
-}
-
-    async getChatByContact(contactId) {
-        const response = await fetch(`${SERVER_API}chats/dialog/${contactId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,31 +78,55 @@ class Chat {
             const data = await response.json();
             return data;
 
+        } catch (error) {
+            console.error('Ошибка при получении диалога' + error);
+        }
+    }
+
+    async getChatByContact(contactId) {
+        const response = await fetch(`${SERVER_API}chats/dialog/${contactId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const error = new Error(errorData.message || 'Ошибка получения чата');
+            error.errors = errorData.errors;
+            throw error;
+        }
+
+        const data = await response.json();
+        return data;
+
     }
 
     async deleteChat(chatId) {
 
-        try{
+        try {
             const csrfToken = localStorage.getItem('csrf_token');
             if (!csrfToken) {
                 console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');
             }
 
             const response = await fetch(`${SERVER_API}chats/${chatId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                    },
-                    credentials: 'include',
-                });
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                credentials: 'include',
+            });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    const error = new Error(errorData.message || 'Ошибка удаления чата');
-                    error.errors = errorData.errors;
-                    throw error;
-                }            
+            if (!response.ok) {
+                const errorData = await response.json();
+                const error = new Error(errorData.message || 'Ошибка удаления чата');
+                error.errors = errorData.errors;
+                throw error;
+            }
         } catch (error) {
             console.error(error);
         }
@@ -139,33 +137,61 @@ class Chat {
 
     async addToGroup(members, chatId) {
 
-        try{
+        try {
             const csrfToken = localStorage.getItem('csrf_token');
             if (!csrfToken) {
                 console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');
             }
 
             const response = await fetch(`${SERVER_API}chats/${chatId}/members`, {
-                    method: 'PATCH',
-                    body: JSON.stringify(members),
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                    },
-                    credentials: 'include',
-                });
+                method: 'PATCH',
+                body: JSON.stringify(members),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                credentials: 'include',
+            });
 
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    const error = new Error(errorData.message || 'Ошибка удаления чата');
-                    error.errors = errorData.errors;
-                    throw error;
-                }            
+            if (!response.ok) {
+                const errorData = await response.json();
+                const error = new Error(errorData.message || 'Ошибка удаления чата');
+                error.errors = errorData.errors;
+                throw error;
+            }
         } catch (error) {
             console.error(error);
         }
 
 
+    }
+
+    async editChat(chatId, dataOfChat) {
+        try {
+            const csrfToken = localStorage.getItem('csrf_token');
+            if (!csrfToken) {
+                console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');
+            }
+
+            const response = await fetch(`${SERVER_API}chats/${chatId}`, {
+                method: 'PATCH',
+                body: JSON.stringify(dataOfChat),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                credentials: 'include',
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                const error = new Error(errorData.message || 'Ошибка изменения чата');
+                error.errors = errorData.errors;
+                throw error;
+            }
+        } catch (error) {
+            console.error(error);
+        }
     }
 }
 
