@@ -16,7 +16,7 @@
     display: inline-flex;
     align-items: center;
     overflow-wrap: break-word;
-    white-space: normal;
+    white-space: pre-wrap;
 }
 
 .message-time, .message-read{

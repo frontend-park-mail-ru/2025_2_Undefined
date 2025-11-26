@@ -13,11 +13,13 @@ export function ChatItem({
   unreadCount,
   muted,
   onClick,
-  ref
+  ref,
+  isActive
 }) {
+  isActive(id);
   return (
     <div
-      class="chat-item"
+      class={`chat-item ${isActive(id) ? 'active' : ''}`}
       data-chat-id={id}
       ref={ref}
       onClick={onClick}

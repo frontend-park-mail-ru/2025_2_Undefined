@@ -27,7 +27,8 @@
 }
 
 /* ===== БУРГЕР-КНОПКА ===== */
-.sidebar-menu-btn {
+.sidebar-menu-btn,
+.meatballs-div {
     width: 42px;
     height: 42px;
     min-width: 42px;
@@ -40,7 +41,8 @@
     transition: background 0.2s ease, transform 0.15s ease;
 }
 
-.sidebar-menu-btn:hover {
+.sidebar-menu-btn:hover,
+.meatballs-div:hover {
     background: var(--color-bg-tertiary);
 }
 
@@ -76,7 +78,8 @@
     background-repeat: no-repeat;
 }
 
-.search-input, .editProfile-input {
+.search-input,
+.editProfile-input {
     flex: 1;
     border: none;
     outline: none;
@@ -89,13 +92,14 @@
     padding: 10px;
 }
 
-.search-input::placeholder, .editProfile-input::placeholder {
+.search-input::placeholder,
+.editProfile-input::placeholder {
     color: var(--color-text-secondary);
 }
 
-.editProfile{
+.editProfile {
     display: flex;
-    
+
 }
 
 /* ===== СКРОЛЛ СОДЕРЖИМОГО ===== */
@@ -104,6 +108,7 @@
     overflow-y: auto;
     padding: 10px;
     color: var(--color-text-primary);
+    transition: overflow-y 0.3s ease;
 }
 
 .sidebar-bottom {
@@ -116,7 +121,52 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: var(--color-bg-secondary);
+
+}
+
+.header-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.meatballs-div {}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    /* background-color: #0f1623; */
+    min-height: 0;
+    align-items: center;
+    background:
+        linear-gradient(rgba(0, 0, 0, 0.75),
+            rgba(0, 0, 0, 0.9)),
+        url(../../assets/background/background.svg);
+    background-repeat: repeat;
+    background-size: auto;
+}
+
+.content-center {
+    height: 100%;
+    width: 800px;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+
+}
+
+.content-center-messages {
+    margin-top: auto;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    height: 700px;
+}
+
+.content-center-inputMessage {
+    width: 100%;
+    height: 69px;
+    margin: 25px 0;
 }
 
 /* Хедер справа */
@@ -135,6 +185,102 @@
     flex: 1;
     overflow: hidden;
     display: flex;
-    background: var(--color-bg-secondary);
+    /* background: var(--color-bg-secondary); */
     color: var(--color-text-primary);
+}
+
+
+/* Скроллбар */
+.sidebar-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar-content::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb {
+    background: #2a3546;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.sidebar-content::-webkit-scrollbar-thumb:hover {
+    background: #364153;
+}
+
+.sidebar-content {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3546 transparent;
+}
+
+
+
+/* Стили для контейнера сообщений */
+.content-center-messages {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    min-height: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Стили для состояния "нет сообщений" */
+.no-messages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #8c8c8c;
+    text-align: center;
+    gap: 10px;
+}
+
+.no-messages p {
+    margin: 0;
+}
+
+.no-messages p:first-child {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.no-messages p:last-child {
+    font-size: 14px;
+}
+
+.content-center-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.content-center-messages::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 4px;
+    margin: 4px 0;
+}
+
+.content-center-messages::-webkit-scrollbar-thumb {
+    background: #2a3546;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+
+.content-center-messages::-webkit-scrollbar-thumb:hover {
+    background: #364153;
+}
+
+.content-center-messages {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3546 transparent;
+}
+
+.message-body {
+    display: flex;
+    flex-direction: column;
 }

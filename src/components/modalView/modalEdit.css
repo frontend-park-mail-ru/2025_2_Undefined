@@ -1,0 +1,167 @@
+/* Стили для модального окна редактирования группы/канала */
+.edit-group-modal {
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    background: #2D3137;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.edit-group-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Секция аватара */
+.edit-group-avatar-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #40444a;
+}
+
+.edit-group-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4D47C3;
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Поля редактирования */
+.edit-group-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.edit-group-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.edit-group-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #8C8C8C;
+    font-weight: 500;
+}
+
+.edit-group-label .icon {
+    width: 16px;
+    height: 16px;
+}
+
+/* Стили для textarea */
+.editProfile-textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #8C8C8C;
+    background-color: #2D3137;
+    border-radius: 8px;
+    color: white;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+    min-height: 80px;
+    font-family: inherit;
+}
+
+.editProfile-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #8C8C8C;
+    background-color: #2D3137;
+    border-radius: 8px;
+    color: white;
+    transition: border-color 0.3s ease;
+    resize: vertical;
+}
+
+/* .editProfile-textarea:focus {
+    border-color: #4D47C3;
+    outline: none;
+} */
+
+.editProfile-textarea::placeholder {
+    color: #666;
+}
+
+/* Футер */
+.edit-group-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Стилизация скроллбара */
+.edit-group-modal::-webkit-scrollbar {
+    width: 8px;
+}
+
+.edit-group-modal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.edit-group-modal::-webkit-scrollbar-thumb {
+    background: #4D47C3;
+    border-radius: 4px;
+}
+
+.edit-group-modal::-webkit-scrollbar-thumb:hover {
+    background: #2D2987;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .edit-group-modal {
+        width: 95%;
+        margin: 10px;
+    }
+    
+    .edit-group-body {
+        padding: 16px;
+    }
+    
+    .edit-group-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 18px;
+    }
+    
+    .edit-group-footer {
+        flex-direction: column;
+    }
+    
+    .edit-group-footer .btn {
+        width: 100%;
+    }
+}
+
+/* Стили для disabled кнопки */
+.action-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.action-button:disabled:hover {
+    background: #4D47C3;
+}

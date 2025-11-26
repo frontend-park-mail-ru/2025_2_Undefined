@@ -1,10 +1,11 @@
 .inputMessage{
     display: flex;
+    position: relative;
 }
 
 .inputMessage-item-input{
     height: 60px;
-    width: 731px;
+    width: 98%;
     padding: 20px;
     font-size: 20px;
     background-color: var(--color-bg-secondary);

@@ -1,4 +1,4 @@
-import { app } from "../main";
+import { } from "../main";
 
 export class Router {
     constructor(routes, appElementId) {

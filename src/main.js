@@ -9,7 +9,7 @@ const rootElement = document.getElementById('root');
 // export const login = new Login(rootElement);
 // export const signup = new Signup(rootElement);
 
-export const app = {
+window.app = {
     user: null,
     isAuth: false,
 };
@@ -31,6 +31,8 @@ export const app = {
 
 
 export async function fetchUser() {
+    console.log("Register")
+
     try {
         const response = await fetch('/api/v1/me', {
             credentials: "include"
@@ -50,6 +52,6 @@ export async function fetchUser() {
     return false;
 }
 
-await fetchUser();
+// await fetchUser();
 
 // initRouter(routes, 'root');

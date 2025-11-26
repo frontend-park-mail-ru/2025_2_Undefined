@@ -1,6 +1,5 @@
 import createGroupDialogTemplate from '@components/create-group/create-group.hbs';
 import Chat from '@api/modules/chats';
-import { app } from '@/main.js';
 
 export async function renderCreateGroupDialog(parent, homeInstance, HomeData) {
     const html = createGroupDialogTemplate();

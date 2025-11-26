@@ -12,12 +12,12 @@ export function initWebSocket() {
 
     globalWs.onopen = () => console.log('WebSocket подключён');
 
-    globalWs.onmessage = (event) => {
-        const data = event.data;
-        const message = JSON.parse(data);
+    // globalWs.onmessage = (event) => {
+    //     const data = event.data;
+    //     const message = JSON.parse(data);
     
-        console.log('Прислали сообщение: ' + message.text);
-    }
+    //     console.log('Прислали сообщение:', message);
+    // }
 
     globalWs.onerror = (error) => console.log('WebSocket ошибка:', error);
 

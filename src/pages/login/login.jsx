@@ -162,6 +162,8 @@ const Login = () => {
             await loginUser(data);
             form.reset();
             console.log('Успешный вход');
+            await fetchUser();
+            checkAuth();
         } catch (error) {
             if (error.errors) {
                 error.errors.forEach((err) =>
@@ -254,12 +256,12 @@ const container = document.getElementById('root');
 createRoot(<Login />, container);
 export default Login;
 
-export const app = {
+window.app = {
     user: null,
     isAuth: false,
 };
 
-async function fetchUser() {
+export async function fetchUser() {
     try {
         const response = await fetch('/api/v1/me', {
             credentials: 'include',
@@ -280,12 +282,18 @@ async function fetchUser() {
     return false;
 }
 
-await fetchUser();
+export const checkAuth = () => {
+    if (app.isAuth) {
+        console.log('Я зареган');
+        createRoot(<Home />, container);
+        // logoutUser();
+    } else {
+        console.log('я не зареган');
+        createRoot(<Login />, container);
 
-if (app.isAuth) {
-    console.log('Я зареган');
-    createRoot(<Home />, container);
-    // logoutUser();
-} else {
-    console.log('я не зареган');
+    }
+
 }
+await fetchUser();
+await checkAuth();
+
