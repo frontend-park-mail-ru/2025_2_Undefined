@@ -317,4 +317,5 @@ export const checkAuth = () => {
     }
 };
 
-// Перв
+await fetchUser();
+await checkAuth();
