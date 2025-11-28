@@ -1,5 +1,5 @@
-import { } from '@/main.js';
-import Chat from '@api/modules/chats.js';
+// import { } from '@/main.js';
+// import Chat from '@api/modules/chats.js';
 
 export async function startNewDialog(HomeData, homeInstance) {
     const contactItems = document.querySelectorAll('.contact-item');

@@ -9,7 +9,7 @@ import { startNewDialog } from '@components/contact/contact';
 import { startNewChat } from '@/components/action-button/action-button';
 import { openChat } from '@/components/chat/chat';
 import { inputMessage } from '@/components/input-message/input-message';
-import { getRouter } from '@/router/router.js';
+import { getRouter } from '@/router/router.jsx';
 import { LeftSidebar } from '@components/leftSidebar/leftSidebar.jsx';
 import { InputMessage } from '@components/input-message/inputMessage.jsx';
 import { GroupInfoModal } from '@components/modalView/modalView';
@@ -17,7 +17,6 @@ import { EditGroupModal } from '@components/modalView/modalEdit';
 import { ContextMenu } from '@components/context-menu/context-menu.jsx';
 import { Message } from '@components/message/message';
 import { getWebSocket } from '@api/modules/websocket';
-import { checkAuth } from '../login/login.jsx';
 import { fetchUser as apiFetchUser } from '../login/login.jsx';
 
 // Стили
@@ -71,6 +70,7 @@ const Home = () => {
   const openChatIdRef = useRef(openChatId);
   const menusRef = useRef(menus);
   menusRef.current = menus;
+  const chatDataRef = useRef(null);
 
   /* ===============================
      АВТОСКРОЛЛ К ПОСЛЕДНЕМУ СООБЩЕНИЮ
@@ -426,11 +426,12 @@ const Home = () => {
     try {
       const response = await Chat.getChat(chatId);
       setChatData(response);
+      chatDataRef.current = response;
 
       if (response && Array.isArray(response.messages)) {
         const processedMessages = response.messages.reverse().map((m) => ({
           ...m,
-          isMine: m.sender_id === app.user?.id,
+          isMine: response.type !== 'channel' && m.sender_id === app.user?.id,
           isSystem: m.type === 'system',
         }));
         setMessages(processedMessages);
@@ -458,7 +459,7 @@ const Home = () => {
         if (newMessage.chat_id !== openChatIdRef.current) return prevMessages;
         if (prevMessages.some((msg) => msg.id === newMessage.id)) return prevMessages;
 
-        newMessage.isMine = newMessage.sender_id === app.user?.id;
+        newMessage.isMine = chatDataRef.current?.type !== 'channel' && newMessage.sender_id === app.user?.id;
         return [...prevMessages, newMessage];
       });
     };

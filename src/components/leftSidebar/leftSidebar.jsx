@@ -10,9 +10,9 @@ import { Profile } from '@components/profile/profile.jsx';
 import { EditProfile } from '@components/profile/editProfile.jsx';
 import Chat from '@api/modules/chats.js';
 import { logoutUser } from '@api/modules/auth';
-import { checkAuth } from '../../pages/login/login.jsx';
+import { getRouter } from '@/router/router.jsx';
 
-import { fetchUser } from '@/main.js';
+import { fetchUser } from '@/main.jsx';
 
 export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeContactsFor }) {
   const [activeTab, setActiveTab] = useState('chats');
@@ -130,8 +130,7 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
           exit: { visible: false, position: { x: 0, y: 0 } }
         });
         await fetchUser();
-        checkAuth();
-        console.log(123)
+        getRouter().navigateTo('/login');
 
       }
     }
