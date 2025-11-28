@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'minireact';
 import ReactDOM from 'minireact-dom';
 import Login from '../login/login.jsx';
 import { signUpUser } from '@api/modules/auth';
-import { checkAuth } from '../login/login.jsx';
 import { fetchUser } from '../login/login.jsx';
+import { getRouter } from '@/router/router.jsx';
 
 const Signup = () => {
     const passwordRef = useRef(null);
@@ -128,7 +128,7 @@ const Signup = () => {
         try {
             await signUpUser(dataToSend);
             await fetchUser();
-            checkAuth();
+            getRouter().navigateTo('/');
         } catch (error) {
             console.log("Signup error:", error);
             if (error.errors) {
@@ -147,7 +147,7 @@ const Signup = () => {
     };
 
     const goToLogin = () => {
-        ReactDOM.render(<Login />, document.getElementById('root'));
+        getRouter().navigateTo('/login');
     };
 
     return (
@@ -222,5 +222,4 @@ const Signup = () => {
     );
 };
 
-ReactDOM.render(<Signup />, document.getElementById('root'));
 export default Signup;

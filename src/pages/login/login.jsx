@@ -3,6 +3,7 @@ import ReactDOM from 'minireact-dom';
 import Signup from '../signup/signup.jsx';
 import { loginUser, logoutUser } from '@api/modules/auth';
 import Home from '../home/home.jsx';
+import { getRouter } from '@/router/router.jsx';
 
 const Login = () => {
     const formRef = useRef(null);
@@ -182,10 +183,8 @@ const Login = () => {
 
         try {
             await loginUser(data);
-            form.reset();
-            console.log('Успешный вход');
             await fetchUser();
-            checkAuth();
+            getRouter().navigateTo('/');
         } catch (error) {
             if (error.errors) {
                 error.errors.forEach((err) =>
@@ -206,7 +205,7 @@ const Login = () => {
     };
 
     const goToSignup = () => {
-        ReactDOM.render(<Signup />, document.getElementById('root'));
+        getRouter().navigateTo('/signup');
     };
 
     return (
@@ -277,7 +276,7 @@ const Login = () => {
 };
 
 const container = document.getElementById('root');
-createRoot(<Login />, container);
+// createRoot(<Login />, container);
 export default Login;
 
 window.app = {
