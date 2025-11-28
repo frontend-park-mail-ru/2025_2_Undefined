@@ -7,7 +7,6 @@ export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateM
     const textareaRef = useRef(null);
     const sendButtonRef = useRef(null);
 
-    console.log(textOfEdit)
 
     useEffect(() => {
         if (textareaRef.current) {
@@ -112,13 +111,13 @@ export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateM
                         overflow: 'hidden',
                         minHeight: '40px',
                         maxHeight: '120px',
-                        paddingRight: messageText.trim() ? '32px' : '12px', // ← место под крестик
+                        // paddingRight: messageText.trim() ? '32px' : '12px', // ← место под крестик
                         boxSizing: 'border-box'
                     }}
                 />
 
                 {/* ✅ Кнопка крестика */}
-                {messageText.trim() && (
+                {/* {messageText.trim() && ( */}
                     <button
                         type="button"
                         onClick={clearInput}
@@ -145,7 +144,7 @@ export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateM
                     >
                         ✕
                     </button>
-                )}
+                {/* )} */}
             </div>
             <div class="inputMessage-item">
                 <button

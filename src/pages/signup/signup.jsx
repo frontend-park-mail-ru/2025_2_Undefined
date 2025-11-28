@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'minireact';
 import ReactDOM from 'minireact-dom';
 import Login from '../login/login.jsx';
 import { signUpUser } from '@api/modules/auth';
-import { checkAuth } from '../login/login.jsx';
 import { fetchUser } from '../login/login.jsx';
+import { getRouter } from '@/router/router.jsx';
 
 const Signup = () => {
     const formRef = useRef(null);
@@ -192,7 +192,7 @@ const Signup = () => {
         try {
             await signUpUser(data);
             await fetchUser();
-            checkAuth();
+            getRouter().navigateTo('/');
         } catch (error) {
             if (error.errors) {
                 error.errors.forEach((err) =>
@@ -207,7 +207,7 @@ const Signup = () => {
     };
 
     const goToLogin = () => {
-        ReactDOM.render(<Login />, document.getElementById('root'));
+        getRouter().navigateTo('/login');
     };
 
     return (
@@ -267,7 +267,7 @@ const Signup = () => {
                 </div>
 
                 <button type='submit' class='signup-button'>
-                    {isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
+                    {'Зарегистрироваться'}
                 </button>
             </form>
 
@@ -281,5 +281,4 @@ const Signup = () => {
     );
 };
 
-ReactDOM.render(<Signup />, document.getElementById('root'));
 export default Signup;
