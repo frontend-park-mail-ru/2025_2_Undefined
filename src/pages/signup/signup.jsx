@@ -6,120 +6,24 @@ import { fetchUser } from '../login/login.jsx';
 import { getRouter } from '@/router/router.jsx';
 
 const Signup = () => {
-    const formRef = useRef(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const passwordRef = useRef(null);
+
     const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Значения полей
+    const [formData, setFormData] = useState({
+        phone_number: '',
+        name: '',
+        password: ''
+    });
+
+    // Ошибки формы
+    const [errors, setErrors] = useState({});
+    const [formError, setFormError] = useState(null);
 
     /** -----------------------------
-     * Очистка ошибок
-    --------------------------------*/
-    const clearErrors = () => {
-        const form = formRef.current;
-        if (!form) return;
-
-        const inputs = form.querySelectorAll('.signup-input');
-        inputs.forEach((input) => {
-            input.classList.remove('error');
-            input.classList.remove('ok');
-
-            const fieldName = input.getAttribute('name');
-            const errorElement = form.querySelector(`[data-field="${fieldName}"]`);
-
-            if (errorElement) {
-                errorElement.style.display = 'none';
-                errorElement.textContent = '';
-            }
-        });
-
-        const formError = form.querySelector('.form-error');
-        if (formError) formError.remove();
-    };
-
-    /** -----------------------------
-     * Ошибка поля
-    --------------------------------*/
-    const showFieldError = (fieldName, message) => {
-        const form = formRef.current;
-        const input = form.querySelector(`[name="${fieldName}"]`);
-        const errorElement = form.querySelector(`[data-field="${fieldName}"]`);
-
-        if (input && errorElement) {
-            input.classList.add('error');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-    };
-
-    const showFieldOk = (fieldName) => {
-        const form = formRef.current;
-        const input = form.querySelector(`[name="${fieldName}"]`);
-        if (input) {
-            input.classList.add('ok');
-            input.classList.remove('error');
-        }
-    };
-
-    /** -----------------------------
-     * Общая ошибка формы
-    --------------------------------*/
-    const showFormError = (message) => {
-        clearErrors();
-
-        const form = formRef.current;
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'form-error';
-        errorDiv.textContent = message;
-
-        form.prepend(errorDiv);
-    };
-
-    /** -----------------------------
-     * Валидация формы
-    --------------------------------*/
-    const validateForm = (data) => {
-        let isValid = true;
-
-        if (!data.phone_number || data.phone_number.trim().length === 0) {
-            showFieldError('phone_number', 'Номер телефона обязателен');
-            isValid = false;
-        } else if (data.phone_number.trim().length < 18) {
-            showFieldError('phone_number', 'Введите номер полностью');
-            isValid = false;
-        } else {
-            showFieldOk('phone_number');
-        }
-
-        if (!data.name || data.name.trim().length === 0) {
-            showFieldError('name', 'Имя обязательно');
-            isValid = false;
-        } else {
-            showFieldOk('name');
-        }
-
-        const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+$/;
-
-        if (!data.password || data.password.length === 0) {
-            showFieldError('password', 'Пароль обязателен');
-            isValid = false;
-        } else if (data.password.length < 8) {
-            showFieldError('password', 'Минимум 8 символов');
-            isValid = false;
-        } else if (!passwordRegex.test(data.password)) {
-            showFieldError(
-                'password',
-                'Допустима латиница, цифры и спецсимволы'
-            );
-            isValid = false;
-        } else {
-            showFieldOk('password');
-        }
-
-        return isValid;
-    };
-
-    /** -----------------------------
-     * Красивое форматирование номера
+     * Маска телефона
     --------------------------------*/
     const telValidate = (event) => {
         let value = event.target.value.replace(/\D/g, '');
@@ -135,36 +39,70 @@ const Signup = () => {
         if (value.length > 6) formatted += '-' + value.substring(6, 8);
         if (value.length > 8) formatted += '-' + value.substring(8, 10);
 
-        event.target.value = formatted;
+        setFormData(prev => ({ ...prev, phone_number: formatted }));
     };
 
     /** -----------------------------
-     * Удаление ошибки при вводе
+     * Изменение input
     --------------------------------*/
     const changeInput = (event) => {
-        event.target.classList.remove('error');
-        event.target.classList.remove('ok');
+        const { name, value } = event.target;
 
-        const form = formRef.current;
-        const fieldName = event.target.name;
-        const errorElement = form.querySelector(`[data-field="${fieldName}"]`);
+        setFormData(prev => ({ ...prev, [name]: value }));
 
-        if (errorElement) {
-            errorElement.style.display = 'none';
-            errorElement.textContent = '';
-        }
+        setErrors(prev => {
+            const updated = { ...prev };
+            delete updated[name];
+            return updated;
+        });
+
+        setFormError(null);
     };
 
     /** -----------------------------
-     * Переключение видимости пароля
+     * Показ/скрытие пароля
     --------------------------------*/
     const togglePassword = () => {
-        const input = passwordRef.current;
-        if (!input) return;
+        if (!passwordRef.current) return;
 
-        const newType = input.type === 'password' ? 'text' : 'password';
-        input.type = newType;
+        const newType = passwordRef.current.type === 'password' ? 'text' : 'password';
+        passwordRef.current.type = newType;
         setShowPassword(newType === 'text');
+    };
+
+    /** -----------------------------
+     * Валидация формы
+    --------------------------------*/
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Телефон
+        const cleanPhone = formData.phone_number.replace(/\D/g, '');
+        if (cleanPhone.length !== 11) {
+            newErrors.phone_number = "Введите номер полностью в формате +7 (XXX) XXX-XX-XX";
+        }
+
+        // Имя
+        if (!formData.name.trim()) {
+            newErrors.name = "Имя не может быть пустым";
+        }
+
+        // Пароль
+        const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]+$/;
+
+        if (!formData.password || formData.password.length < 8) {
+            newErrors.password = "Пароль должен содержать минимум 8 символов";
+        } else if (!passwordRegex.test(formData.password)) {
+            newErrors.password = "Пароль может содержать латиницу, цифры и спецсимволы";
+        }
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setFormError("Исправьте ошибки в форме.");
+            return false;
+        }
+
+        return true;
     };
 
     /** -----------------------------
@@ -172,34 +110,36 @@ const Signup = () => {
     --------------------------------*/
     const onSubmit = async (event) => {
         event.preventDefault();
-
-        // if (isSubmitting) return;
-
-        clearErrors();
         setIsSubmitting(true);
 
-        const form = formRef.current;
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
+        setErrors({});
+        setFormError(null);
 
-        if (!validateForm(data)) {
+        if (!validateForm()) {
             setIsSubmitting(false);
             return;
         }
 
-        data.phone_number = '+' + data.phone_number.replace(/\D/g, '');
+        const dataToSend = {
+            ...formData,
+            phone_number: formData.phone_number.replace(/\D/g, '') // отправляем без маски
+        };
 
         try {
-            await signUpUser(data);
+            await signUpUser(dataToSend);
             await fetchUser();
             getRouter().navigateTo('/');
         } catch (error) {
+            console.log("Signup error:", error);
             if (error.errors) {
-                error.errors.forEach((err) =>
-                    showFieldError(err.field, err.message)
-                );
+                const newErrors = {};
+                error.errors.forEach(err => {
+                    newErrors[err.field] = err.message;
+                });
+                setErrors(newErrors);
+                setFormError("Некоторые данные введены некорректно. Исправьте ошибки и попробуйте снова.");
             } else {
-                showFormError('Ошибка регистрации');
+                setFormError("Ошибка регистрации. Попробуйте позже.");
             }
         }
 
@@ -211,71 +151,72 @@ const Signup = () => {
     };
 
     return (
-        <div class='signup-block'>
+        <div class="signup-block">
             <h1>Регистрация</h1>
 
-            <form id='signup' ref={formRef} class='signup-form' onSubmit={onSubmit}>
-                <div class='input-group'>
+            {formError && <div class="form-error">{formError}</div>}
+
+            <form id="signup" class="signup-form" onSubmit={onSubmit}>
+
+                {/* Телефон */}
+                <div class="input-group">
                     <input
-                        type='text'
-                        id='tel'
-                        name='phone_number'
-                        class='signup-input'
-                        placeholder='Введите номер телефона'
+                        type="text"
+                        name="phone_number"
+                        value={formData.phone_number}
+                        class={`signup-input ${errors.phone_number ? 'error' : ''}`}
+                        placeholder="Введите номер телефона"
+                        autocomplete="tel"
                         onInput={telValidate}
                         onChange={changeInput}
                     />
-                    <div class='error-message' data-field='phone_number'></div>
+                    <div class="error-message">{errors.phone_number}</div>
                 </div>
 
-                <div class='input-group'>
+                {/* Имя */}
+                <div class="input-group">
                     <input
-                        type='text'
-                        name='name'
-                        class='signup-input'
-                        placeholder='Введите имя'
+                        type="text"
+                        name="name"
+                        value={formData.name}
+                        class={`signup-input ${errors.name ? 'error' : ''}`}
+                        placeholder="Введите имя"
+                        autocomplete="name"
                         onChange={changeInput}
                     />
-                    <div class='error-message' data-field='name'></div>
+                    <div class="error-message">{errors.name}</div>
                 </div>
 
-                <div class='input-group'>
-                    <div class='signup-password-input'>
+                {/* Пароль */}
+                <div class="input-group">
+                    <div class="signup-password-input">
                         <input
-                            type='password'
-                            name='password'
-                            id='passwordInput'
-                            class='signup-input'
-                            placeholder='Введите пароль'
+                            type="password"
+                            name="password"
+                            value={formData.password}
+                            autocomplete="new-password"
+                            class={`signup-input ${errors.password ? 'error' : ''}`}
+                            placeholder="Введите пароль"
                             ref={passwordRef}
                             onChange={changeInput}
                         />
-                        <button
-                            type='button'
-                            class='toggle-password'
-                            id='togglePassword'
-                            onClick={togglePassword}
-                        >
-                            {showPassword ? (
-                                <i class='eyeHidden-icon'></i>
-                            ) : (
-                                <i class='eye-icon'></i>
-                            )}
+
+                        <button type="button" class="toggle-password" onClick={togglePassword}>
+                            {showPassword ? <i class="eyeHidden-icon"></i> : <i class="eye-icon"></i>}
                         </button>
                     </div>
-                    <div class='error-message' data-field='password'></div>
+                    <div class="error-message">{errors.password}</div>
                 </div>
 
-                <button type='submit' class='signup-button'>
-                    {'Зарегистрироваться'}
+                {/* Кнопка */}
+                <button type="submit" class="signup-button">
+                    {isSubmitting ? 'Регистрация...' : 'Зарегистрироваться'}
                 </button>
             </form>
 
-            <div class='link-to-login-block'>
+            <div class="link-to-login-block">
                 <span>Уже есть аккаунт?</span>
-                <a class='link-to-login' onClick={goToLogin}>
-                    Вход
-                </a>
+                <a class="link-to-login" onClick={goToLogin}>Вход</a>
             </div>
         </div>
     );

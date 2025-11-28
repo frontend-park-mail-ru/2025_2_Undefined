@@ -5,7 +5,6 @@ import { loginUser, logoutUser } from '@api/modules/auth';
 import Home from '../home/home.jsx';
 import { getRouter } from '@/router/router.jsx';
 
-
 const Login = () => {
     const formRef = useRef(null);
     const passwordRef = useRef(null);
@@ -91,13 +90,36 @@ const Login = () => {
     };
 
     /** -----------------------------
+     * Проверка отдельного поля
+    --------------------------------*/
+    const validateField = (event) => {
+        const { name, value } = event.target;
+
+        if (name === 'phone_number') {
+            if (!value || value.trim().length < 18) {
+                showFieldError('phone_number', 'Введите корректный номер');
+            } else {
+                showFieldOk('phone_number');
+            }
+        }
+
+        if (name === 'password') {
+            if (!value || value.length < 8) {
+                showFieldError('password', 'Пароль минимум 8 символов');
+            } else {
+                showFieldOk('password');
+            }
+        }
+    };
+
+    /** -----------------------------
      * Красивое форматирование номера
     --------------------------------*/
     const telValidate = (event) => {
-        let value = event.target.value.replace(/\D/g, ''); // оставляем только цифры
+        let value = event.target.value.replace(/\D/g, '');
 
         if (value.startsWith('7') || value.startsWith('8')) {
-            value = value.substring(1); // убираем первую цифру, если 7 или 8
+            value = value.substring(1);
         }
 
         let formatted = '+7 (';
@@ -198,8 +220,9 @@ const Login = () => {
                         id="tel"
                         class="login-input"
                         placeholder="Введите номер телефона"
-                        onInput={telValidate} // <-- добавлено
+                        onInput={telValidate}
                         onChange={changeInput}
+                        onBlur={validateField}
                     />
                     <div class="error-message" data-field="phone_number"></div>
                 </div>
@@ -214,6 +237,7 @@ const Login = () => {
                             class="login-input"
                             placeholder="Введите пароль"
                             onChange={changeInput}
+                            onBlur={validateField}
                         />
                         <button
                             type="button"
@@ -281,18 +305,16 @@ export async function fetchUser() {
     return false;
 }
 
-// export const checkAuth = () => {
-//     if (app.isAuth) {
-//         console.log('Я зареган');
-//         createRoot(<Home />, container);
-//         // logoutUser();
-//     } else {
-//         console.log('я не зареган');
-//         createRoot(<Login />, container);
+export const checkAuth = () => {
+    if (app.isAuth) {
+        console.log('Я зареган');
+        createRoot(<Home />, container);
+        // logoutUser();
+    } else {
+        console.log('я не зареган');
+        createRoot(<Login />, container);
+    }
+};
 
-//     }
-
-// }
-// await fetchUser();
-// await checkAuth();
-
+await fetchUser();
+await checkAuth();
