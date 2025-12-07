@@ -34,8 +34,6 @@ export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateM
     };
 
     const handleSend = () => {
-        console.log('Отправляется по id', id)
-        console.log(messageText)
         if (isEditing) {
             updateMessage(messageText);
             setMessageText('');

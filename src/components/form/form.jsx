@@ -1,6 +1,6 @@
 // @components/form/form.jsx
 import React, { useState, useEffect, useRef } from 'minireact';
-import { addContact as apiAddContact } from '@api/modules/contacts'; // ⚠️ Переименовали импорт
+import { addContact as apiAddContact } from '@api/modules/contacts'; 
 import Chat from '@api/modules/chats.js';
 
 export function Form({ title, placeholderForInput, action = 'Добавить', onClose, onSuccess, isAddContact, isCreateGroup, isCreateChannel }) {
@@ -42,12 +42,13 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
 
     const showError = (message) => {
         setError(message);
+        document.querySelector('.error-message').style.display = 'block';
         if (errorRef.current && typeof errorRef.current.focus === 'function') {
             try { errorRef.current.focus(); } catch (e) { }
         }
     };
 
-    const telValidate = (event) => {
+    const telValidate = (event) => {    
         if (!isAddContact) return;
 
         let value = event.target.value.replace(/\D/g, '');
@@ -74,7 +75,6 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
         event.target.value = formattedValue;
     }
 
-    // ⚠️ ИСПРАВЛЕНИЕ: Переименовали локальную функцию
     const handleAddContact = async () => {
         const rawNumber = inputRef.current.value.replace(/\D/g, '');
         if (rawNumber.length < 10) {
@@ -93,13 +93,13 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
             const code = error?.statusCode ?? error?.status;
             if (code === 404) message = 'Пользователь не найден';
             else if (code === 409) message = 'Пользователь уже в контактах';
+            else if (code === 400) message = 'Нельзя добавить себя в контакты'
             else if (code === 500) message = 'Ошибка сервера';
             showError(message);
         }
     }
 
     const createGroupOrChannel = async () => {
-        console.log(isCreateGroup)
         const type = isCreateGroup ? 'group' : 'channel';
         const chatData = {
             members: [
@@ -114,22 +114,21 @@ export function Form({ title, placeholderForInput, action = 'Добавить', 
 
         try {
             const response = await Chat.createChat(chatData);
-            console.log('Чат создан:', response);
         } catch(err) {
             console.warn('Ошибка создания чата:', err);
-        }
-    }
-
-    const handleSubmit = async () => {
-        if (isAddContact) {
-            await handleAddContact(); // ⚠️ Используем переименованную функцию
-        }
-        if (isCreateGroup || isCreateChannel) {
-            await createGroupOrChannel();
         }
 
         if (onSuccess) onSuccess();
         if (onClose) onClose();
+    }
+
+    const handleSubmit = async () => {
+        if (isAddContact) {
+            await handleAddContact(); 
+        }
+        if (isCreateGroup || isCreateChannel) {
+            await createGroupOrChannel();
+        }
     };
 
     const handleKeyDown = (e) => {

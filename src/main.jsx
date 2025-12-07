@@ -10,6 +10,9 @@ window.app = {
     isAuth: false,
 };
 
+const homeApiRef = { current: null };
+let homeRootMounted = false;
+
 export async function fetchUser() {
     try {
         const res = await fetch('/api/v1/me', { credentials: 'include' });
@@ -41,7 +44,21 @@ const routes = {
             return;
         }
         const root = document.getElementById('root');
-        createRoot(<Home />, root);
+        createRoot(<Home apiRef={homeApiRef} />, root);
+        homeRootMounted = true;
+    },
+    '/chat/:id': (params) => {
+        if (!app.isAuth) {
+            getRouter()?.navigateTo('/login');
+            return;
+        }
+        const { id: chatId } = params;
+        const root = document.getElementById('root');
+        if (!homeRootMounted) {
+            createRoot(<Home apiRef={homeApiRef} />, root);
+            homeRootMounted = true;
+        }
+        homeApiRef.current.openChat(chatId);
     },
 };
 

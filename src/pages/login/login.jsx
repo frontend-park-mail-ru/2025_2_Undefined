@@ -1,10 +1,8 @@
-import React, { useState, useRef, createRoot } from 'minireact';
+import React, { useState, useRef } from 'minireact';
 import ReactDOM from 'minireact-dom';
 import Signup from '../signup/signup.jsx';
-import { loginUser, logoutUser } from '@api/modules/auth';
-import Home from '../home/home.jsx';
+import { loginUser } from '@api/modules/auth';
 import { getRouter } from '@/router/router.jsx';
-
 
 const Login = () => {
     const formRef = useRef(null);
@@ -13,17 +11,25 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // ➕ Ref'ы для ошибок (аналогично Signup)
+    const phoneErrorRef = useRef(null);
+    const passwordErrorRef = useRef(null);
+    const formErrorRef = useRef(null); // ← добавлено
+
     /** -----------------------------
      * Очистка ошибок формы
     --------------------------------*/
     const clearErrors = () => {
+        phoneErrorRef.current = null;
+        passwordErrorRef.current = null;
+        formErrorRef.current = null; // ← очищаем
+
         const form = formRef.current;
         if (!form) return;
 
         const inputs = form.querySelectorAll('.login-input');
         inputs.forEach((input) => {
-            input.classList.remove('error');
-            input.classList.remove('ok');
+            input.classList.remove('error', 'ok');
 
             const fieldName = input.getAttribute('name');
             const errorElement = form.querySelector(`[data-field="${fieldName}"]`);
@@ -33,8 +39,8 @@ const Login = () => {
             }
         });
 
-        const formError = form.querySelector('.form-error');
-        if (formError) formError.remove();
+        const formErrorEl = form.querySelector('.form-error');
+        if (formErrorEl) formErrorEl.remove();
     };
 
     /** -----------------------------
@@ -42,23 +48,40 @@ const Login = () => {
     --------------------------------*/
     const showFieldError = (fieldName, message) => {
         const form = formRef.current;
-        const input = form.querySelector(`[name="${fieldName}"]`);
-        const errorElement = form.querySelector(`[data-field="${fieldName}"]`);
+        const input = form?.querySelector(`[name="${fieldName}"]`);
+        const errorElement = form?.querySelector(`[data-field="${fieldName}"]`);
 
-        if (input && errorElement) {
+        if (input) {
             input.classList.add('error');
-            errorElement.textContent = message;
+            input.classList.remove('ok');
+        }
+
+        if (fieldName === 'phone_number') phoneErrorRef.current = message;
+        else if (fieldName === 'password') passwordErrorRef.current = message;
+
+        if (errorElement) {
             errorElement.style.display = 'block';
         }
     };
 
     const showFieldOk = (fieldName) => {
         const form = formRef.current;
-        const input = form.querySelector(`[name="${fieldName}"]`);
+        const input = form?.querySelector(`[name="${fieldName}"]`);
         if (input) {
             input.classList.add('ok');
             input.classList.remove('error');
         }
+
+        if (fieldName === 'phone_number') phoneErrorRef.current = null;
+        else if (fieldName === 'password') passwordErrorRef.current = null;
+    };
+
+    /** -----------------------------
+     * Общая ошибка формы
+    --------------------------------*/
+    const showFormError = (message) => {
+        clearErrors();
+        formErrorRef.current = message; // ← сохраняем в ref
     };
 
     /** -----------------------------
@@ -94,18 +117,15 @@ const Login = () => {
      * Красивое форматирование номера
     --------------------------------*/
     const telValidate = (event) => {
-        let value = event.target.value.replace(/\D/g, ''); // оставляем только цифры
-
+        let value = event.target.value.replace(/\D/g, '');
         if (value.startsWith('7') || value.startsWith('8')) {
-            value = value.substring(1); // убираем первую цифру, если 7 или 8
+            value = value.substring(1);
         }
-
         let formatted = '+7 (';
         if (value.length > 0) formatted += value.substring(0, 3);
         if (value.length > 3) formatted += ') ' + value.substring(3, 6);
         if (value.length > 6) formatted += '-' + value.substring(6, 8);
         if (value.length > 8) formatted += '-' + value.substring(8, 10);
-
         event.target.value = formatted;
     };
 
@@ -113,8 +133,7 @@ const Login = () => {
      * Удаление ошибки при вводе
     --------------------------------*/
     const changeInput = (event) => {
-        event.target.classList.remove('error');
-        event.target.classList.remove('ok');
+        event.target.classList.remove('error', 'ok');
 
         const form = formRef.current;
         const fieldName = event.target.name;
@@ -132,7 +151,6 @@ const Login = () => {
     const togglePassword = () => {
         const input = passwordRef.current;
         if (!input) return;
-
         const newType = input.type === 'password' ? 'text' : 'password';
         input.type = newType;
         setShowPassword(newType === 'text');
@@ -165,16 +183,21 @@ const Login = () => {
             getRouter().navigateTo('/');
         } catch (error) {
             if (error.errors) {
+                // 400: ошибка валидации
                 error.errors.forEach((err) =>
                     showFieldError(err.field, err.message)
                 );
             } else {
-                const formError = form.querySelector('.form-error');
-                if (!formError) {
-                    const div = document.createElement('div');
-                    div.className = 'form-error';
-                    div.textContent = 'Ошибка авторизации';
-                    form.prepend(div);
+                // ➕ Аналогично Signup — по statusCode
+                switch (error.statusCode) {
+                    case 401:
+                        showFormError('Неверный номер или пароль');
+                        break;
+                    case 429:
+                        showFormError('Слишком много попыток. Попробуйте позже.');
+                        break;
+                    default:
+                        showFormError('Ошибка авторизации');
                 }
             }
         }
@@ -190,6 +213,13 @@ const Login = () => {
         <div class="login-block">
             <h1>Вход</h1>
 
+            {/* ➕ Общая ошибка формы — аналогично Signup */}
+            {formErrorRef.current && (
+                <div class="form-error">
+                    {formErrorRef.current}
+                </div>
+            )}
+
             <form id="login" ref={formRef} class="login-form" onSubmit={onSubmit}>
                 <div class="input-group">
                     <input
@@ -198,10 +228,12 @@ const Login = () => {
                         id="tel"
                         class="login-input"
                         placeholder="Введите номер телефона"
-                        onInput={telValidate} // <-- добавлено
+                        onInput={telValidate}
                         onChange={changeInput}
                     />
-                    <div class="error-message" data-field="phone_number"></div>
+                    <div class="error-message" data-field="phone_number">
+                        {phoneErrorRef.current}
+                    </div>
                 </div>
 
                 <div class="input-group">
@@ -228,8 +260,9 @@ const Login = () => {
                             )}
                         </button>
                     </div>
-
-                    <div class="error-message" data-field="password"></div>
+                    <div class="error-message" data-field="password">
+                        {passwordErrorRef.current}
+                    </div>
                 </div>
 
                 <button type="submit" class="login-button">
@@ -251,21 +284,14 @@ const Login = () => {
     );
 };
 
-const container = document.getElementById('root');
-// createRoot(<Login />, container);
 export default Login;
 
-window.app = {
-    user: null,
-    isAuth: false,
-};
+// Без изменений:
+window.app = { user: null, isAuth: false };
 
 export async function fetchUser() {
     try {
-        const response = await fetch('/api/v1/me', {
-            credentials: 'include',
-        });
-
+        const response = await fetch('/api/v1/me', { credentials: 'include' });
         if (response.ok) {
             const userData = await response.json();
             app.user = userData;
@@ -275,24 +301,7 @@ export async function fetchUser() {
     } catch (error) {
         console.error('Ошибка при получении пользователя:', error);
     }
-
     app.user = null;
     app.isAuth = false;
     return false;
 }
-
-// export const checkAuth = () => {
-//     if (app.isAuth) {
-//         console.log('Я зареган');
-//         createRoot(<Home />, container);
-//         // logoutUser();
-//     } else {
-//         console.log('я не зареган');
-//         createRoot(<Login />, container);
-
-//     }
-
-// }
-// await fetchUser();
-// await checkAuth();
-

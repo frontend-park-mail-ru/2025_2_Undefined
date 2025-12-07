@@ -13,8 +13,9 @@ import { logoutUser } from '@api/modules/auth';
 import { getRouter } from '@/router/router.jsx';
 
 import { fetchUser } from '@/main.jsx';
+import { closeWebSocket } from '@api/modules/websocket';
 
-export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeContactsFor }) {
+export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeContactsFor, updateChats }) {
   const [activeTab, setActiveTab] = useState('chats');
   const [search, setSearch] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -124,6 +125,7 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
       danger: true,
       onClick: async () => {
         await logoutUser();
+        closeWebSocket();
         setMenus({
           main: { visible: false, position: { x: 0, y: 0 } },
           newChat: { visible: false, position: { x: 0, y: 0 } },
@@ -191,6 +193,10 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
       // Не сбрасываем поиск — пользователь может искать дальше
     }
   }, [contactsFor]);
+
+  useEffect(() => {
+    loadChats();
+  }, [updateChats])
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -282,22 +288,31 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
     }
   };
 
-  const loadChats = async () => {
-    try {
-      const rawChats = await Chat.getChats();
-      const chatList = Array.isArray(rawChats.chats) ? rawChats.chats : [];
-      const processedChats = chatList.map((item) => {
+const loadChats = async () => {
+  try {
+    const rawChats = await Chat.getChats();
+    const chatList = Array.isArray(rawChats.chats) ? rawChats.chats : [];
+
+    const processedChats = chatList
+      .map((item) => {
         const name = item.name || '';
         return {
           ...item,
-          placeholder: item.placeholder || getPlaceholder(name)
+          placeholder: item.placeholder || getPlaceholder(name),
+          _sortTime: item.last_message?.created_at
+            ? new Date(item.last_message.created_at).getTime()
+            : 0, 
         };
-      });
-      setChats(processedChats);
-    } catch (error) {
-      console.error('Ошибка загрузки чатов:', error);
-    }
-  };
+      })
+      .sort((a, b) => b._sortTime - a._sortTime); 
+
+    const cleanChats = processedChats.map(({ _sortTime, ...chat }) => chat);
+
+    setChats(cleanChats);
+  } catch (error) {
+    console.error('Ошибка загрузки чатов:', error);
+  }
+};
 
   const isActive = (id) => id === getOpenChatId() ? 'active' : '';
 
@@ -398,11 +413,15 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
                   isChannel={chat.isChannel}
                   isGroup={chat.isGroup}
                   last_message={chat.last_message}
-                  lastMessageDate={chat.lastMessageDate}
+                  // lastMessageDate={chat.last_message.created_at}
                   messageStatus={chat.messageStatus}
                   unreadCount={chat.unreadCount}
                   muted={chat.muted}
-                  onClick={() => onChatOpen(chat.id)}
+                  onClick={() => {
+                    console.log(chat)
+                    onChatOpen(chat.id)
+                  }
+                  }
                   isActive={(id) => isActive(id)}
                 />
               ))
@@ -427,10 +446,8 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
                     if (chat) {
                       onChatOpen(chat.id);
                     }
-                    // Не переключаем таб автоматически — пользователь может выбрать нескольких
-                    // Если нужно — раскомментируйте:
-                    // setActiveTab('chats');
-                    // changeContactsFor();
+                    setActiveTab('chats');
+                    changeContactsFor();
                   }}
                   contactsFor={{
                     action: contactsFor,
@@ -532,7 +549,7 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
           action="Добавить"
           onClose={() => {
             setIsFormOpen(false);
-            setSearch(''); // опционально — сброс после добавления
+            setSearch(''); 
           }}
           onSuccess={() => loadContacts()}
           isAddContact={true}

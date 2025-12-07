@@ -24,20 +24,17 @@ export function ChatItem({
       ref={ref}
       onClick={onClick}
     >
-      {/* Аватар */}
       <div class="chat-avatar">
         <div class="avatar-placeholder">{placeholder || getPlaceholder(name)}</div>
       </div>
 
-      {/* Правая часть */}
       <div class="chat-info">
         <div class="info-row">
 
-          {/* Название + тип чата */}
           <div class="title">
             <div class="chat-type">
-              {isChannel && <i class="channel-icon"></i>}
-              {isGroup && <i class="group-icon"></i>}
+              {isChannel && <i class="icon channel-icon"></i>}
+              {isGroup && <i class="icon group-icon"></i>}
             </div>
 
             <div class="chat-name">{name}</div>
@@ -45,14 +42,12 @@ export function ChatItem({
 
           <div class="separator"></div>
 
-          {/* Метаданные последнего сообщения */}
           <div class="lastMessageMeta">
             <div class={`MessageStatus ${messageStatus || ""}`}></div>
-            <div class="time">{lastMessageDate}</div>
+            <div class="time">{last_message.created_at.slice(11, 16)}</div>
           </div>
         </div>
 
-        {/* Подзаголовок */}
         <div class="subtitle">
           <div class="last-message">{last_message?.text || ""}</div>
 

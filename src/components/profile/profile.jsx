@@ -2,7 +2,6 @@ import { getPlaceholder } from '@components/avatar/avatar.js';
 import React from 'minireact';
 
 export const Profile = ({ placeholder, name, phone_number, username }) => {
-    console.log(name, phone_number, username)
     return (
         <div class="profile">
             {/* <div class="profile__avatar">

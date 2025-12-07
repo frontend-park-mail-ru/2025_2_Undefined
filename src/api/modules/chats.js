@@ -193,6 +193,26 @@ class Chat {
             console.error(error);
         }
     }
+
+    async getMessages (chatId, offset) {
+        const response = await fetch(`${SERVER_API}chats/${chatId}/messages?offset=${offset}&limit=20`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            const error = new Error(errorData.message || 'Ошибка получения сообщений');
+            error.errors = errorData.errors;
+            throw error;
+        }
+
+        const data = await response.json();
+        return data;
+    }
 }
 
 export default new Chat();

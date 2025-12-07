@@ -11,17 +11,25 @@ const Signup = () => {
     const passwordRef = useRef(null);
     const [showPassword, setShowPassword] = useState(false);
 
+    const phoneErrorRef = useRef(null);
+    const nameErrorRef = useRef(null);
+    const passwordErrorRef = useRef(null);
+    const formError = useRef(null);
+
     /** -----------------------------
      * Очистка ошибок
     --------------------------------*/
     const clearErrors = () => {
+        phoneErrorRef.current = null;
+        nameErrorRef.current = null;
+        passwordErrorRef.current = null;
+
         const form = formRef.current;
         if (!form) return;
 
         const inputs = form.querySelectorAll('.signup-input');
         inputs.forEach((input) => {
-            input.classList.remove('error');
-            input.classList.remove('ok');
+            input.classList.remove('error', 'ok');
 
             const fieldName = input.getAttribute('name');
             const errorElement = form.querySelector(`[data-field="${fieldName}"]`);
@@ -41,23 +49,36 @@ const Signup = () => {
     --------------------------------*/
     const showFieldError = (fieldName, message) => {
         const form = formRef.current;
-        const input = form.querySelector(`[name="${fieldName}"]`);
-        const errorElement = form.querySelector(`[data-field="${fieldName}"]`);
+        const input = form?.querySelector(`[name="${fieldName}"]`);
+        const errorElement = form?.querySelector(`[data-field="${fieldName}"]`);
 
-        if (input && errorElement) {
+        if (input) {
             input.classList.add('error');
-            errorElement.textContent = message;
+            input.classList.remove('ok');
+        }
+
+        if (fieldName === 'phone_number') phoneErrorRef.current = message;
+        else if (fieldName === 'name') nameErrorRef.current = message;
+        else if (fieldName === 'password') passwordErrorRef.current = message;
+
+        if (errorElement) {
+            // errorElement.textContent = message;
             errorElement.style.display = 'block';
         }
     };
 
     const showFieldOk = (fieldName) => {
         const form = formRef.current;
-        const input = form.querySelector(`[name="${fieldName}"]`);
+        const input = form?.querySelector(`[name="${fieldName}"]`);
         if (input) {
             input.classList.add('ok');
             input.classList.remove('error');
         }
+
+        // ➕ Очищаем ошибку
+        if (fieldName === 'phone_number') phoneErrorRef.current = null;
+        else if (fieldName === 'name') nameErrorRef.current = null;
+        else if (fieldName === 'password') passwordErrorRef.current = null;
     };
 
     /** -----------------------------
@@ -65,13 +86,7 @@ const Signup = () => {
     --------------------------------*/
     const showFormError = (message) => {
         clearErrors();
-
-        const form = formRef.current;
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'form-error';
-        errorDiv.textContent = message;
-
-        form.prepend(errorDiv);
+        formError.current = message;
     };
 
     /** -----------------------------
@@ -194,12 +209,12 @@ const Signup = () => {
             await fetchUser();
             getRouter().navigateTo('/');
         } catch (error) {
-            if (error.errors) {
-                error.errors.forEach((err) =>
-                    showFieldError(err.field, err.message)
-                );
-            } else {
-                showFormError('Ошибка регистрации');
+            switch (error.statusCode) {
+                case 409:
+                    showFieldError('phone_number', 'Этот номер уже занят')
+                    break;
+                default:
+                    showFormError('Ошибка регистрации');
             }
         }
 
@@ -214,6 +229,10 @@ const Signup = () => {
         <div class='signup-block'>
             <h1>Регистрация</h1>
 
+            {formError.current && 
+                <div class="form-error"> {formError.current} </div>
+            }
+
             <form id='signup' ref={formRef} class='signup-form' onSubmit={onSubmit}>
                 <div class='input-group'>
                     <input
@@ -225,7 +244,9 @@ const Signup = () => {
                         onInput={telValidate}
                         onChange={changeInput}
                     />
-                    <div class='error-message' data-field='phone_number'></div>
+                    <div class='error-message' data-field='phone_number'>
+                        {phoneErrorRef.current}
+                    </div>
                 </div>
 
                 <div class='input-group'>
@@ -236,7 +257,9 @@ const Signup = () => {
                         placeholder='Введите имя'
                         onChange={changeInput}
                     />
-                    <div class='error-message' data-field='name'></div>
+                    <div class='error-message' data-field='name'>
+                        {nameErrorRef.current}
+                    </div>
                 </div>
 
                 <div class='input-group'>
@@ -263,7 +286,9 @@ const Signup = () => {
                             )}
                         </button>
                     </div>
-                    <div class='error-message' data-field='password'></div>
+                    <div class='error-message' data-field='password'>
+                        {passwordErrorRef.current}
+                    </div>
                 </div>
 
                 <button type='submit' class='signup-button'>

@@ -7,15 +7,28 @@ class Router {
         this.currentPath = null;
     }
 
+    _matchRoute(path) {
+        if (this.routes[path]) {
+            return { handler: this.routes[path], params: {} };
+        }
+
+        const chatMatch = path.match(/^\/chat\/([^/]+)$/);
+        if (chatMatch) {
+            const chatId = chatMatch[1];
+            const handler = this.routes['/chat/:id'];
+            if (handler) {
+                return { handler, params: { id: chatId } };
+            }
+        }
+
+        return null;
+    }
+
     navigateTo(path) {
         if (this.currentPath === path) return;
 
         if (!this.isRouteAllowed(path)) {
-            if (app.isAuth) {
-                path = '/';
-            } else {
-                path = '/login';
-            }
+            path = app.isAuth ? '/' : '/login';
         }
 
         history.pushState({ path }, '', path);
@@ -24,19 +37,19 @@ class Router {
 
     isRouteAllowed(path) {
         if (app.isAuth) {
-            // Авторизованный: нельзя в /login и /signup
-            return !(path === '/login' || path === '/signup');
+            return !['/login', '/signup'].includes(path) && 
+                   (path === '/' || path.startsWith('/chat/'));
         } else {
-            // Не авторизованный: нельзя в /
-            return path === '/login' || path === '/signup';
+            return ['/login', '/signup'].includes(path);
         }
     }
 
     renderRoute(path) {
         this.currentPath = path;
-        const handler = this.routes[path];
-        if (handler) {
-            handler();
+
+        const match = this._matchRoute(path);
+        if (match) {
+            match.handler(match.params);
         } else {
             console.warn(`Route not found: ${path}. Redirecting...`);
             this.navigateTo(app.isAuth ? '/' : '/login');
@@ -48,7 +61,6 @@ class Router {
         if (this.isRouteAllowed(path)) {
             this.renderRoute(path);
         } else {
-            // Восстанавливаем "правильный" путь
             this.navigateTo(app.isAuth ? '/' : '/login');
         }
     };
@@ -56,7 +68,6 @@ class Router {
     init() {
         window.addEventListener('popstate', this.handlePopState);
 
-        // Изначальный рендер
         const initialPath = window.location.pathname;
         if (this.isRouteAllowed(initialPath)) {
             this.renderRoute(initialPath);

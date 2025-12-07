@@ -31,7 +31,7 @@ import '@components/context-menu/context-menu.css';
 import '@components/modalView/modalView.css';
 import '@components/modalView/modalEdit.css';
 
-const Home = () => {
+const Home = ({ apiRef }) => {
   /* ===============================
      СТЕЙТЫ
   =============================== */
@@ -48,6 +48,7 @@ const Home = () => {
   const [selectedMessage, setSelectedMessage] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [textOfEdit, setTextOfEdit] = useState('');
+  const [updateChats, setUpdateChats] = useState(0);
 
   // 🔍 Поиск сообщений
   const [searchQuery, setSearchQuery] = useState('');
@@ -66,22 +67,33 @@ const Home = () => {
   const meatballsMenuRef = useRef(null);
   const messagesEndRef = useRef(null);
   const searchInputRef = useRef(null);
+  const messageBoxRef = useRef(null);
 
   const openChatIdRef = useRef(openChatId);
   const menusRef = useRef(menus);
+  const offset = useRef(0);
   menusRef.current = menus;
   const chatDataRef = useRef(null);
 
   /* ===============================
-     АВТОСКРОЛЛ К ПОСЛЕДНЕМУ СООБЩЕНИЮ
+     ✅ АВТОСКРОЛЛ К ПОСЛЕДНЕМУ СООБЩЕНИЮ — ТОЛЬКО ПОСЛЕ РЕНДЕРА
   =============================== */
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (messages.length === 0) return;
+
+    const id = requestAnimationFrame(() => {
+      const el = messagesEndRef.current;
+      if (el) {
+        el.scrollIntoView({
+          behavior: 'smooth',
+          block: 'end',
+          inline: 'nearest'
+        });
+      }
+    });
+
+    return () => cancelAnimationFrame(id);
+  }, [messages.length]);
 
   useEffect(() => {
     openChatIdRef.current = openChatId;
@@ -123,12 +135,10 @@ const Home = () => {
     setSearchResults(results);
     setCurrentResultIndex(results.length > 0 ? 0 : -1);
 
-    // Прокрутка к первому результату
     if (results.length > 0) {
       const el = document.querySelector(`[data-message-index="${results[0].index}"]`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Можно добавить временный класс для "мигания"
       }
     }
   };
@@ -190,9 +200,11 @@ const Home = () => {
       text: 'Удалить',
       icon: '/icons/exit.svg',
       danger: true,
-      onClick: () => {
+      onClick: async () => {
         console.log(openChatId);
-        Chat.deleteChat(openChatId);
+        await Chat.deleteChat(openChatId);
+        setUpdateChats(prev => prev + 1);
+        setIsChatOpen(false);
         setMenus(prev => ({
           ...prev,
           meatballs: { visible: false, position: { x: 0, y: 0 } }
@@ -417,9 +429,17 @@ const Home = () => {
      ОТКРЫТЬ ЧАТ
   =============================== */
   const openChatHandler = async (chatId) => {
+    const prevContainer = messageBoxRef.current;
+    if (prevContainer && prevContainer.__homeScrollHandler) {
+      prevContainer.removeEventListener('scroll', prevContainer.__homeScrollHandler);
+      prevContainer.__homeScrollHandler = null;
+    }
+
+    offset.current = 0;
+
     setOpenChatId(chatId);
     setIsChatOpen(true);
-    setSearchQuery(''); // сброс поиска при смене чата
+    setSearchQuery('');
     setSearchResults([]);
     setCurrentResultIndex(-1);
 
@@ -443,28 +463,70 @@ const Home = () => {
       setChatData(null);
       setMessages([]);
     }
+
+    const handleScroll = () => {
+      const container = messageBoxRef.current;
+      if (!container) return;
+
+      if (container.scrollTop === 0 && !container.__loading) {
+        container.__loading = true;
+        loadMessages()
+          .finally(() => {
+            container.__loading = false;
+          });
+      }
+    };
+
+    const container = messageBoxRef.current;
+    if (container) {
+      // Сохраняем ссылку на обработчик прямо в DOM-элементе
+      container.__homeScrollHandler = handleScroll;
+      container.addEventListener('scroll', handleScroll, { passive: true });
+    }
+
+    getRouter().navigateTo(`/chat/${chatId}`);
   };
 
   const getOpenChatId = () => openChatId;
 
+  // Экспонируем метод через ref
+  useEffect(() => {
+    if (apiRef) {
+      apiRef.current = { openChat: openChatHandler };
+    }
+    return () => {
+      if (apiRef) apiRef.current = null;
+    };
+  }, [openChatHandler]);
+
   /* ===============================
-     ВЕБ-СОКЕТ
+     ✅ ВЕБ-СОКЕТ — УМНЫЙ АВТОСКРОЛЛ
   =============================== */
   useEffect(() => {
     initWebSocket();
     const globalWs = getWebSocket();
 
+    if (!globalWs) {
+      console.warn('WebSocket not available');
+      return;
+    }
+
     const addNewMessage = (newMessage) => {
+      setUpdateChats(prev => prev + 1);
       setMessages((prevMessages) => {
         if (newMessage.chat_id !== openChatIdRef.current) return prevMessages;
         if (prevMessages.some((msg) => msg.id === newMessage.id)) return prevMessages;
 
+        newMessage.isSystem = newMessage.type === 'system';
         newMessage.isMine = chatDataRef.current?.type !== 'channel' && newMessage.sender_id === app.user?.id;
         return [...prevMessages, newMessage];
       });
+
+      return newMessage.isMine;
     };
 
     const deleteMessageLocally = (messageId) => {
+      setUpdateChats(prev => prev + 1);
       setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
     };
 
@@ -474,7 +536,7 @@ const Home = () => {
       );
     };
 
-    globalWs.onmessage = (event) => {
+    const handleMessage = (event) => {
       let message;
       try {
         message = JSON.parse(event.data);
@@ -484,10 +546,25 @@ const Home = () => {
       }
 
       switch (message.type) {
-        case 'new_message':
-          console.log("YES")
-          addNewMessage(message.value);
+        case 'new_message': {
+          const container = messageBoxRef.current;
+          const wasAtBottom = container
+            ? container.scrollHeight - container.scrollTop <= container.clientHeight + 100
+            : false;
+
+          const isMine = addNewMessage(message.value);
+
+          if (isMine || wasAtBottom) {
+            requestAnimationFrame(() => {
+              messagesEndRef.current?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'end',
+                inline: 'nearest'
+              });
+            });
+          }
           break;
+        }
         case 'delete_message':
           deleteMessageLocally(message.value.id);
           break;
@@ -499,10 +576,51 @@ const Home = () => {
       }
     };
 
+    globalWs.addEventListener('message', handleMessage);
+
     return () => {
-      // cleanup не требуется, если WS глобальный
+      globalWs.removeEventListener('message', handleMessage);
     };
   }, []);
+
+  /* ===============================
+     ПОДГРУЗКА СООБЩЕНИЙ
+  =============================== */
+  const loadMessages = async () => {
+    const container = messageBoxRef.current;
+    if (!container) return;
+
+    const currentScrollTop = container.scrollTop;
+    const currentScrollHeight = container.scrollHeight;
+
+    offset.current += 20;
+    console.log(offset.current)
+    try {
+      const newMessages = await Chat.getMessages(openChatIdRef.current, offset.current);
+      console.log(newMessages)
+      if (newMessages.length === 0) {
+        offset.current -= 20
+        return;
+      }
+      setMessages(prev => {
+        const processed = newMessages.map(m => ({
+          ...m,
+          isSystem: m.type === 'system',
+          isMine: chatDataRef.current?.type !== 'channel' && m.sender_id === app.user?.id,
+        }));
+        return [...processed.reverse(), ...prev];
+      });
+
+      requestAnimationFrame(() => {
+        const newScrollHeight = container.scrollHeight;
+        const heightDiff = newScrollHeight - currentScrollHeight;
+        container.scrollTop = currentScrollTop + heightDiff;
+      });
+    } catch (err) {
+      console.error('Ошибка подгрузки сообщений:', err);
+      offset.current -= 20;
+    }
+  };
 
   /* ===============================
      JSX
@@ -515,6 +633,7 @@ const Home = () => {
           getOpenChatId={getOpenChatId}
           contactsFor={contactsFor}
           changeContactsFor={() => setContactsFor('dialog')}
+          updateChats={updateChats}
         />
       </div>
 
@@ -526,12 +645,10 @@ const Home = () => {
             style="cursor: pointer;"
           >
             <div class="header-wrapper" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-              {/* Левая часть: имя чата */}
               <div style="flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 {chatData ? chatData.name || `Чат ${openChatId}` : ''}
               </div>
 
-              {/* Центр: поиск */}
               <div style="flex: 2; display: flex; align-items: center; justify-content: center; margin: 0 16px;">
                 <div
                   style="
@@ -557,14 +674,14 @@ const Home = () => {
                     "
                   ></span>
                   <div>
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={searchQuery}
-                    onInput={(e) => handleSearch(e.target.value)}
-                    placeholder="Поиск в чате..."
-                    onClick={(ev) => ev.stopPropagation()}
-                    style="
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={searchQuery}
+                      onInput={(e) => handleSearch(e.target.value)}
+                      placeholder="Поиск в чате..."
+                      onClick={(ev) => ev.stopPropagation()}
+                      style="
                       border: none;
                       background: transparent;
                       outline: none;
@@ -572,14 +689,11 @@ const Home = () => {
                       font-size: 14px;
                       padding: 4px 0;
                     "
-                  />
+                    />
                   </div>
-
-                  
                 </div>
               </div>
 
-              {/* Правая часть: meatballs */}
               <div
                 class="meatballs-div"
                 ref={meatballsButtonRef}
@@ -596,7 +710,10 @@ const Home = () => {
 
           <div class="content">
             <div class="content-center">
-              <div class="content-center-messages">
+              <div
+                class="content-center-messages"
+                ref={messageBoxRef}
+              >
                 {messages.length > 0 ? (
                   messages.map((message, index) => (
                     <div
@@ -659,11 +776,13 @@ const Home = () => {
           name={chatData?.name}
           description={chatData?.description || ''}
           onClose={() => setEditInfoModal(false)}
-          onSave={() => console.log('Успешно сохранено')}
+          onSave={() => {
+            setUpdateChats(prev => prev + 1);
+            openChatHandler(chatData?.id);
+          }}
         />
       )}
 
-      {/* Меню "мясных шариков" */}
       {menus.meatballs.visible && (
         <div
           ref={meatballsMenuRef}
@@ -678,7 +797,6 @@ const Home = () => {
         </div>
       )}
 
-      {/* Контекстное меню сообщения */}
       {menus.message.visible && (
         <div
           style={{
