@@ -1,0 +1,30 @@
+.stickers-modal-overlay{
+    position: absolute;
+    height: 350px;
+    width: 360px;
+    right: 0;
+    top: -370px;
+    background-color: var(--color-border);
+    border-radius: 8px;
+    padding: 10px;
+    font-size: 30px;
+}
+
+.sticker-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 25px;      
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: transform 0.15s, background-color 0.15s;
+}
+
+.sticker-button:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+    transform: scale(1.1);
+}

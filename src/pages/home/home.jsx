@@ -68,6 +68,7 @@ const Home = ({ apiRef }) => {
   const messagesEndRef = useRef(null);
   const searchInputRef = useRef(null);
   const messageBoxRef = useRef(null);
+  const messagesRef = useRef(null);
 
   const openChatIdRef = useRef(openChatId);
   const menusRef = useRef(menus);
@@ -455,13 +456,16 @@ const Home = ({ apiRef }) => {
           isSystem: m.type === 'system',
         }));
         setMessages(processedMessages);
+        messagesRef.current = processedMessages;
       } else {
         setMessages([]);
+        messagesRef.current = [];
       }
     } catch (error) {
       console.error('Ошибка загрузки чата:', error);
       setChatData(null);
       setMessages([]);
+      messagesRef.current = [];
     }
 
     const handleScroll = () => {
@@ -519,6 +523,8 @@ const Home = ({ apiRef }) => {
 
         newMessage.isSystem = newMessage.type === 'system';
         newMessage.isMine = chatDataRef.current?.type !== 'channel' && newMessage.sender_id === app.user?.id;
+
+        messagesRef.current = [...prevMessages, newMessage];
         return [...prevMessages, newMessage];
       });
 
@@ -527,13 +533,21 @@ const Home = ({ apiRef }) => {
 
     const deleteMessageLocally = (messageId) => {
       setUpdateChats(prev => prev + 1);
-      setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+      setMessages((prev) => {
+        const next = prev.filter((msg) => msg.id !== messageId);
+        messagesRef.current = next;
+        return next;
+      });
     };
 
     const updateMessageLocally = (updatedMessage) => {
-      setMessages((prev) =>
-        prev.map((msg) => (msg.id === updatedMessage.id ? { ...msg, ...updatedMessage } : msg))
-      );
+      setMessages((prev) => {
+        const next = prev.map((msg) =>
+          msg.id === updatedMessage.id ? { ...msg, ...updatedMessage } : msg
+        );
+        messagesRef.current = next;
+        return next;
+      });
     };
 
     const handleMessage = (event) => {
@@ -593,22 +607,23 @@ const Home = ({ apiRef }) => {
     const currentScrollTop = container.scrollTop;
     const currentScrollHeight = container.scrollHeight;
 
-    offset.current += 20;
-    console.log(offset.current)
+    offset.current = messagesRef.current.length;
+    console.log('offset:', offset.current)
+    console.log(messagesRef.current)
     try {
       const newMessages = await Chat.getMessages(openChatIdRef.current, offset.current);
-      console.log(newMessages)
-      if (newMessages.length === 0) {
-        offset.current -= 20
-        return;
-      }
+      // if (newMessages.length === 0) {
+      //   offset.current -= 20
+      //   return;
+      // }
       setMessages(prev => {
         const processed = newMessages.map(m => ({
           ...m,
           isSystem: m.type === 'system',
           isMine: chatDataRef.current?.type !== 'channel' && m.sender_id === app.user?.id,
         }));
-        return [...processed.reverse(), ...prev];
+        messagesRef.current = [...processed, ...prev]
+        return [...processed, ...prev];
       });
 
       requestAnimationFrame(() => {
@@ -618,7 +633,7 @@ const Home = ({ apiRef }) => {
       });
     } catch (err) {
       console.error('Ошибка подгрузки сообщений:', err);
-      offset.current -= 20;
+      // offset.current -= 20;
     }
   };
 

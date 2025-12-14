@@ -213,7 +213,6 @@ const Login = () => {
         <div class="login-block">
             <h1>Вход</h1>
 
-            {/* ➕ Общая ошибка формы — аналогично Signup */}
             {formErrorRef.current && (
                 <div class="form-error">
                     {formErrorRef.current}

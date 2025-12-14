@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useRef } from 'minireact';
 import { getWebSocket } from '@api/modules/websocket';
+import { StickersModal } from '@components/stickers-modal/sticker-modal';
 
 export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateMessage, noEdit }) {
     const [messageText, setMessageText] = useState('');
     const [isDisabled, setIsDisabled] = useState(true);
+    const [showStickerModal, setShowStickerModal] = useState(false)
+
     const textareaRef = useRef(null);
     const sendButtonRef = useRef(null);
 
@@ -21,6 +24,7 @@ export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateM
             sendButtonRef.current.disabled = text === '';
         }
         setIsDisabled(text === '');
+        console.log(textareaRef.current.value)
     }, [messageText]);
 
     useEffect(() => {
@@ -93,57 +97,100 @@ export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateM
         console.log('Сообщение отправлено через WebSocket');
     }
 
+    const addSmile = (sticker) => {
+        setMessageText(prev => prev + sticker);
+        textareaRef.current.value += sticker;
+    };
+
     return (
         <div class="inputMessage" data-inputmessage-id={id} style={{ position: 'relative' }}>
             <div class="inputMessage-item" style={{ flex: 1, position: 'relative' }}>
-                <textarea
-                    class="inputMessage-item-input"
-                    placeholder="Сообщение"
-                    onInput={handleInputChange}
-                    onKeyPress={handleKeyPress}
-                    onKeyDown={handleKeyDown}
-                    ref={textareaRef}
-                    rows="1"
-                    style={{
-                        resize: 'none',
-                        overflow: 'hidden',
-                        minHeight: '40px',
-                        maxHeight: '120px',
-                        // paddingRight: messageText.trim() ? '32px' : '12px', // ← место под крестик
-                        boxSizing: 'border-box'
-                    }}
-                />
-
-                {/* ✅ Кнопка крестика */}
-                {/* {messageText.trim() && ( */}
-                    <button
-                        type="button"
-                        onClick={clearInput}
+                <div>
+                    <textarea
+                        class="inputMessage-item-input"
+                        placeholder="Сообщение"
+                        // value='{messageText}'         
+                        onInput={handleInputChange}
+                        onKeyPress={handleKeyPress}
+                        onKeyDown={handleKeyDown}
+                        ref={textareaRef}
+                        rows="1"
                         style={{
-                            position: 'absolute',
-                            top: '50%',
-                            right: '8px',
-                            transform: 'translateY(-50%)',
-                            background: 'transparent',
-                            border: 'none',
-                            fontSize: '18px',
-                            color: '#999',
-                            cursor: 'pointer',
-                            width: '24px',
-                            height: '24px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: 0,
-                            margin: 0,
-                            zIndex: 1
+                            resize: 'none',
+                            overflow: 'hidden',
+                            minHeight: '40px',
+                            maxHeight: '120px',
+                            paddingRight: messageText.trim() ? '32px' : '12px',
+                            boxSizing: 'border-box'
                         }}
-                        aria-label="Очистить"
-                    >
-                        ✕
-                    </button>
-                {/* )} */}
+                    />
+                    {/* ✅ Кнопка крестика */}
+                    {messageText.trim() && (
+                        <button
+                            type="button"
+                            onClick={clearInput}
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                right: '8px',
+                                transform: 'translateY(-50%)',
+                                background: 'transparent',
+                                border: 'none',
+                                fontSize: '18px',
+                                color: '#999',
+                                cursor: 'pointer',
+                                width: '24px',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: 0,
+                                margin: 0,
+                                zIndex: 1
+                            }}
+                            aria-label="Очистить"
+                        >
+                            ✕
+                        </button>
+                    )}
+
+                    {!isEditing &&
+                        <button
+                            type="button"
+                            onClick={() => setShowStickerModal(!showStickerModal)}
+                            style={{
+                                position: 'absolute',
+                                top: '50%',
+                                right: '30px',
+                                transform: 'translateY(-50%)',
+                                background: 'transparent',
+                                border: 'none',
+                                fontSize: '18px',
+                                color: '#999',
+                                cursor: 'pointer',
+                                width: '24px',
+                                height: '24px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: 0,
+                                margin: 0,
+                                zIndex: 1
+                            }}
+                            aria-label="Очистить"
+                        >
+                            <i class="smile-icon icon"></i>
+                        </button>
+                    }
+                </div>
+                {showStickerModal &&
+                    <StickersModal
+                        onClose={setShowStickerModal(false)}
+                        addSmile={addSmile}
+                    />
+                }
             </div>
+
             <div class="inputMessage-item">
                 <button
                     class={`button`}
@@ -153,6 +200,7 @@ export function InputMessage({ id, onSendMessage, isEditing, textOfEdit, updateM
                     <i class="icon post-icon"></i>
                 </button>
             </div>
+
         </div>
     );
 }

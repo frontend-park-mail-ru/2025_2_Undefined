@@ -211,7 +211,7 @@ class Chat {
         }
 
         const data = await response.json();
-        return data;
+        return data.reverse();
     }
 }
 

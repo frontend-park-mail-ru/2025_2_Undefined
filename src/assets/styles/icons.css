@@ -47,13 +47,18 @@
     mask-image: url('../../assets/icons/user_alt_light.svg');
 }
 
-.eye-icon {
-    background-image: url('./assets/icons/eye.svg');
+.smile-icon {
+    -webkit-mask-image: url('../../assets/icons/smile.svg');
+    mask-image: url('../../assets/icons/smile.svg');
 }
 
-.eyeHidden-icon {
+/* .eye-icon {
+    background-image: url('./assets/icons/eye.svg');
+} */
+
+/* .eyeHidden-icon {
     background-image: url('./assets/icons/eyeHidden.svg');
-}
+} */
 
 .menu-icon {
     -webkit-mask-image: url('../../assets/icons/menu.svg');
