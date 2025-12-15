@@ -18,6 +18,7 @@ import { ContextMenu } from '@components/context-menu/context-menu.jsx';
 import { Message } from '@components/message/message';
 import { getWebSocket } from '@api/modules/websocket';
 import { fetchUser as apiFetchUser } from '../login/login.jsx';
+import { smiles, stickers } from '@assets/smiles/smiles'
 
 // Стили
 import '@components/menu-of-chat/menu-of-chat.css';
@@ -76,8 +77,38 @@ const Home = ({ apiRef }) => {
   menusRef.current = menus;
   const chatDataRef = useRef(null);
 
+  const [notificationStatus, setNotificationStatus] = useState('default');
+
+  useEffect(() => {
+    const checkPermission = () => {
+      if (!('Notification' in window)) {
+        setNotificationStatus('unsupported');
+        return;
+      }
+      if (Notification.permission === 'granted') {
+        setNotificationStatus('granted');
+      } else if (Notification.permission === 'denied') {
+        setNotificationStatus('denied');
+      }
+    };
+
+    checkPermission();
+  }, []);
+
+  const requestNotificationPermission = async () => {
+    if (notificationStatus !== 'default') return;
+
+    try {
+      const result = await Notification.requestPermission();
+      setNotificationStatus(result === 'granted' ? 'granted' : 'denied');
+    } catch (err) {
+      console.error('Ошибка запроса разрешения на уведомления:', err);
+      setNotificationStatus('denied');
+    }
+  };
+
   /* ===============================
-     ✅ АВТОСКРОЛЛ К ПОСЛЕДНЕМУ СООБЩЕНИЮ — ТОЛЬКО ПОСЛЕ РЕНДЕРА
+    АВТОСКРОЛЛ К ПОСЛЕДНЕМУ СООБЩЕНИЮ — ТОЛЬКО ПОСЛЕ РЕНДЕРА
   =============================== */
   useEffect(() => {
     if (messages.length === 0) return;
@@ -446,6 +477,7 @@ const Home = ({ apiRef }) => {
 
     try {
       const response = await Chat.getChat(chatId);
+      console.log(response)
       setChatData(response);
       chatDataRef.current = response;
 
@@ -483,7 +515,6 @@ const Home = ({ apiRef }) => {
 
     const container = messageBoxRef.current;
     if (container) {
-      // Сохраняем ссылку на обработчик прямо в DOM-элементе
       container.__homeScrollHandler = handleScroll;
       container.addEventListener('scroll', handleScroll, { passive: true });
     }
@@ -493,7 +524,6 @@ const Home = ({ apiRef }) => {
 
   const getOpenChatId = () => openChatId;
 
-  // Экспонируем метод через ref
   useEffect(() => {
     if (apiRef) {
       apiRef.current = { openChat: openChatHandler };
@@ -502,6 +532,31 @@ const Home = ({ apiRef }) => {
       if (apiRef) apiRef.current = null;
     };
   }, [openChatHandler]);
+
+  const showNotification = (msg) => {
+    console.log('уведомление')
+    let senderName = msg.sender_name || 'Новый чат';
+    let title = senderName;
+
+    const chat = chats.find(c => c.id === msg.chat_id);
+    if (chat && chat.type !== 'dialog') {
+      title = chat.name || 'Группа';
+    }
+
+    const notification = new Notification(title, {
+      body: msg.text || '📎 Вложение',
+      icon: msg.attachment?.file_url || '/icons/logo-64.png',
+      tag: `msg-${msg.id}`,
+      renotify: true,
+    });
+
+    notification.onclick = () => {
+      window.focus();
+      openChatHandler(msg.chat_id);
+      notification.close();
+    };
+
+  };
 
   /* ===============================
      ✅ ВЕБ-СОКЕТ — УМНЫЙ АВТОСКРОЛЛ
@@ -522,8 +577,24 @@ const Home = ({ apiRef }) => {
         if (prevMessages.some((msg) => msg.id === newMessage.id)) return prevMessages;
 
         newMessage.isSystem = newMessage.type === 'system';
+        newMessage.typeOfAttachment = newMessage.attachment?.type;
         newMessage.isMine = chatDataRef.current?.type !== 'channel' && newMessage.sender_id === app.user?.id;
 
+        if (newMessage.typeOfAttachment === 'sticker') {
+          console.log(newMessage.attachment?.file_url)
+          newMessage.attachment = {
+            file_url: stickers[newMessage.attachment?.file_url].src,
+            type: 'sticker'
+          }
+        }
+
+        if (newMessage.typeOfAttachment === 'image') {
+          console.log(newMessage.attachment?.file_url)
+          newMessage.attachment = {
+            file_url: newMessage.attachment?.file_url,
+            type: 'image'
+          }
+        }
         messagesRef.current = [...prevMessages, newMessage];
         return [...prevMessages, newMessage];
       });
@@ -559,6 +630,8 @@ const Home = ({ apiRef }) => {
         return;
       }
 
+      console.log('сообщение пришло', message)
+
       switch (message.type) {
         case 'new_message': {
           const container = messageBoxRef.current;
@@ -566,7 +639,19 @@ const Home = ({ apiRef }) => {
             ? container.scrollHeight - container.scrollTop <= container.clientHeight + 100
             : false;
 
+          if (message.attachment) {
+            console.log('atta')
+          }
+          console.log(message.value)
+
+          const isNewChat = message.chat_id !== openChatIdRef.current;
+
           const isMine = addNewMessage(message.value);
+
+          if (!isMine && isNewChat) {
+            console.log('уведоммление')
+            showNotification(message.value);
+          }
 
           if (isMine || wasAtBottom) {
             requestAnimationFrame(() => {
@@ -656,7 +741,10 @@ const Home = ({ apiRef }) => {
         <div class="main-panel">
           <div
             class="header"
-            onClick={() => setInfoModal(true)}
+            onClick={() => {
+              requestNotificationPermission();
+              setInfoModal(true)
+            }}
             style="cursor: pointer;"
           >
             <div class="header-wrapper" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -748,6 +836,8 @@ const Home = ({ apiRef }) => {
                         text={highlightText(message.text || '', searchQuery)}
                         time={formatMessageTime(message.created_at)}
                         onMessageClick={handleMessageClick(message)}
+                        isUpdated={message.updated_at}
+                        attachment={message.attachment}
                       />
                     </div>
                   ))

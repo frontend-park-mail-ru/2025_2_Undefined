@@ -190,7 +190,6 @@ export function LeftSidebar({ onChatOpen, getOpenChatId, contactsFor, changeCont
       setSearch('');
     } else if (contactsFor === 'dialog') {
       setActiveTab('chats');
-      // Не сбрасываем поиск — пользователь может искать дальше
     }
   }, [contactsFor]);
 

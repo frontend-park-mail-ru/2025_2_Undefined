@@ -1,4 +1,4 @@
-.stickers-modal-overlay{
+.stickers-modal-overlay {
     position: absolute;
     height: 350px;
     width: 360px;
@@ -8,13 +8,30 @@
     border-radius: 8px;
     padding: 10px;
     font-size: 30px;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
 }
 
-.sticker-button {
+.stickers-modal-content{
+    height: 275px;
+}
+
+.stickers-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px; 
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.smile-button {
     background-color: transparent;
     border: none;
     cursor: pointer;
-    font-size: 25px;      
+    font-size: 25px;
     width: 34px;
     height: 34px;
     display: inline-flex;
@@ -24,7 +41,56 @@
     transition: transform 0.15s, background-color 0.15s;
 }
 
-.sticker-button:hover {
+.smile-button:hover {
     background-color: rgba(0, 0, 0, 0.05);
     transform: scale(1.1);
+}
+
+.stickers-modal-footer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+.stickers-modal-footer-item {
+    width: 50%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.stickers-modal-footer-item p {
+    margin: 0;
+    text-align: center;
+}
+
+.inActive p {
+    color: #8c8c8c;
+}
+
+.sticker-button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 25px;
+    width: 87px;
+    height: 87px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: transform 0.15s, background-color 0.15s;
+}
+
+.sticker-image {
+    width: 87px;     
+    height: 87px;
+    object-fit: contain; 
+    pointer-events: none;
 }

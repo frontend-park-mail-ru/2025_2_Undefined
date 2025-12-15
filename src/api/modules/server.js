@@ -13,7 +13,7 @@ const SERVER_API = `${location.origin}/api/v1`;
  */
 export async function sendPOSTRequest(path, data) {
     try {
-
+        console.log(data)
         const csrfToken = localStorage.getItem('csrf_token');
         if (!csrfToken) {
             console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');

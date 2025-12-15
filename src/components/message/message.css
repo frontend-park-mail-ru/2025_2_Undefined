@@ -4,7 +4,7 @@
     height: fit-content;
     display: inline-flex;
     flex-direction: row;
-    padding: 12px;
+    padding: 6px;
     border-radius: 8px;
     font-size: 20px;
     color: white;
@@ -46,4 +46,28 @@
     font-size: 16px;
     color: white;
     align-self: center;
+}
+
+.sticker {
+    background-color: transparent;
+}
+
+.sticker-message {
+    max-width: 256px;
+    max-height: 256px;
+    object-fit: contain; 
+    pointer-events: none;
+}
+
+.image-message {
+    border-radius: 8px;
+    max-width: 256px;
+    max-height: 256px;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.subtext {
+    display: flex;
+    flex-direction: column;
 }

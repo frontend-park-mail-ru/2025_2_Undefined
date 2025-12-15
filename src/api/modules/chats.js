@@ -194,7 +194,7 @@ class Chat {
         }
     }
 
-    async getMessages (chatId, offset) {
+    async getMessages(chatId, offset) {
         const response = await fetch(`${SERVER_API}chats/${chatId}/messages?offset=${offset}&limit=20`, {
             method: 'GET',
             headers: {
@@ -213,6 +213,50 @@ class Chat {
         const data = await response.json();
         return data.reverse();
     }
-}
 
+    async getAttachmentId(data) {
+        const formData = new FormData();
+        formData.append('chat_id', data.chat_id);
+        formData.append('file', data.file);
+        try {
+            const csrfToken = localStorage.getItem('csrf_token');
+            if (!csrfToken) {
+                console.warn('CSRF-токен отсутствует. Запрос может быть отклонён.');
+            }
+
+            const response = await fetch(`${SERVER_API}message/attachment`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                },
+                credentials: 'include',
+                body: formData
+            });
+
+            if (!response.ok) {
+                let errorData;
+                try {
+                    errorData = await response.json();
+                } catch {
+                    errorData = { message: `HTTP error ${response.status}` };
+                }
+
+                const error = new Error(errorData.message || 'Ошибка');
+                console.log(errorData);
+                console.log("SERVER VALIDATION ERRORS:", errorData.errors);
+                error.errors = errorData.errors;
+                error.statusCode = response.status;
+
+                throw error;
+            }
+
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.log(error)
+            throw error;
+        }
+
+    }
+}
 export default new Chat();

@@ -52,6 +52,11 @@
     mask-image: url('../../assets/icons/smile.svg');
 }
 
+.clip-icon {
+    -webkit-mask-image: url('../../assets/icons/clip.svg');
+    mask-image: url('../../assets/icons/clip.svg');
+}
+
 /* .eye-icon {
     background-image: url('./assets/icons/eye.svg');
 } */
